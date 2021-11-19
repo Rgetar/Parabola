@@ -18,7 +18,7 @@ sup{font-size:0.83rem;}
 //ul{display:flex;flex-direction:column-reverse;}
 </style>
 <body style="font-family:Arial;white-space:pre;line-height:0;"
-><span id="listc" style="float:left;line-height:0.9;position: absolute;heighta:80%;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><script
+><canvas id="canvas" width="150" height="150"></canvas><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><script
 >'use strict'
 
 
@@ -55,67 +55,83 @@ if(fsize>16)
 
 listc.lastChild.remove();
 
-t=document.createElement('table');
+t=document.createElement('span');
 t.border=2;
 t.cellPadding=0;
 t.style.textAlign='center';
 t.style.borderSpacing='0';
-t.style.float='left';
+//t.style.float='left';
 t.style.marginRight='10px';
-t.style.marginBottom='-10px';
-for(let e=0;e<n;e++)
-   {let r=document.createElement('tr');
-   for(let i=0;i<n;i++)
-      {let d=document.createElement('td');
-      d.style.width=w-1+'px';
-      d.style.height=w-1+'px';
-      if(tar[i]==n-1-e)
-         d.style.background='#a0ffa0';
-      d.style.borderLeft='none';
-      d.style.borderTop='none';
+//for(let e=0;e<n;e++)
+   {let r=document.createElement('span');
+   //for(let i=0;i<n;i++)
+      {let d=document.createElement('span');
+      //d.style.width=w-1+'px';
+      //d.style.height=w-1+'px';
+      d.style.width=w*n+'px';
+      d.style.height=w*n+'px';
+      //if(tar[i]==n-1-e)
+      //   d.style.background='#a0ffa0';
+      d.style.border='none';
+      //d.style.borderLeft='none';
+      //d.style.borderTop='none';
+      let s=document.createElement('svg');
+      s.setAttribute('width',w*(n+5));
+      s.setAttribute('height',w*(n+2));
+      
+      for(let e=0;e<n;e++)
+      {let re=document.createElement('rect');
+      re.setAttribute('x',(e)*w);
+      re.setAttribute('y',(n-tar[e]-1)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w);
+      re.style.fill='#a0ffa0';
+      s.appendChild(re);
+      }
+      
+      for(let e=0;e<=n;e++)
+      {let li=document.createElement('line');
+      li.setAttribute('x1',w*e+(e?-0.5:0.5));
+      li.setAttribute('y1',0);
+      li.setAttribute('x2',w*e+(e?-0.5:0.5));
+      li.setAttribute('y2',w*n);
+      li.setAttribute('stroke','black');
+      //li.setAttribute('stroke-width',0.5);
+      s.appendChild(li);
+      
+      li=document.createElement('line');
+      li.setAttribute('x1',0);
+      li.setAttribute('y1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*n);
+      li.setAttribute('y2',w*e+(e?-0.5:0.5));
+      li.setAttribute('stroke','black');
+      s.appendChild(li);
+      
+      let t=document.createElement('text');
+      t.setAttribute('x',n*w+7);
+      t.setAttribute('y',(e-0.4)*w);
+      t.setAttribute('font-size',fsize+'px');
+      t.innerHTML=n-e;
+      t.style.font=fsize+'px';
+      s.appendChild(t);
+      
+      t=document.createElement('text');
+      t.setAttribute('x',(e-0.5)*w);
+      t.setAttribute('y',n*w+fsize+1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.innerHTML=e-1;
+      t.style.font=fsize+'px';
+      s.appendChild(t);
+      }
+      
+      d.appendChild(s);
+      
       r.appendChild(d);
       }
    t.appendChild(r); 
    }
 listc.appendChild(t); 
-
-
-t=document.createElement('table');
-t.cellPadding=0;
-t.style.textAlign='left';
-t.style.borderSpacing='0';
-t.style.fontSize=fsize+'px';
-for(let e=0;e<n;e++)
-   {let r=document.createElement('tr');
-      let d=document.createElement('td');
-      d.style.height=w+'px';
-      d.style.border='none';
-         d.innerHTML=n-1-e;
-      r.appendChild(d);
-   t.appendChild(r); 
-   }
-listc.appendChild(t); 
-
-listc.innerHTML+='<br/>'; 
-
-t=document.createElement('table');
-t.cellPadding=0;
-t.style.textAlign='center';
-t.style.borderSpacing='0';
-t.style.fontSize=fsize+'px';
-   {let r=document.createElement('tr');
-   for(let i=0;i<n;i++)
-      {let d=document.createElement('td');
-      d.style.width=w+'px';
-      d.style.border='none';
-         d.innerHTML=i;
-      r.appendChild(d);
-      }
-   t.appendChild(r); 
-   }
-listc.appendChild(t); 
-
-
 
 listc.innerHTML+='<br/><br/>';
 listc.innerHTML+='<span style="cursor:pointer;"><br/><i id="addtable">Add table (use "Space" key)</i></span>';
@@ -129,10 +145,12 @@ listc.scrollTop=listc.scrollHeight;}
 }
 
 
-let nextn=10;
+let nextn=25;
 
 for(let e=2;e<=nextn;e++)
    addtable(e);
+
+
 
 
 </script></div></body></html>
