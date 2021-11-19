@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns = "http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<title>Parabola</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<style type="text/css" media="Screen">
+a{text-decoration:none;color:blue;}
+a:hover{text-decoration:underline;}
+a:visited{color:blue;}
+li{list-style-type:none;cursor:pointer;padding-left: 7px;padding-right: 27px;}
+//li{list-style-type:none;cursor:pointer;padding-left: 7px;outline: 1px solid black}
+//ul{margin-right:auto;widthq:100%}
+//td{cursor:pointer;}
+sub{font-size:0.83rem;}
+sup{font-size:0.83rem;}
+//ul{display:flex;flex-direction:column-reverse;}
+</style>
+<body style="font-family:Arial;white-space:pre;line-height:0;"
+><span id="listc" style="float:left;line-height:0.9;position: absolute;heighta:80%;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><span><br/><i>Add table</i></span></span><script
+>'use strict'
+
+
+document.addEventListener('keydown',function(e){
+if(!e.ctrlKey){
+let c=e.code;
+if(c=='Space'){
+   nextn++;
+   addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
+   }
+	       	
+}}
+);
+
+function addtable(n)
+{
+let tar=[];
+for(let e=0;e<n;e++)
+   tar.push(e*e%n);
+
+let t;
+let w=Math.floor(500/n);
+if(w>51)
+   w=51;
+else if(w<3)
+   w=3;
+
+let fsize=Math.floor(w*0.5);
+if(fsize>16)
+   fsize=16;
+
+
+
+listc.lastChild.remove();
+
+t=document.createElement('table');
+t.border=2;
+t.cellPadding=0;
+t.style.textAlign='center';
+t.style.borderSpacing='0';
+t.style.float='left';
+t.style.marginRight='10px';
+t.style.marginBottom='-10px';
+for(let e=0;e<n;e++)
+   {let r=document.createElement('tr');
+   for(let i=0;i<n;i++)
+      {let d=document.createElement('td');
+      d.style.width=w-1+'px';
+      d.style.height=w-1+'px';
+      if(tar[i]==n-1-e)
+         d.style.background='#a0ffa0';
+      d.style.borderLeft='none';
+      d.style.borderTop='none';
+      r.appendChild(d);
+      }
+   t.appendChild(r); 
+   }
+listc.appendChild(t); 
+
+
+t=document.createElement('table');
+t.cellPadding=0;
+t.style.textAlign='left';
+t.style.borderSpacing='0';
+t.style.fontSize=fsize+'px';
+for(let e=0;e<n;e++)
+   {let r=document.createElement('tr');
+      let d=document.createElement('td');
+      d.style.height=w+'px';
+      d.style.border='none';
+         d.innerHTML=n-1-e;
+      r.appendChild(d);
+   t.appendChild(r); 
+   }
+listc.appendChild(t); 
+
+listc.innerHTML+='<br/>'; 
+
+t=document.createElement('table');
+t.cellPadding=0;
+t.style.textAlign='center';
+t.style.borderSpacing='0';
+t.style.fontSize=fsize+'px';
+   {let r=document.createElement('tr');
+   for(let i=0;i<n;i++)
+      {let d=document.createElement('td');
+      d.style.width=w+'px';
+      d.style.border='none';
+         d.innerHTML=i;
+      r.appendChild(d);
+      }
+   t.appendChild(r); 
+   }
+listc.appendChild(t); 
+
+
+
+listc.innerHTML+='<br/><br/>';
+listc.innerHTML+='<span style="cursor:pointer;"><br/><i id="addtable">Add table (use "Space" key)</i></span>';
+}
+
+listc.onclick=function(e){
+if(e.target.id=='addtable')
+{nextn++;
+addtable(nextn);
+listc.scrollTop=listc.scrollHeight;}
+}
+
+
+let nextn=10;
+
+for(let e=2;e<=nextn;e++)
+   addtable(e);
+
+
+</script></div></body></html>
