@@ -20,7 +20,15 @@ sup{font-size:0.83rem;}
 ><canvas id="canvas" width="150" height="150"></canvas><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><script
 >'use strict'
 
-
+function getw(n)
+{
+let w=Math.floor(1000/n);
+if(w>51)
+   w=51;
+else if(w<3)
+   w=3;
+return w;
+}
 
 function addtable(n)
 {
@@ -41,11 +49,7 @@ for(let e=0;e<n;e++)
 let to=1.5;
 
 let t;
-let w=Math.floor(1000/n);
-if(w>51)
-   w=51;
-else if(w<3)
-   w=3;
+let w=getw(n);
 
 let fsize=Math.floor(w*0.5);
 if(fsize>16)
@@ -61,7 +65,10 @@ t.cellPadding=0;
 t.style.textAlign='center';
 t.style.borderSpacing='0';
 t.style.marginRight='10px';
-t.innerHTML+='<span><br/><br/><br/><br/>N = '+n+'</span><br/><br/>';
+if(n>2)
+   t.innerHTML+='<span><br/><br/><br/><br/>N = '+n+'</span><br/><br/>';
+else
+	t.innerHTML+='<span><br/>N = '+n+'</span><br/><br/>';
 /*let nn=document.createElement('span');
 nn.innerHTML='N = '+n;
 r.appendChild(nn);*/
@@ -85,7 +92,19 @@ r.appendChild(nn);*/
       
       for(let e=0;e<n;e++)
       {let re=document.createElement('rect');
+      re.setAttribute('id','r'+n+' '+e);
       re.setAttribute('x',(e)*w);
+      /*Object.defineProperty(re,'y',{
+         get: function(){
+            return this.getAttribute('y');
+            //return y;
+            },
+         set: function(n){
+            this.setAttribute('y',n);
+            //y=n;
+            }
+         });
+      re.y=(n-tar[e]-1)*w;*/
       re.setAttribute('y',(n-tar[e]-1)*w);
       re.setAttribute('width',w);
       re.setAttribute('height',w);
@@ -129,6 +148,7 @@ r.appendChild(nn);*/
       s.appendChild(t);
       
       t=document.createElement('text');
+      t.setAttribute('id','t'+n+' '+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',n*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
@@ -156,7 +176,7 @@ r.appendChild(nn);*/
 listc.appendChild(t); 
 
 listc.innerHTML+='<br/>';
-listc.innerHTML+='<span style="cursor:pointer;"><br/><br/><i id="addtable">Add table (use "Space" key)</i><br/><br/><br/><i id="addtables">Add 10 tables (use "Enter" key)</i></span>';
+listc.innerHTML+='<span style="cursor:pointer;"><br/><br/><i id="addtable">Add table (use "Space" key)</i><br/><br/><br/><i id="addtables">Add 10 tables (use "Enter" key)</i><br/><br/><br/><i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes (use "M" key)</i></span>';
 }
 
 document.addEventListener('keydown',function(e){
@@ -173,7 +193,22 @@ else if(c=='Enter')
       addtable(nextn);
       }
    listc.scrollTop=listc.scrollHeight;
-   }	
+   }
+else if(c=='KeyM')
+   {
+   mode=1-mode;
+   for(let n=2;n<=nextn;n++)
+      {let w=getw(n);
+      let to=Math.floor(n/2-0.5);
+      for(let e=0;e<n;e++)
+         {
+         let re=document.getElementById('r'+n+' '+e);
+         re.setAttribute('x',((e+mode*to)%n)*w);
+         let t=document.getElementById('t'+n+' '+e);
+         t.innerHTML=e-mode*to;
+         }
+      }
+   }
 }}
 );
 
@@ -189,15 +224,30 @@ if(e.target.id=='addtable')
       }
    listc.scrollTop=listc.scrollHeight;
    }
+   else if(e.target.id=='switchmode')
+      {
+      mode=1-mode;
+      for(let n=2;n<=nextn;n++)
+         {let w=getw(n);
+         let to=Math.floor(n/2-0.5);
+         for(let e=0;e<n;e++)
+            {
+            let re=document.getElementById('r'+n+' '+e);
+            re.setAttribute('x',((e+mode*to)%n)*w);
+            let t=document.getElementById('t'+n+' '+e);
+            t.innerHTML=e-mode*to;
+            }
+         }
+      }
 }
 
 
 
+let mode=0;
 let nextn=10;
 
 for(let e=2;e<=nextn;e++)
    addtable(e);
-
 
 
 
