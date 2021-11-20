@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <title>Parabola</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <style type="text/css" media="Screen">
 a{text-decoration:none;color:blue;}
@@ -26,8 +25,20 @@ sup{font-size:0.83rem;}
 function addtable(n)
 {
 let tar=[];
+let car=[];
 for(let e=0;e<n;e++)
-   tar.push(e*e%n);
+   car.push(0);
+   
+let maxc=0;
+for(let e=0;e<n;e++)
+   {let i=e*e%n;
+   tar.push(i);
+   car[i]++;
+   if(car[i]>maxc)
+      maxc++;
+   }
+
+let to=1.5;
 
 let t;
 let w=Math.floor(1000/n);
@@ -50,7 +61,7 @@ t.cellPadding=0;
 t.style.textAlign='center';
 t.style.borderSpacing='0';
 t.style.marginRight='10px';
-t.innerHTML+='<span><br/><br/>N = '+n+'</span><br/><br/>';
+t.innerHTML+='<span><br/><br/><br/><br/>N = '+n+'</span><br/><br/>';
 /*let nn=document.createElement('span');
 nn.innerHTML='N = '+n;
 r.appendChild(nn);*/
@@ -70,7 +81,7 @@ r.appendChild(nn);*/
       //d.style.borderTop='none';
       let s=document.createElement('svg');
       s.setAttribute('width',w*(n+5));
-      s.setAttribute('height',w*(n+1));
+      s.setAttribute('height',w*(n+maxc+to));
       
       for(let e=0;e<n;e++)
       {let re=document.createElement('rect');
@@ -79,6 +90,14 @@ r.appendChild(nn);*/
       re.setAttribute('width',w);
       re.setAttribute('height',w);
       re.style.fill='#ff0000';
+      s.appendChild(re);
+      
+      re=document.createElement('rect');
+      re.setAttribute('x',(e)*w);
+      re.setAttribute('y',w*(n+maxc-car[e]+to));
+      re.setAttribute('width',w-1);
+      re.setAttribute('height',w*car[e]);
+      re.style.fill='#a0d7d7';
       s.appendChild(re);
       }
       
@@ -98,22 +117,32 @@ r.appendChild(nn);*/
       li.setAttribute('x2',w*n);
       li.setAttribute('y2',w*e+(e?-0.5:0.5));
       li.setAttribute('stroke','black');
-      s.appendChild(li);
+      s.appendChild(li);}
       
-      let t=document.createElement('text');
+      for(let e=0;e<n;e++)
+      {let t=document.createElement('text');
       t.setAttribute('x',n*w+7);
-      t.setAttribute('y',(e-0.4)*w);
+      t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
-      t.innerHTML=n-e;
+      t.innerHTML=n-e-1;
       t.style.font=fsize+'px';
       s.appendChild(t);
       
       t=document.createElement('text');
-      t.setAttribute('x',(e-0.5)*w);
+      t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',n*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
-      t.innerHTML=e-1;
+      t.innerHTML=e;
+      t.style.font=fsize+'px';
+      s.appendChild(t);
+      
+      t=document.createElement('text');
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.innerHTML=car[e];
       t.style.font=fsize+'px';
       s.appendChild(t);
       }
@@ -127,7 +156,7 @@ r.appendChild(nn);*/
 listc.appendChild(t); 
 
 listc.innerHTML+='<br/>';
-listc.innerHTML+='<span style="cursor:pointer;"><br/><i id="addtable">Add table (use "Space" key)</i><br/><br/><br/><i id="addtables">Add 10 tables (use "Enter" key)</i></span>';
+listc.innerHTML+='<span style="cursor:pointer;"><br/><br/><i id="addtable">Add table (use "Space" key)</i><br/><br/><br/><i id="addtables">Add 10 tables (use "Enter" key)</i></span>';
 }
 
 document.addEventListener('keydown',function(e){
@@ -163,10 +192,13 @@ if(e.target.id=='addtable')
 }
 
 
+
 let nextn=10;
 
 for(let e=2;e<=nextn;e++)
    addtable(e);
+
+
 
 
 
