@@ -10,6 +10,7 @@ a:hover{text-decoration:underline;}
 a:visited{color:blue;}
 li{list-style-type:none;cursor:pointer;padding-left: 7px;padding-right: 27px;}
 //li{list-style-type:none;cursor:pointer;padding-left: 7px;outline: 1px solid black}
+i{padding: 7px;outline: 1px solid black}
 //ul{margin-right:auto;widthq:100%}
 //td{cursor:pointer;}
 sub{font-size:0.83rem;}
@@ -17,7 +18,7 @@ sup{font-size:0.83rem;}
 //ul{display:flex;flex-direction:column-reverse;}
 </style>
 <body style="font-family:Arial;white-space:pre;line-height:0;"
-><canvas id="canvas" width="150" height="150"></canvas><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><script
+><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><script
 >'use strict'
 
 function getw(n)
@@ -25,8 +26,8 @@ function getw(n)
 let w=Math.floor(1000/n);
 if(w>51)
    w=51;
-else if(w<3)
-   w=3;
+else if(w<8)
+   w=8;
 return w;
 }
 
@@ -47,90 +48,71 @@ for(let e=0;e<n;e++)
    }
 
 let to=1.5;
-
-let t;
 let w=getw(n);
+let tu=Math.floor(n/2-0.5);
 
 let fsize=Math.floor(w*0.5);
 if(fsize>16)
    fsize=16;
 
-
-
+listc.lastChild.remove();
 listc.lastChild.remove();
 
-t=document.createElement('span');
+let t=document.createElement('span');
 t.border=2;
 t.cellPadding=0;
 t.style.textAlign='center';
 t.style.borderSpacing='0';
-t.style.marginRight='10px';
-if(n>2)
-   t.innerHTML+='<span><br/><br/><br/><br/>N = '+n+'</span><br/><br/>';
-else
-	t.innerHTML+='<span><br/>N = '+n+'</span><br/><br/>';
-/*let nn=document.createElement('span');
-nn.innerHTML='N = '+n;
-r.appendChild(nn);*/
+t.style.width=w*n+'px';
+t.style.height=w*n+'px';
+t.style.border='none';
+t.id='tc';
 
-//for(let e=0;e<n;e++)
-   {let r=document.createElement('span');
-   //for(let i=0;i<n;i++)
-      {let d=document.createElement('span');
-      //d.style.width=w-1+'px';
-      //d.style.height=w-1+'px';
-      d.style.width=w*n+'px';
-      d.style.height=w*n+'px';
-      //if(tar[i]==n-1-e)
-      //   d.style.background='#a0ffa0';
-      d.style.border='none';
-      //d.style.borderLeft='none';
-      //d.style.borderTop='none';
+t.innerHTML+='<span id="th"><br/>N = '+n+'</span><br/><br/>';
+
+let d=document.createDocumentFragment();
+
       let s=document.createElement('svg');
+      s.setAttribute('id','svg');
       s.setAttribute('width',w*(n+5));
       s.setAttribute('height',w*(n+maxc+to));
       
+      let g=document.createElement('g');
+      g.setAttribute('id','rc');
       for(let e=0;e<n;e++)
       {let re=document.createElement('rect');
-      re.setAttribute('id','r'+n+' '+e);
-      re.setAttribute('x',(e)*w);
-      /*Object.defineProperty(re,'y',{
-         get: function(){
-            return this.getAttribute('y');
-            //return y;
-            },
-         set: function(n){
-            this.setAttribute('y',n);
-            //y=n;
-            }
-         });
-      re.y=(n-tar[e]-1)*w;*/
+      re.setAttribute('id','r'+e);
+      re.setAttribute('x',((e+mode*tu)%n)*w);
       re.setAttribute('y',(n-tar[e]-1)*w);
       re.setAttribute('width',w);
       re.setAttribute('height',w);
       re.style.fill='#ff0000';
-      s.appendChild(re);
+      g.appendChild(re);
       
       re=document.createElement('rect');
-      re.setAttribute('x',(e)*w);
+      re.setAttribute('id','g'+e);
+      re.setAttribute('x',e*w);
       re.setAttribute('y',w*(n+maxc-car[e]+to));
       re.setAttribute('width',w-1);
       re.setAttribute('height',w*car[e]);
       re.style.fill='#a0d7d7';
-      s.appendChild(re);
+      g.appendChild(re);
       }
       
+      s.appendChild(g);
+
       for(let e=0;e<=n;e++)
       {let li=document.createElement('line');
+      li.setAttribute('id','v'+e);
       li.setAttribute('x1',w*e+(e?-0.5:0.5));
       li.setAttribute('y1',0);
       li.setAttribute('x2',w*e+(e?-0.5:0.5));
       li.setAttribute('y2',w*n);
       li.setAttribute('stroke','black');
-      //li.setAttribute('stroke-width',0.5);
       s.appendChild(li);
       
       li=document.createElement('line');
+      li.setAttribute('id','h'+e);
       li.setAttribute('x1',0);
       li.setAttribute('y1',w*e+(e?-0.5:0.5));
       li.setAttribute('x2',w*n);
@@ -140,6 +122,7 @@ r.appendChild(nn);*/
       
       for(let e=0;e<n;e++)
       {let t=document.createElement('text');
+      t.setAttribute('id','y'+e);
       t.setAttribute('x',n*w+7);
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
@@ -148,16 +131,17 @@ r.appendChild(nn);*/
       s.appendChild(t);
       
       t=document.createElement('text');
-      t.setAttribute('id','t'+n+' '+e);
+      t.setAttribute('id','x'+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',n*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
-      t.innerHTML=e;
+      t.innerHTML=e-mode*tu;
       t.style.font=fsize+'px';
       s.appendChild(t);
       
       t=document.createElement('text');
+      t.setAttribute('id','t'+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
       t.setAttribute('font-size',fsize+'px');
@@ -168,15 +152,254 @@ r.appendChild(nn);*/
       }
       
       d.appendChild(s);
-      
-      r.appendChild(d);
-      }
-   t.appendChild(r); 
-   }
+
+t.appendChild(d);
+
 listc.appendChild(t); 
 
-listc.innerHTML+='<br/>';
-listc.innerHTML+='<span style="cursor:pointer;"><br/><br/><i id="addtable">Add table (use "Space" key)</i><br/><br/><br/><i id="addtables">Add 10 tables (use "Enter" key)</i><br/><br/><br/><i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes (use "M" key)</i></span>';
+listc.innerHTML+='<span style="cursor:pointer;"><br/><br/><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i></span>';
+}
+
+function inct(n)
+{
+let tar=[];
+let car=[];
+for(let e=0;e<n;e++)
+   car.push(0);
+   
+let maxc=0;
+for(let e=0;e<n;e++)
+   {let i=e*e%n;
+   tar.push(i);
+   car[i]++;
+   if(car[i]>maxc)
+      maxc++;
+   }
+
+let to=1.5;
+let w=getw(n);
+let tu=Math.floor(n/2-0.5);
+
+let fsize=Math.floor(w*0.5);
+if(fsize>16)
+   fsize=16;
+
+document.getElementById('th').innerHTML='<br/>N = '+n;
+
+      let s=document.getElementById('svg');
+      let g=document.getElementById('rc');
+      s.setAttribute('width',w*(n+5));
+      s.setAttribute('height',w*(n+maxc+to));
+      
+      let e=n-1;
+      let re=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      re.setAttribute('id','r'+e);
+      re.setAttribute('x',((e+mode*tu)%n)*w);
+      re.setAttribute('y',(n-tar[e]-1)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w);
+      re.style.fill='#ff0000';
+      g.appendChild(re);
+      
+      re=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      re.setAttribute('id','g'+e);
+      re.setAttribute('x',e*w);
+      re.setAttribute('y',w*(n+maxc-car[e]+to));
+      re.setAttribute('width',w-1);
+      re.setAttribute('height',w*car[e]);
+      re.style.fill='#a0d7d7';
+      g.appendChild(re);
+      
+      for(e=0;e<n-1;e++)
+      {re=document.getElementById('r'+e);
+      re.setAttribute('x',((e+mode*tu)%n)*w);
+      re.setAttribute('y',(n-tar[e]-1)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w);
+
+      re=document.getElementById('g'+e);
+      re.setAttribute('x',e*w);
+      re.setAttribute('y',w*(n+maxc-car[e]+to));
+      re.setAttribute('width',w-1);
+      re.setAttribute('height',w*car[e]);
+      }
+      
+      e=n;
+      
+      let li=document.createElementNS('http://www.w3.org/2000/svg','line');
+      li.setAttribute('id','v'+e);
+      li.setAttribute('x1',w*e+(e?-0.5:0.5));
+      li.setAttribute('y1',0);
+      li.setAttribute('x2',w*e+(e?-0.5:0.5));
+      li.setAttribute('y2',w*n);
+      li.setAttribute('stroke','black');
+      s.appendChild(li);
+      
+      li=document.createElementNS('http://www.w3.org/2000/svg','line');
+      li.setAttribute('id','h'+e);
+      li.setAttribute('x1',0);
+      li.setAttribute('y1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*n);
+      li.setAttribute('y2',w*e+(e?-0.5:0.5));
+      li.setAttribute('stroke','black');
+      s.appendChild(li);
+
+      for(e=0;e<n;e++)
+      {li=document.getElementById('v'+e);
+      li.setAttribute('x1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*e+(e?-0.5:0.5));
+      li.setAttribute('y2',w*n);
+      
+      li=document.getElementById('h'+e);
+      li.setAttribute('y1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*n);
+      li.setAttribute('y2',w*e+(e?-0.5:0.5));}
+
+      for(e=n-1;e<n;e++)
+      {let t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('id','y'+e);
+      t.setAttribute('x',n*w+7);
+      t.setAttribute('y',(e+0.6)*w);
+      t.setAttribute('font-size',fsize+'px');
+      t.innerHTML=n-e-1;
+      t.style.font=fsize+'px';
+      s.appendChild(t);
+      
+      t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('id','x'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',n*w+fsize+1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.innerHTML=e-mode*tu;
+      t.style.font=fsize+'px';
+      s.appendChild(t);
+      
+      t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('id','t'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.innerHTML=car[e];
+      t.style.font=fsize+'px';
+      s.appendChild(t);}
+      
+      for(e=0;e<n-1;e++)
+      {let t=document.getElementById('t'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
+      t.setAttribute('font-size',fsize+'px');
+      t.innerHTML=car[e];
+      t.style.font=fsize+'px';
+      
+      t=document.getElementById('x'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',n*w+fsize+1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.style.font=fsize+'px';
+      t.innerHTML=e-mode*tu;
+      
+      t=document.getElementById('y'+e);
+      t.setAttribute('x',n*w+7);
+      t.setAttribute('y',(e+0.6)*w);
+      t.setAttribute('font-size',fsize+'px');
+      t.style.font=fsize+'px';
+      t.innerHTML=n-e-1;
+      }
+}
+
+function dect(n)
+{
+let tar=[];
+let car=[];
+for(let e=0;e<n;e++)
+   car.push(0);
+   
+let maxc=0;
+for(let e=0;e<n;e++)
+   {let i=e*e%n;
+   tar.push(i);
+   car[i]++;
+   if(car[i]>maxc)
+      maxc++;
+   }
+
+let to=1.5;
+let w=getw(n);
+let tu=Math.floor(n/2-0.5);
+
+let fsize=Math.floor(w*0.5);
+if(fsize>16)
+   fsize=16;
+
+document.getElementById('th').innerHTML='<br/>N = '+n;
+
+      let s=document.getElementById('svg');
+      s.setAttribute('width',w*(n+5));
+      s.setAttribute('height',w*(n+maxc+to));
+      
+      document.getElementById('r'+n).remove();
+      document.getElementById('g'+n).remove();
+      
+      let e;
+      let re;
+      for(e=0;e<n;e++)
+      {re=document.getElementById('r'+e);
+      re.setAttribute('x',((e+mode*tu)%n)*w);
+      re.setAttribute('y',(n-tar[e]-1)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w);
+
+      re=document.getElementById('g'+e);
+      re.setAttribute('x',e*w);
+      re.setAttribute('y',w*(n+maxc-car[e]+to));
+      re.setAttribute('width',w-1);
+      re.setAttribute('height',w*car[e]);
+      }
+       
+      document.getElementById('h'+(n+1)).remove();
+      document.getElementById('v'+(n+1)).remove();
+
+      for(e=0;e<=n;e++)
+      {let li=document.getElementById('v'+e);
+      li.setAttribute('x1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*e+(e?-0.5:0.5));
+      li.setAttribute('y2',w*n);
+      
+      li=document.getElementById('h'+e);
+      li.setAttribute('y1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*n);
+      li.setAttribute('y2',w*e+(e?-0.5:0.5));}
+
+      document.getElementById('x'+n).remove();
+      document.getElementById('y'+n).remove();
+      document.getElementById('t'+n).remove();
+          
+      for(e=0;e<n;e++)
+      {let t=document.getElementById('t'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
+      t.setAttribute('font-size',fsize+'px');
+      t.innerHTML=car[e];
+      t.style.font=fsize+'px';
+      
+      t=document.getElementById('x'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',n*w+fsize+1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.style.font=fsize+'px';
+      t.innerHTML=e-mode*tu;
+      
+      t=document.getElementById('y'+e);
+      t.setAttribute('x',n*w+7);
+      t.setAttribute('y',(e+0.6)*w);
+      t.setAttribute('font-size',fsize+'px');
+      t.style.font=fsize+'px';
+      t.innerHTML=n-e-1;
+      }
 }
 
 document.addEventListener('keydown',function(e){
@@ -184,27 +407,36 @@ if(!e.ctrlKey){
 let c=e.code;
 if(c=='Space'){
    nextn++;
-   addtable(nextn);
-   listc.scrollTop=listc.scrollHeight;
+   inct(nextn);
+   //listc.scrollTop=listc.scrollHeight;
+   }
+if(c=='Backspace'){
+   if(nextn>2)
+      {nextn--;
+      dect(nextn);
+      }
    }
 else if(c=='Enter')
-   {for(let e=0;e<10;e++)
+   {
+   /*for(let e=0;e<10;e++)
       {nextn++;
       addtable(nextn);
-      }
-   listc.scrollTop=listc.scrollHeight;
+      }*/
+   nextn+=10;
+   addtable(nextn);
+   //listc.scrollTop=listc.scrollHeight;
    }
 else if(c=='KeyM')
    {
    mode=1-mode;
-   for(let n=2;n<=nextn;n++)
+   for(let n=nextn;n<=nextn;n++)
       {let w=getw(n);
       let to=Math.floor(n/2-0.5);
       for(let e=0;e<n;e++)
          {
-         let re=document.getElementById('r'+n+' '+e);
+         let re=document.getElementById('r'+e);
          re.setAttribute('x',((e+mode*to)%n)*w);
-         let t=document.getElementById('t'+n+' '+e);
+         let t=document.getElementById('x'+e);
          t.innerHTML=e-mode*to;
          }
       }
@@ -213,28 +445,59 @@ else if(c=='KeyM')
 );
 
 listc.onclick=function(e){
-if(e.target.id=='addtable')
+let c=e.target;
+while(c.tagName=='B'||c.tagName=='SMALL')
+   c=c.parentNode;
+if(c.id=='addtable')
    {nextn++;
    addtable(nextn);
-   listc.scrollTop=listc.scrollHeight;}
-   else if(e.target.id=='addtables')
-   {for(let e=0;e<10;e++)
+   //listc.scrollTop=listc.scrollHeight;
+   }
+   else if(c.id=='addtables')
+   {
+   /*for(let e=0;e<10;e++)
       {nextn++;
       addtable(nextn);
-      }
-   listc.scrollTop=listc.scrollHeight;
+      }*/
+   nextn+=10;
+   addtable(nextn);
+   //listc.scrollTop=listc.scrollHeight;
    }
-   else if(e.target.id=='switchmode')
+   else if(c.id=='addtables100')
+   {
+   nextn+=100;
+   addtable(nextn);
+   }
+   else if(c.id=='removetable')
+   {
+   if(nextn>2)
+      {nextn--;
+      dect(nextn);
+      }
+   }
+   else if(c.id=='removetables10')
+   {
+   nextn-=10;
+   if(nextn<2)nextn=2;
+   addtable(nextn);
+   }
+   else if(c.id=='removetables100')
+   {
+   nextn-=100;
+   if(nextn<2)nextn=2;
+   addtable(nextn);
+   }
+   else if(c.id=='switchmode')
       {
       mode=1-mode;
-      for(let n=2;n<=nextn;n++)
+      for(let n=nextn;n<=nextn;n++)
          {let w=getw(n);
          let to=Math.floor(n/2-0.5);
          for(let e=0;e<n;e++)
             {
-            let re=document.getElementById('r'+n+' '+e);
+            let re=document.getElementById('r'+e);
             re.setAttribute('x',((e+mode*to)%n)*w);
-            let t=document.getElementById('t'+n+' '+e);
+            let t=document.getElementById('x'+e);
             t.innerHTML=e-mode*to;
             }
          }
@@ -242,14 +505,39 @@ if(e.target.id=='addtable')
 }
 
 
+window.onkeydown = function(e) { 
+  return !((e.keyCode==32) && e.target == document.body);
+};
+
+
+function check(n)
+{let c=[];
+let e;
+for(e=0;e<n;e++)
+   c.push(0);
+let i=0;
+e=0;
+while(e<n&&c[i]<3)
+   {i=e*e%n;
+   c[i]++;
+   e++;
+   }
+return e==n;
+}
 
 let mode=0;
-let nextn=10;
+let nextn=2;
 
 for(let e=2;e<=nextn;e++)
    addtable(e);
 
-
+//nextn=110;
+/*
+//listc.innerHTML+='<br/><br/>';
+for(let e=10000000;e<=10000100;e++)
+   if(check(e))
+      listc.innerHTML+=e+'<br/>';
+*/
 
 
 
