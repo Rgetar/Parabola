@@ -451,7 +451,7 @@ while(c.tagName=='B'||c.tagName=='SMALL')
 if(c.id=='addtable')
    {nextn++;
    addtable(nextn);
-   //listc.scrollTop=listc.scrollHeight;
+   listc.scrollTop=listc.scrollHeight;
    }
    else if(c.id=='addtables')
    {
@@ -461,18 +461,20 @@ if(c.id=='addtable')
       }*/
    nextn+=10;
    addtable(nextn);
-   //listc.scrollTop=listc.scrollHeight;
+   listc.scrollTop=listc.scrollHeight;
    }
    else if(c.id=='addtables100')
    {
    nextn+=100;
    addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
    }
    else if(c.id=='removetable')
    {
    if(nextn>2)
       {nextn--;
       dect(nextn);
+      listc.scrollTop=listc.scrollHeight;
       }
    }
    else if(c.id=='removetables10')
@@ -480,12 +482,14 @@ if(c.id=='addtable')
    nextn-=10;
    if(nextn<2)nextn=2;
    addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
    }
    else if(c.id=='removetables100')
    {
    nextn-=100;
    if(nextn<2)nextn=2;
    addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
    }
    else if(c.id=='switchmode')
       {
@@ -501,6 +505,7 @@ if(c.id=='addtable')
             t.innerHTML=e-mode*to;
             }
          }
+      listc.scrollTop=listc.scrollHeight;
       }
 }
 
