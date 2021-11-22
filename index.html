@@ -161,7 +161,7 @@ let d=document.createDocumentFragment();
       for(let e=0;e<n;e++)
       {re=document.createElement('rect');
       re.setAttribute('id','r'+e);
-      re.setAttribute('y',((n-1-e+mode*tu)%n)*w);
+      re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
       re.setAttribute('x',tar[e]*w);
       re.setAttribute('width',w);
       re.setAttribute('height',w);
@@ -526,7 +526,7 @@ else if(c=='KeyM')
       for(let e=0;e<n;e++)
          {
          let re=document.getElementById('r'+e);
-         re.setAttribute('y',((n-1-e+mode*to)%n)*w);
+         re.setAttribute('y',((n*2-e-1-mode*to)%n)*w);
          let t=document.getElementById('y'+e);
          t.innerHTML=n-e-1-mode*to;
          re=document.getElementById('zerostring');
@@ -622,7 +622,7 @@ if(c.id=='addtable')
          for(let e=0;e<n;e++)
             {
             let re=document.getElementById('r'+e);
-            re.setAttribute('y',((n-1-e+mode*to)%n)*w);
+            re.setAttribute('y',((n*2-e-1-mode*to)%n)*w);
             let t=document.getElementById('y'+e);
             t.innerHTML=n-e-1-mode*to;
             re=document.getElementById('zerostring');
