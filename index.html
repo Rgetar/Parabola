@@ -148,8 +148,18 @@ let d=document.createDocumentFragment();
       if(graph==1)
       {let g=document.createElement('g');
       g.setAttribute('id','rc');
+      
+      let re=document.createElement('rect');
+      re.setAttribute('id','zerostring');
+      re.setAttribute('y',((n-1-mode*tu)%n)*w);
+      re.setAttribute('x',0);
+      re.setAttribute('width',w*n);
+      re.setAttribute('height',w);
+      re.style.fill='#f0f0f0';
+      g.appendChild(re);
+      
       for(let e=0;e<n;e++)
-      {let re=document.createElement('rect');
+      {re=document.createElement('rect');
       re.setAttribute('id','r'+e);
       re.setAttribute('y',((n-1-e+mode*tu)%n)*w);
       re.setAttribute('x',tar[e]*w);
@@ -519,6 +529,8 @@ else if(c=='KeyM')
          re.setAttribute('y',((n-1-e+mode*to)%n)*w);
          let t=document.getElementById('y'+e);
          t.innerHTML=n-e-1-mode*to;
+         re=document.getElementById('zerostring');
+         re.setAttribute('y',((n-1-mode*to)%n)*w);
          }
       }
    }
@@ -613,6 +625,8 @@ if(c.id=='addtable')
             re.setAttribute('y',((n-1-e+mode*to)%n)*w);
             let t=document.getElementById('y'+e);
             t.innerHTML=n-e-1-mode*to;
+            re=document.getElementById('zerostring');
+            re.setAttribute('y',((n-1-mode*to)%n)*w);
             }
          }
       listc.scrollTop=listc.scrollHeight;
