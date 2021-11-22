@@ -23,30 +23,98 @@ sup{font-size:0.83rem;}
 
 function getw(n)
 {
+let minw=16;
 let w=Math.floor(1000/n);
 if(w>51)
    w=51;
-else if(w<8)
-   w=8;
+else if(w<minw)
+   w=minw;
 return w;
+}
+
+function setar(n)
+{
+tar=[];
+car=[];
+addfn1(n);
+for(let e=0;e<n;e++)
+   car.push(0);
+if(fn[0].length>n)
+   {maxc=fn[0][n];
+   maxcz=fn[1][n];
+   for(let e=0;e<n;e++)
+      {let i=fn[7][e]%n;
+      tar.push(i);
+      car[i]++;
+      }
+   }
+else
+   {maxc=0;
+   maxcz=0;
+   for(let e=0;e<n;e++)
+      {let i=fn[7][e]%n;
+      tar.push(i);
+      car[i]++;
+      if(i&&car[i]>maxcz)
+         maxcz++;
+      maxc=Math.max(car[0],maxcz);
+      }
+   }
+}
+
+function addgraph(s,n,w,fsize,g)
+{
+let x,y,x0,y0;
+for(let e=0;e<=n;e++)
+   {if(e)
+      {
+      x0=e>1?x:0.25*w;
+      y0=e>1?y:(n+1+g%3)*w;
+      }
+   x=e?(e-0.5)*w:1.5*w;
+   y=e?(n-0.5-fn[g][e]+(graph==4?1:0))*w:(n+1+g%3)*w;
+   let m=document.createElement(fgr[g]);
+   if(g==0||g==3||g==6)
+      {m.setAttribute('y',y-w/4);
+      m.setAttribute('x',x-w/4);
+      m.setAttribute('width',w/2);
+      m.setAttribute('height',w/2);
+      }
+   else if(g==1||g==4)
+      {m.setAttribute('points',(x-w/6)+','+y+' '+x+','+(y-w/4)+' '+(x+w/6)+','+y+' '+x+','+(y+w/4));
+      }
+   else if(g==2||g==5)
+      {m.setAttribute('cx',x);
+      m.setAttribute('cy',y);
+      m.setAttribute('r',w/8);
+      }
+   m.style.fill=cgr[g];
+   s.appendChild(m);
+   if(e)
+      {let x1=(e==1)?2.75*w:x;
+      let y1=(e==1)?y0:y;
+      let li=document.createElement('line');
+      li.setAttribute('x1',x0);
+      li.setAttribute('y1',y0);
+      li.setAttribute('x2',x1);
+      li.setAttribute('y2',y1);
+      li.setAttribute('stroke',cgr[g]);
+      li.setAttribute('stroke-width',w/wgr[g]);
+      s.appendChild(li);
+      }
+   }
+let t=document.createElement('text');
+t.setAttribute('x',3*w);
+t.setAttribute('y',(n+1+g%3)*w+fsize/2);
+t.setAttribute('font-size',fsize+'px');
+t.innerHTML=tgr[g];
+s.appendChild(t);
 }
 
 function addtable(n)
 {
-let tar=[];
-let car=[];
-for(let e=0;e<n;e++)
-   car.push(0);
-   
-let maxc=0;
-for(let e=0;e<n;e++)
-   {let i=e*e%n;
-   tar.push(i);
-   car[i]++;
-   if(car[i]>maxc)
-      maxc++;
-   }
-
+if(graph==1)
+   setar(n);
 let to=1.5;
 let w=getw(n);
 let tu=Math.floor(n/2-0.5);
@@ -68,16 +136,17 @@ t.style.height=w*n+'px';
 t.style.border='none';
 t.id='tc';
 
-t.innerHTML+='<span id="th"><br/>N = '+n+'</span><br/><br/>';
+t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+'</span><br/><br/>';
 
 let d=document.createDocumentFragment();
 
       let s=document.createElement('svg');
       s.setAttribute('id','svg');
       s.setAttribute('width',w*(n+5));
-      s.setAttribute('height',w*(n+maxc+to));
+      s.setAttribute('height',w*(n+(graph==1?maxc:graph==4?0:2)+to));
       
-      let g=document.createElement('g');
+      if(graph==1)
+      {let g=document.createElement('g');
       g.setAttribute('id','rc');
       for(let e=0;e<n;e++)
       {let re=document.createElement('rect');
@@ -97,9 +166,28 @@ let d=document.createDocumentFragment();
       re.setAttribute('height',w*car[e]);
       re.style.fill='#a0d7d7';
       g.appendChild(re);
-      }
-      
+      }   
       s.appendChild(g);
+      }
+
+      else if(graph==2)
+         {addfn2(n);
+         addgraph(s,n,w,fsize,0);
+         addgraph(s,n,w,fsize,1);
+         addgraph(s,n,w,fsize,2);
+         }
+
+      else if(graph==3)
+         {addfn3(n);
+         addgraph(s,n,w,fsize,3);
+         addgraph(s,n,w,fsize,4);
+         addgraph(s,n,w,fsize,5);
+         }
+
+      else if(graph==4)
+         {addfn4(n);
+         addgraph(s,n,w,fsize,6);
+         }
 
       for(let e=0;e<=n;e++)
       {let li=document.createElement('line');
@@ -120,35 +208,35 @@ let d=document.createDocumentFragment();
       li.setAttribute('stroke','black');
       s.appendChild(li);}
       
+      
       for(let e=0;e<n;e++)
       {let t=document.createElement('text');
-      t.setAttribute('id','y'+e);
-      t.setAttribute('x',n*w+7);
-      t.setAttribute('y',(e+0.6)*w);
-      t.setAttribute('font-size',fsize+'px');
-      t.innerHTML=n-e-1-mode*tu;
-      t.style.font=fsize+'px';
-      s.appendChild(t);
-      
-      t=document.createElement('text');
       t.setAttribute('id','x'+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',n*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
-      t.innerHTML=e;
-      t.style.font=fsize+'px';
+      t.innerHTML=e+(graph>1?1:0);
+      s.appendChild(t);
+
+      t=document.createElement('text');
+      t.setAttribute('id','y'+e);
+      t.setAttribute('x',n*w+7);
+      t.setAttribute('y',(e+0.6)*w);
+      t.setAttribute('font-size',fsize+'px');
+      t.innerHTML=n-e-(graph==4?0:1)-mode*tu;
       s.appendChild(t);
       
-      t=document.createElement('text');
+      if(graph==1)
+      {t=document.createElement('text');
       t.setAttribute('id','t'+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
       t.innerHTML=car[e];
-      t.style.font=fsize+'px';
       s.appendChild(t);
+      }
       }
       
       d.appendChild(s);
@@ -157,7 +245,8 @@ t.appendChild(d);
 
 listc.appendChild(t); 
 
-listc.innerHTML+='<span><br/><br/><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i></span>';
+listc.innerHTML+='<span><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i style="padding:0;outline:none;cursor:default;"><small>(use "1", "2", "3", "4" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
+document.getElementById('gr'+graph).style.background='#c0fac0';
 }
 
 function inct(n)
@@ -262,7 +351,6 @@ document.getElementById('th').innerHTML='<br/>N = '+n;
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
       t.innerHTML=n-e-1;
-      t.style.font=fsize+'px';
       s.appendChild(t);
       
       t=document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -272,7 +360,6 @@ document.getElementById('th').innerHTML='<br/>N = '+n;
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
       t.innerHTML=e-mode*tu;
-      t.style.font=fsize+'px';
       s.appendChild(t);
       
       t=document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -282,7 +369,6 @@ document.getElementById('th').innerHTML='<br/>N = '+n;
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
       t.innerHTML=car[e];
-      t.style.font=fsize+'px';
       s.appendChild(t);}
       
       for(e=0;e<n-1;e++)
@@ -291,21 +377,18 @@ document.getElementById('th').innerHTML='<br/>N = '+n;
       t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
       t.setAttribute('font-size',fsize+'px');
       t.innerHTML=car[e];
-      t.style.font=fsize+'px';
       
       t=document.getElementById('x'+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',n*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
-      t.style.font=fsize+'px';
       t.innerHTML=e-mode*tu;
       
       t=document.getElementById('y'+e);
       t.setAttribute('x',n*w+7);
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
-      t.style.font=fsize+'px';
       t.innerHTML=n-e-1;
       }
 }
@@ -383,21 +466,18 @@ document.getElementById('th').innerHTML='<br/>N = '+n;
       t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
       t.setAttribute('font-size',fsize+'px');
       t.innerHTML=car[e];
-      t.style.font=fsize+'px';
       
       t=document.getElementById('x'+e);
       t.setAttribute('x',(e+0.5)*w);
       t.setAttribute('y',n*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
-      t.style.font=fsize+'px';
       t.innerHTML=e-mode*tu;
       
       t=document.getElementById('y'+e);
       t.setAttribute('x',n*w+7);
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
-      t.style.font=fsize+'px';
       t.innerHTML=n-e-1;
       }
 }
@@ -428,7 +508,8 @@ else if(c=='Enter')
    }
 else if(c=='KeyM')
    {
-   mode=1-mode;
+   if(graph==1)
+   {mode=1-mode;
    for(let n=nextn;n<=nextn;n++)
       {let w=getw(n);
       let to=Math.floor(n/2-0.5);
@@ -441,12 +522,41 @@ else if(c=='KeyM')
          }
       }
    }
+   }
+else if(c=='Digit1')
+   {if(graph!=1)
+      {graph=1;
+      switchmode.hidden=false;
+      addtable(nextn);
+      }
+   }
+else if(c=='Digit2')
+   {if(graph!=2)
+      {graph=2;
+      switchmode.hidden=true;
+      addtable(nextn);
+      }
+   }
+else if(c=='Digit3')
+   {if(graph!=3)
+      {graph=3;
+      switchmode.hidden=true;
+      addtable(nextn);
+      }
+   }
+else if(c=='Digit4')
+   {if(graph!=4)
+      {graph=4;
+      switchmode.hidden=true;
+      addtable(nextn);
+      }
+   }
 }}
 );
 
 listc.onclick=function(e){
 let c=e.target;
-while(c.tagName=='B'||c.tagName=='SMALL')
+while(c.tagName=='B'||c.tagName=='SMALL'||c.tagName=='BIG')
    c=c.parentNode;
 if(c.id=='addtable')
    {nextn++;
@@ -492,8 +602,8 @@ if(c.id=='addtable')
    listc.scrollTop=listc.scrollHeight;
    }
    else if(c.id=='switchmode')
-      {
-      mode=1-mode;
+      {if(graph==1)
+      {mode=1-mode;
       for(let n=nextn;n<=nextn;n++)
          {let w=getw(n);
          let to=Math.floor(n/2-0.5);
@@ -506,6 +616,35 @@ if(c.id=='addtable')
             }
          }
       listc.scrollTop=listc.scrollHeight;
+      }
+      }
+   else if(c.id=='gr1')
+      {if(graph!=1)
+         {graph=1;
+         switchmode.hidden=false;
+         addtable(nextn);
+         }
+      }
+   else if(c.id=='gr2')
+      {if(graph!=2)
+         {graph=2;
+         switchmode.hidden=true;
+         addtable(nextn);
+         }
+      }
+   else if(c.id=='gr3')
+      {if(graph!=3)
+         {graph=3;
+         switchmode.hidden=true;
+         addtable(nextn);
+         }
+      }
+   else if(c.id=='gr4')
+      {if(graph!=4)
+         {graph=4;
+         switchmode.hidden=true;
+         addtable(nextn);
+         }
       }
 }
 
@@ -530,11 +669,75 @@ while(e<n&&c[i]<3)
 return e==n;
 }
 
+function addfn1(n)
+{while(fn[7].length<=n)
+   fn[7].push(fn[7].length*fn[7].length);
+}
+
+function addfn2(n)
+{while(fn[0].length<=n)
+   {setar(fn[0].length);
+   fn[0].push(maxc);
+   fn[1].push(maxcz);
+   fn[2].push(car[0]);
+   }
+}
+
+function addfn3(n)
+{fn[3]=[0];
+fn[4]=[0];
+fn[5]=[0];
+while(fn[3].length<=n)
+   {let l=fn[3].length;
+   setar(l);
+   let aar=[];
+   let e;
+   for(e=0;e<l;e++)
+      aar.push(-1);
+   for(e=0;e<l;e++)
+      if(aar[tar[e]]<0)
+         aar[tar[e]]=e;
+   let i=0;
+   for(e of aar)if(e>0)i+=e;
+   fn[3].push(i%n);
+   let u=Math.floor(l/2);
+   i=u*(u+1)/2;
+   fn[5].push(i%n);
+   if(!(l%2))
+      i-=l/2;
+   fn[4].push(i%n);
+   }
+}
+
+function addfn4(n)
+{while(fn[6].length<=n)
+   {setar(fn[6].length);
+   let i=0;
+   for(let e of car)if(e)i++;
+   fn[6].push(i);
+   }
+}
+
 let mode=0;
 let nextn=2;
+let tar,car,maxc,maxcz;
+let fn=[[],[],[],[],[],[],[],[]];
+for(let e=0;e<fn.length;e++)
+   fn[e].push(0);
+let cgr=['orange','green','blue','gray','deeppink','skyblue','purple'];
+let wgr=[5,15,15,5,10,15,5];
+let fgr=['rect','polygon','circle','rect','polygon','circle','rect'];
+let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x'];
 
-for(let e=2;e<=nextn;e++)
-   addtable(e);
+let graph=1;
+   
+addfn1(100);
+addfn2(100);
+addfn3(100);
+addfn4(100);
+   
+addtable(nextn);
+if(graph>1)switchmode.hidden=true;
 
 //nextn=110;
 /*
