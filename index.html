@@ -210,6 +210,21 @@ let d=document.createElement('span');
       re.style.fill='#ffff00';
       s.appendChild(re);
       
+      let i=gro[graph];
+      while(grg[i]==graph)
+         {
+         re=document.createElement('rect');
+         re.setAttribute('id','hg'+i);
+         re.setAttribute('y',fn[i][0]);
+         re.setAttribute('x',0);
+         re.setAttribute('width',w*n);
+         re.setAttribute('height',w);
+         re.setAttribute('opacity',vgr[i]?hgv:0);
+         re.style.fill=cgr[i];
+         s.appendChild(re);
+         i++;
+         }
+      
       if(graph==1)
       {let g=document.createElement('g');
       g.setAttribute('id','rc');
@@ -840,6 +855,7 @@ vgr[g]=!vgr[g];
 grvn[grg[g]]+=vgr[g]?1:-1;
 document.getElementById('grc'+g).setAttribute('opacity',vgr[g]?1:0);
 document.getElementById('gc'+g).setAttribute('opacity',vgr[g]?1:vgrh);
+document.getElementById('hg'+g).setAttribute('opacity',vgr[g]?hgv:0);
 }
 
 function mousetextupdate(x,y){
@@ -855,6 +871,16 @@ function mousetextupdate(x,y){
       {x1=-1000000;
       b=true;}
    document.getElementById('mv').setAttribute('x',x1*w);
+   
+   let i=gro[graph];
+   while(grg[i]==graph)
+      {
+      if(vgr[i])
+         document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-1)*w);
+         //document.getElementById('hg'+i).setAttribute('y',(fn[i][b?0:x1+1])*w);
+      i++;
+      }
+   
    xs.hidden=(xsh||b)&&(gm<0);
    if(!xs.hidden)
       {
@@ -918,8 +944,10 @@ let nextn=2;
 let tar,car,maxc,maxcz;
 let fnumber=7;
 let fn=[[],[],[],[],[],[],[],[]];
+let mousex=-1000000;
+let mousey=-1000000;
 for(let e=0;e<fn.length;e++)
-   fn[e].push(0);
+   fn[e].push(mousey);
 let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple'];
 let wgr=[5,15,15,5,10,15,5];
 let fgr=['rect','polygon','circle','rect','polygon','circle','rect'];
@@ -927,9 +955,7 @@ let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero
 let vgr=[true,true,true,true,true,true,true];
 let grx=new Array(fnumber);
 let vgrh=0.15;
-let mhvh=0.15;
-let mousex=-1000000;
-let mousey=-1000000;
+let mhvh=0.15,hgv=0.025;
 let tu;
 let gro=[0,0,0,3,6,7];
 let grg=[2,2,2,3,3,3,4,5];
