@@ -18,18 +18,17 @@ sup{font-size:0.83rem;}
 //ul{display:flex;flex-direction:column-reverse;}
 </style>
 <body style="font-family:Arial;white-space:pre;line-height:0;"
-><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><script
+><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><div id="xs" style="position:fixed;border:1px solid #cccccc;border-radius:5px;padding:5px 15px 5px 15px;background:white;line-height:1.5;";
+hidden></div><script
 >'use strict'
 
 function getw(n)
 {
-let minw=16;
-let w=Math.floor(1000/n);
-if(w>51)
-   w=51;
+w=Math.floor(1000/n);
+if(w>maxw)
+   w=maxw;
 else if(w<minw)
    w=minw;
-return w;
 }
 
 function setar(n)
@@ -65,32 +64,50 @@ else
 function addgraph(s,n,w,fsize,g)
 {
 let x,y,x0,y0;
-for(let e=0;e<=n;e++)
+let gc=document.createElement('g');
+gc.setAttribute('id','gc'+g);
+gc.setAttribute('opacity',vgr[g]?1:vgrh);
+let grc=document.createElement('g');
+grc.setAttribute('id','grc'+g);
+grc.setAttribute('opacity',vgr[g]?1:0);
+for(let e=0;e<=n+(grx[g]?0:1);e++)
    {if(e)
       {
       x0=e>1?x:0.25*w;
       y0=e>1?y:(n+1+g%3)*w;
       }
    x=e?(e-0.5)*w:1.5*w;
-   y=e?(n-0.5-fn[g][e]+(graph==4?1:0))*w:(n+1+g%3)*w;
+   y=e?(n-0.5-fn[g][e])*w:(n+1+g%3)*w;
+   let w1=e>n?maxw:w;
+   if(e>n)
+      {grx[g]=document.createElement('g');
+      x=w1/4;
+      y=w1/4;
+      }
    let m=document.createElement(fgr[g]);
    if(g==0||g==3||g==6)
-      {m.setAttribute('y',y-w/4);
-      m.setAttribute('x',x-w/4);
-      m.setAttribute('width',w/2);
-      m.setAttribute('height',w/2);
+      {m.setAttribute('y',y-w1/4);
+      m.setAttribute('x',x-w1/4);
+      m.setAttribute('width',w1/2);
+      m.setAttribute('height',w1/2);
       }
    else if(g==1||g==4)
-      {m.setAttribute('points',(x-w/6)+','+y+' '+x+','+(y-w/4)+' '+(x+w/6)+','+y+' '+x+','+(y+w/4));
+      {m.setAttribute('points',(x-w1/6)+','+y+' '+x+','+(y-w1/4)+' '+(x+w1/6)+','+y+' '+x+','+(y+w1/4));
       }
    else if(g==2||g==5)
       {m.setAttribute('cx',x);
       m.setAttribute('cy',y);
-      m.setAttribute('r',w/8);
+      m.setAttribute('r',w1/8);
       }
    m.style.fill=cgr[g];
-   s.appendChild(m);
-   if(e)
+   //
+   if(e>n)
+      grx[g].appendChild(m);
+   else if(e)
+      grc.appendChild(m);
+   else
+   	gc.appendChild(m);
+   if(e&&e<=n)
       {let x1=(e==1)?2.75*w:x;
       let y1=(e==1)?y0:y;
       let li=document.createElement('line');
@@ -100,7 +117,10 @@ for(let e=0;e<=n;e++)
       li.setAttribute('y2',y1);
       li.setAttribute('stroke',cgr[g]);
       li.setAttribute('stroke-width',w/wgr[g]);
-      s.appendChild(li);
+      if(e==1)
+         gc.appendChild(li);
+      else
+   	   grc.appendChild(li);
       }
    }
 let t=document.createElement('text');
@@ -108,7 +128,25 @@ t.setAttribute('x',3*w);
 t.setAttribute('y',(n+1+g%3)*w+fsize/2);
 t.setAttribute('font-size',fsize+'px');
 t.innerHTML=tgr[g];
-s.appendChild(t);
+gc.appendChild(t);
+s.appendChild(grc);
+s.appendChild(gc);
+let grect=document.createElement('rect');
+grect.setAttribute('id','grect'+g);
+grect.setAttribute('y',(n+0.75+g%3)*w);
+grect.setAttribute('x',0);
+grect.setAttribute('width',w*3);
+grect.setAttribute('height',w/2);
+grect.setAttribute('opacity',0);
+grect.style.cursor='pointer';
+grect.setAttribute('onclick','grectclick('+g+')');
+grect.setAttribute('onmousemove','setgm('+g+')');
+grect.setAttribute('onmouseleave','setgm(-1)');
+s.appendChild(grect);
+}
+
+function setgm(g)
+{gm=g;
 }
 
 function addtable(n)
@@ -116,8 +154,8 @@ function addtable(n)
 if(graph==1)
    setar(n);
 let to=1.5;
-let w=getw(n);
-let tu=Math.floor(n/2-0.5);
+getw(n);
+tu=Math.floor(n/2-0.5);
 
 let fsize=Math.floor(w*0.5);
 if(fsize>16)
@@ -138,27 +176,54 @@ t.id='tc';
 
 t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+'</span><br/><br/>';
 
-let d=document.createDocumentFragment();
+let d=document.createElement('span');
 
       let s=document.createElement('svg');
       s.setAttribute('id','svg');
       s.setAttribute('width',w*(n+5));
       s.setAttribute('height',w*(n+(graph==1?maxc:graph==4?0:2)+to));
       
+      let e;
+      let re=document.createElement('rect');
+      re.setAttribute('id','mh');
+      e=(Math.floor((mousey+listc.scrollTop-68)/w))*w;
+      if(e>=w*n||e<0)
+         e=-1000000;
+      re.setAttribute('y',e);
+      re.setAttribute('x',0);
+      re.setAttribute('width',w*n);
+      re.setAttribute('height',w);
+      re.setAttribute('opacity',mhvh);
+      re.style.fill='#ffff00';
+      s.appendChild(re);
+      
+      re=document.createElement('rect');
+      re.setAttribute('id','mv');
+      re.setAttribute('y',0);
+      e=(Math.floor((mousex+listc.scrollLeft-10)/w))*w;
+      if(e>=w*n||e<0)
+         e=-1000000;
+      re.setAttribute('x',e);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w*n);
+      re.setAttribute('opacity',mhvh);
+      re.style.fill='#ffff00';
+      s.appendChild(re);
+      
       if(graph==1)
       {let g=document.createElement('g');
       g.setAttribute('id','rc');
       
-      let re=document.createElement('rect');
+      re=document.createElement('rect');
       re.setAttribute('id','zerostring');
       re.setAttribute('y',((n-1-mode*tu)%n)*w);
       re.setAttribute('x',0);
       re.setAttribute('width',w*n);
       re.setAttribute('height',w);
-      re.style.fill='#f0f0f0';
+      re.setAttribute('opacity',0.1);
       g.appendChild(re);
       
-      for(let e=0;e<n;e++)
+      for(e=0;e<n;e++)
       {re=document.createElement('rect');
       re.setAttribute('id','r'+e);
       re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
@@ -198,7 +263,10 @@ let d=document.createDocumentFragment();
          {addfn4(n);
          addgraph(s,n,w,fsize,6);
          }
-
+         
+      let grid=document.createElement('g');
+      grid.setAttribute('id','grid');
+      grid.setAttribute('opacity',vgrid?1:0);
       for(let e=0;e<=n;e++)
       {let li=document.createElement('line');
       li.setAttribute('id','v'+e);
@@ -207,7 +275,10 @@ let d=document.createDocumentFragment();
       li.setAttribute('x2',w*e+(e?-0.5:0.5));
       li.setAttribute('y2',w*n);
       li.setAttribute('stroke','black');
-      s.appendChild(li);
+      if(e&&e<n)
+         grid.appendChild(li);
+      else
+         s.appendChild(li);
       
       li=document.createElement('line');
       li.setAttribute('id','h'+e);
@@ -216,8 +287,11 @@ let d=document.createDocumentFragment();
       li.setAttribute('x2',w*n);
       li.setAttribute('y2',w*e+(e?-0.5:0.5));
       li.setAttribute('stroke','black');
-      s.appendChild(li);}
-      
+      if(e&&e<n)
+         grid.appendChild(li);
+      else
+         s.appendChild(li);}
+      s.appendChild(grid);
       
       for(let e=0;e<n;e++)
       {let t=document.createElement('text');
@@ -234,7 +308,7 @@ let d=document.createDocumentFragment();
       t.setAttribute('x',n*w+7);
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
-      t.innerHTML=n-e-(graph==4?0:1)-mode*tu;
+      t.innerHTML=n-e-1-(graph==1?mode*tu:0);
       s.appendChild(t);
       
       if(graph==1)
@@ -250,12 +324,10 @@ let d=document.createDocumentFragment();
       }
       
       d.appendChild(s);
-
 t.appendChild(d);
-
 listc.appendChild(t); 
 
-listc.innerHTML+='<span><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
+listc.innerHTML+='<span><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode">Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>        <i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
 document.getElementById('gr'+graph).style.background='#c0fac0';
 }
 
@@ -267,6 +339,7 @@ for(let e=0;e<n;e++)
    car.push(0);
    
 let maxc=0;
+
 for(let e=0;e<n;e++)
    {let i=e*e%n;
    tar.push(i);
@@ -276,8 +349,8 @@ for(let e=0;e<n;e++)
    }
 
 let to=1.5;
-let w=getw(n);
-let tu=Math.floor(n/2-0.5);
+getw(n);
+tu=Math.floor(n/2-0.5);
 
 let fsize=Math.floor(w*0.5);
 if(fsize>16)
@@ -420,8 +493,8 @@ for(let e=0;e<n;e++)
    }
 
 let to=1.5;
-let w=getw(n);
-let tu=Math.floor(n/2-0.5);
+getw(n);
+tu=Math.floor(n/2-0.5);
 
 let fsize=Math.floor(w*0.5);
 if(fsize>16)
@@ -521,16 +594,14 @@ else if(c=='KeyM')
    if(graph==1)
    {mode=1-mode;
    for(let n=nextn;n<=nextn;n++)
-      {let w=getw(n);
-      let to=Math.floor(n/2-0.5);
-      for(let e=0;e<n;e++)
+      {for(let e=0;e<n;e++)
          {
          let re=document.getElementById('r'+e);
-         re.setAttribute('y',((n*2-e-1-mode*to)%n)*w);
+         re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
          let t=document.getElementById('y'+e);
-         t.innerHTML=n-e-1-mode*to;
+         t.innerHTML=n-e-1-mode*tu;
          re=document.getElementById('zerostring');
-         re.setAttribute('y',((n-1-mode*to)%n)*w);
+         re.setAttribute('y',((n-1-mode*tu)%n)*w);
          }
       }
    }
@@ -563,7 +634,15 @@ else if(c=='Digit4')
       addtable(nextn);
       }
    }
-}}
+else if(c=='KeyG')
+   {
+   vgrid=!vgrid;
+   document.getElementById('grid').setAttribute('opacity',vgrid?1:0);
+   }
+}
+gm=-1;
+mousetextupdate(mousex,mousey);
+}
 );
 
 listc.onclick=function(e){
@@ -617,16 +696,14 @@ if(c.id=='addtable')
       {if(graph==1)
       {mode=1-mode;
       for(let n=nextn;n<=nextn;n++)
-         {let w=getw(n);
-         let to=Math.floor(n/2-0.5);
-         for(let e=0;e<n;e++)
+         {for(let e=0;e<n;e++)
             {
             let re=document.getElementById('r'+e);
-            re.setAttribute('y',((n*2-e-1-mode*to)%n)*w);
+            re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
             let t=document.getElementById('y'+e);
-            t.innerHTML=n-e-1-mode*to;
+            t.innerHTML=n-e-1-mode*tu;
             re=document.getElementById('zerostring');
-            re.setAttribute('y',((n-1-mode*to)%n)*w);
+            re.setAttribute('y',((n-1-mode*tu)%n)*w);
             }
          }
       listc.scrollTop=listc.scrollHeight;
@@ -660,6 +737,30 @@ if(c.id=='addtable')
          addtable(nextn);
          }
       }
+   else if(c.id=='showhidegrid')
+      {
+      vgrid=!vgrid;
+      document.getElementById('grid').setAttribute('opacity',vgrid?1:0);
+      }
+   else
+      {
+      let b=false;
+      let y=Math.floor((mousey+listc.scrollTop-68)/w);
+      if(y>=nextn||y<0)
+         {y=-1000000;
+         if(xsh)
+            b=true;}
+      let x=Math.floor((mousex+listc.scrollLeft-10)/w);
+      if(x>=nextn||x<0)
+         {x=-1000000;
+         b=true;}
+      if(!b)
+         xsh=!xsh;
+      if(xshn)
+         {xsh=false;
+         xshn=false;}
+      mousetextupdate(mousex,mousey);
+      }
 }
 
 
@@ -689,19 +790,18 @@ function addfn1(n)
 }
 
 function addfn2(n)
-{while(fn[0].length<=n)
-   {setar(fn[0].length);
-   fn[0].push(maxc);
-   fn[1].push(maxcz);
-   fn[2].push(car[0]);
+{
+while(fn[0].length<=n)
+   {let l=fn[0].length;
+   setar(l);
+   fn[0].push(maxc%l);
+   fn[1].push(maxcz%l);
+   fn[2].push(car[0]%l);
    }
 }
 
 function addfn3(n)
-{fn[3]=[0];
-fn[4]=[0];
-fn[5]=[0];
-while(fn[3].length<=n)
+{while(fn[3].length<=n)
    {let l=fn[3].length;
    setar(l);
    let aar=[];
@@ -713,37 +813,132 @@ while(fn[3].length<=n)
          aar[tar[e]]=e;
    let i=0;
    for(e of aar)if(e>0)i+=e;
-   fn[3].push(i%n);
+   fn[3].push(i%l);
    let u=Math.floor(l/2);
    i=u*(u+1)/2;
-   fn[5].push(i%n);
+   fn[5].push(i%l);
    if(!(l%2))
       i-=l/2;
-   fn[4].push(i%n);
+   fn[4].push(i%l);
    }
 }
 
 function addfn4(n)
 {while(fn[6].length<=n)
-   {setar(fn[6].length);
+   {let l=fn[6].length;
+   setar(l);
    let i=0;
    for(let e of car)if(e)i++;
-   fn[6].push(i);
+   fn[6].push(i%l);
    }
+}
+
+function grectclick(g){
+if(!xsh)
+   xshn=true;
+vgr[g]=!vgr[g];
+grvn[grg[g]]+=vgr[g]?1:-1;
+document.getElementById('grc'+g).setAttribute('opacity',vgr[g]?1:0);
+document.getElementById('gc'+g).setAttribute('opacity',vgr[g]?1:vgrh);
+}
+
+function mousetextupdate(x,y){
+   let b=false;
+   let y1=Math.floor((mousey+listc.scrollTop-68)/w);
+   if(y1>=nextn||y1<0)
+      {y1=-1000000;
+      //b=true;
+      }
+   document.getElementById('mh').setAttribute('y',y1*w);
+   let x1=Math.floor((mousex+listc.scrollLeft-10)/w);
+   if(x1>=nextn||x1<0)
+      {x1=-1000000;
+      b=true;}
+   document.getElementById('mv').setAttribute('x',x1*w);
+   xs.hidden=(xsh||b)&&(gm<0);
+   if(!xs.hidden)
+      {
+      let h;
+      if(gm<0)
+         {
+         h=x1+(graph>1?1:0);
+         if(y1>=0)
+            h+='; '+(nextn-y1-1-(graph==1?mode:0)*tu);
+         if(graph==1)
+            {
+            h+='<br/>'+car[x1]+' root'+(car[x1]==1?'':'s');
+            h+='<br/>N = '+nextn;
+            }
+         else
+         	{
+         	let e;
+         	for(e=gro[graph];e<gro[graph+1];e++)
+         	   {
+         	   if(vgr[e])
+         	      h+='<br/><span><svg width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text></svg></span>';
+       
+       
+         	   }
+         	}
+         }
+      else
+         h='<i style="outline:none"><small>Click to '+(vgr[gm]?'hide':'show')+' this ghaph</small></i>';
+      xs.innerHTML=h;
+      //xs.style.left=x+(x*2<window.innerWidth?35:-xs.offsetWidth-15)+'px';
+      xs.style.left=x+(x+110<window.innerWidth?35:-xs.offsetWidth-15)+'px';
+      //xs.style.top=y-(y*2<window.innerHeight?5:xs.offsetHeight-30)+'px';
+      xs.style.top=y-5+'px';
+      }
+}
+
+document.onmousemove=function(e){
+   mousex=e.clientX;
+   mousey=e.clientY;
+   //console.log(mousey);
+   mousetextupdate(mousex,mousey);
+}
+
+document.onmouseleave=function(e){
+   mousex=-1000000;
+   mousey=-1000000;
+   //xs.hidden=true;
+   mousetextupdate(mousex,mousey);
+}
+
+listc.onscroll=function(e){
+   mousetextupdate(mousex,mousey);
+}
+
+document.onmouseover=function(e){
+
 }
 
 let mode=0;
 let nextn=2;
 let tar,car,maxc,maxcz;
+let fnumber=7;
 let fn=[[],[],[],[],[],[],[],[]];
 for(let e=0;e<fn.length;e++)
    fn[e].push(0);
-let cgr=['orange','green','blue','gray','deeppink','skyblue','purple'];
+let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple'];
 let wgr=[5,15,15,5,10,15,5];
 let fgr=['rect','polygon','circle','rect','polygon','circle','rect'];
 let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x'];
+let vgr=[true,true,true,true,true,true,true];
+let grx=new Array(fnumber);
+let vgrh=0.15;
+let mhvh=0.15;
+let mousex=-1000000;
+let mousey=-1000000;
+let tu;
+let gro=[0,0,0,3,6,7];
+let grg=[2,2,2,3,3,3,4,5];
+let grvn=[0,0,3,3,1];
+let minw=16;
+let maxw=51;
 
 let graph=1;
+let w,gm=-1,xsh=true,xshn=false,vgrid=true;
    
 addfn1(100);
 addfn2(100);
@@ -763,4 +958,4 @@ for(let e=10000000;e<=10000100;e++)
 
 
 
-</script></div></body></html>
+</script></body></html>
