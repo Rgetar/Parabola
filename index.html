@@ -41,7 +41,9 @@ for(let e=0;e<n;e++)
 if(fn[0].length>n)
    {maxc=fn[0][n];
    maxcz=fn[1][n];
-   for(let e=0;e<n;e++)
+   tar.push(0);
+   car[0]++;   
+   for(let e=1;e<n;e++)
       {let i=fn[7][e]%n;
       tar.push(i);
       car[i]++;
@@ -50,7 +52,9 @@ if(fn[0].length>n)
 else
    {maxc=0;
    maxcz=0;
-   for(let e=0;e<n;e++)
+   tar.push(0);
+   car[0]++;
+   for(let e=1;e<n;e++)
       {let i=fn[7][e]%n;
       tar.push(i);
       car[i]++;
