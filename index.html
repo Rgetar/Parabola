@@ -18,7 +18,7 @@ sup{font-size:0.83rem;}
 //ul{display:flex;flex-direction:column-reverse;}
 </style>
 <body style="font-family:Arial;white-space:pre;line-height:0;"
-><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><div id="xs" style="position:fixed;border:1px solid #cccccc;border-radius:5px;padding:5px 15px 5px 15px;background:white;line-height:1.5;";
+><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><br/><br/></span><div id="xs" style="position:fixed;border:1px solid #cccccc;border-radius:5px;padding:5px 5px 5px 15px;background:white;line-height:1.5;";
 hidden></div><script
 >'use strict'
 
@@ -889,6 +889,7 @@ function mousetextupdate(x,y){
    if(!xs.hidden)
       {
       let h;
+      let e;
       if(gm<0)
          {
          h=x1+(graph>1?1:0);
@@ -901,19 +902,34 @@ function mousetextupdate(x,y){
             }
          else
          	{
-         	let e;
          	for(e=gro[graph];e<gro[graph+1];e++)
          	   {
          	   if(vgr[e])
-         	      h+='<br/><span><svg width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text></svg></span>';
-       
-       
+         	      {/*let s=document.createElement('svg');
+         	      s.innerHTML=grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text>';
+         	      s.setAttribute('height',(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10)));
+         	      s.setAttribute('width',s.getBBox().width);
+         	      h+='<br/><span>'+s.outerHTML+'</span>';*/
+                  
+         	      h+='<br/><span><svg id="sx'+e+'" width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text></svg></span>';
+                  
+                  }
          	   }
          	}
          }
       else
          h='<i style="outline:none"><small>Click to '+(vgr[gm]?'hide':'show')+' this ghaph</small></i>';
+      
       xs.innerHTML=h;
+      if(gm<0&&graph>1)
+      for(e=gro[graph];e<gro[graph+1];e++)
+      if(vgr[e])
+         {
+         let s=document.getElementById('sx'+e);
+         s.setAttribute('width',s.getBBox().width+10);
+         }
+      
+      
       //xs.style.left=x+(x*2<window.innerWidth?35:-xs.offsetWidth-15)+'px';
       xs.style.left=x+(x+110<window.innerWidth?35:-xs.offsetWidth-15)+'px';
       //xs.style.top=y-(y*2<window.innerHeight?5:xs.offsetHeight-30)+'px';
