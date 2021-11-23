@@ -187,7 +187,7 @@ let d=document.createElement('span');
       let s=document.createElement('svg');
       s.setAttribute('id','svg');
       s.setAttribute('width',w*(n+5));
-      s.setAttribute('height',w*n+maxw*((graph==1?maxc:graph==4?0:2)+to));
+      s.setAttribute('height',w*n+(graph==1?w:maxw)*((graph==1?maxc:graph==4?0:2)+to));
       
       let e;
       let re=document.createElement('rect');
@@ -591,25 +591,25 @@ document.addEventListener('keydown',function(e){
 if(!e.ctrlKey){
 let c=e.code;
 if(c=='Space'){
+   let sct=listc.scrollTop;
    nextn++;
    addtable(nextn);
-   //listc.scrollTop=listc.scrollHeight;
+   listc.scrollTop=sct;
    }
 if(c=='Backspace'){
    if(nextn>2)
-      {nextn--;
+      {let sct=listc.scrollTop;
+      nextn--;
       addtable(nextn);
+      listc.scrollTop=sct;
       }
    }
 else if(c=='Enter')
    {
-   /*for(let e=0;e<10;e++)
-      {nextn++;
-      addtable(nextn);
-      }*/
+   let sct=listc.scrollTop;
    nextn+=10;
    addtable(nextn);
-   //listc.scrollTop=listc.scrollHeight;
+   listc.scrollTop=sct;
    }
 else if(c=='KeyM')
    {
@@ -630,30 +630,38 @@ else if(c=='KeyM')
    }
 else if(c=='Digit1')
    {if(graph!=1)
-      {graph=1;
+      {let sct=listc.scrollTop;
+      graph=1;
       swh=false;
       addtable(nextn);
+      listc.scrollTop=sct;
       }
    }
 else if(c=='Digit2')
    {if(graph!=2)
-      {graph=2;
+      {let sct=listc.scrollTop;
+      graph=2;
       swh=true;
       addtable(nextn);
+      listc.scrollTop=sct;
       }
    }
 else if(c=='Digit3')
    {if(graph!=3)
-      {graph=3;
+      {let sct=listc.scrollTop;
+      graph=3;
       swh=true;
       addtable(nextn);
+      listc.scrollTop=sct;
       }
    }
 else if(c=='Digit4')
    {if(graph!=4)
-      {graph=4;
+      {let sct=listc.scrollTop;
+      graph=4;
       swh=true;
       addtable(nextn);
+      listc.scrollTop=sct;
       }
    }
 else if(c=='KeyG')
@@ -736,6 +744,7 @@ if(c.id=='addtable')
          {graph=1;
          swh=false;
          addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
          }
       }
    else if(c.id=='gr2')
@@ -743,6 +752,7 @@ if(c.id=='addtable')
          {graph=2;
          swh=true;
          addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
          }
       }
    else if(c.id=='gr3')
@@ -750,6 +760,7 @@ if(c.id=='addtable')
          {graph=3;
          swh=true;
          addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
          }
       }
    else if(c.id=='gr4')
@@ -757,6 +768,7 @@ if(c.id=='addtable')
          {graph=4;
          swh=true;
          addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
          }
       }
    else if(c.id=='showhidegrid')
