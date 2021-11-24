@@ -73,6 +73,7 @@ gc.setAttribute('id','gc'+g);
 gc.setAttribute('opacity',vgr[g]?1:vgrh);
 let grc=document.createElement('g');
 grc.setAttribute('id','grc'+g);
+grc.setAttribute('height',300);
 grc.setAttribute('opacity',vgr[g]?1:0);
 for(let e=0;e<=n+(grx[g]?0:1);e++)
    {let w1=e>n||e==0?maxw:w;
@@ -188,7 +189,7 @@ let d=document.createElement('span');
       s.setAttribute('id','svg');
       s.setAttribute('width',w*(n+5));
       s.setAttribute('height',w*n+(graph==1?w:maxw)*((graph==1?maxc:graph==4?0:2)+to));
-      
+
       let e;
       let re=document.createElement('rect');
       re.setAttribute('id','mh');
@@ -778,7 +779,11 @@ if(c.id=='addtable')
       }
    else
       {
-      let b=false;
+      if(xshn)
+         {//xsh=false;
+         xshn=false;}
+      else
+      {let b=false;
       let y=Math.floor((mousey+listc.scrollTop-68)/w);
       if(y>=nextn||y<0)
          {y=-1000000;
@@ -790,10 +795,10 @@ if(c.id=='addtable')
          b=true;}
       if(!b)
          xsh=!xsh;
-      if(xshn)
+      /*if(xshn)
          {xsh=false;
-         xshn=false;}
-      mousetextupdate(mousex,mousey);
+         xshn=false;}*/
+      mousetextupdate(mousex,mousey);}
       }
 }
 
@@ -976,6 +981,39 @@ listc.onscroll=function(e){
 document.onmouseover=function(e){
 
 }
+
+let isDown = false;
+let startX,startY;
+let scrollLeft,scrollTop;
+
+listc.addEventListener('mousedown', (e) => {
+  isDown = true;
+  listc.classList.add('active');
+  startX = e.pageX - listc.offsetLeft;
+  startY = e.pageY - listc.offsetTop;
+  scrollLeft = listc.scrollLeft;
+  scrollTop = listc.scrollTop;
+});
+
+listc.addEventListener('mouseup', () => {
+  isDown = false;
+  listc.classList.remove('active');
+});
+
+listc.addEventListener('mousemove', (e) => {
+  if(!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - listc.offsetLeft;
+  const y = e.pageY - listc.offsetTop;
+  const walkX = (x - startX) * 1; //scroll-fast
+  const walkY = (y - startY) * 1;
+  listc.scrollLeft = scrollLeft - walkX;
+  listc.scrollTop = scrollTop - walkY;
+  //if(scrollLeft!=listc.scrollLeft||scrollTop!=listc.scrollTop)
+     xshn=true;
+});
+
+
 
 let mode=0;
 let nextn=2;
