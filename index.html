@@ -848,7 +848,7 @@ function addfn3(n)
    for(e=0;e<l;e++)
       aar.push(-1);
    for(e=0;e<l;e++)
-      if(aar[tar[e]]<0)
+      if(car[tar[e]]>1&&aar[tar[e]]<0)
          aar[tar[e]]=e;
    let i=0;
    for(e of aar)if(e>0)i+=e;
