@@ -244,6 +244,19 @@ let d=document.createElement('span');
       re.setAttribute('height',w);
       re.setAttribute('opacity',0.1);
       g.appendChild(re);
+      
+      if(graph==2)
+      for(e=1;e<n;e++)
+      {addfn2(n);
+      addfn5(n);
+      if(fn[8][e])
+      {re=document.createElement('rect');
+      re.setAttribute('y',0);
+      re.setAttribute('x',(e-1)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',n*w);
+      re.setAttribute('opacity',0.05);
+      g.appendChild(re);}}
 
       if(graph==1)
       {
@@ -268,8 +281,7 @@ let d=document.createElement('span');
       }   
       }
       else if(graph==2)
-         {addfn2(n);
-         addgraph(s,n,w,fsize,0);
+         {addgraph(s,n,w,fsize,0);
          addgraph(s,n,w,fsize,1);
          addgraph(s,n,w,fsize,2);
          }
@@ -350,7 +362,13 @@ let d=document.createElement('span');
 t.appendChild(d);
 listc.appendChild(t); 
 
-listc.innerHTML+='<span><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
+if(graph==2)
+   {let sc1=document.getElementById('sc1');
+   for(e=1;e<n;e++)
+   if(fn[8][e])
+      sc1.innerHTML+=e+' = '+fn[8][e]+'<br/>';
+   }
 document.getElementById('gr'+graph).style.background='#c0fac0';
 }
 
@@ -605,7 +623,7 @@ let e=2;
 let a=Math.sqrt(n1);
 while(n1%e&&e<=a)
    e++;
-//return (e>a);
+return (e>a);
 
 return (e>a!=(fn[0][n]==2&&fn[2][n]==1));
 }
@@ -664,6 +682,20 @@ function addfn4(n)
    let i=0;
    for(let e of car)if(e)i++;
    fn[6].push(i);
+   }
+}
+
+function addfn5(n)
+{while(fn[8].length<=n)
+   {let l=fn[8].length;
+   let i='';
+   //if(check2(l))
+   if(fn[0][l]==2&&fn[2][l]==1)
+      if(l<3||l%2)
+         i=l;
+      else
+      	i=l/2+'·2';
+   fn[8].push(i);
    }
 }
 
@@ -806,23 +838,27 @@ listc.addEventListener('mousemove', (e) => {
 let mode=0;
 let nextn=2;
 let tar,car,maxc,maxcz;
-let fnumber=7;
-let fn=[[],[],[],[],[],[],[],[]];
+let fnumber=8;
+let fn=[];
+for(let e=0;e<=fnumber;e++)
+   fn.push([]);
 let mousex=-1000000;
 let mousey=-1000000;
 for(let e=0;e<fn.length;e++)
    fn[e].push(mousey);
-let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple'];
-let wgr=[5,15,15,5,10,15,5];
-let fgr=['rect','polygon','circle','rect','polygon','circle','rect'];
-let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x'];
-let vgr=[true,true,true,true,true,true,true];
+let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple',''];
+let wgr=[5,15,15,5,10,15,5,0];
+let fgr=['rect','polygon','circle','rect','polygon','circle','rect',''];
+let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x',''];
+let vgr=[]
+for(let e=0;e<fn.length;e++)
+   vgr.push(true);
 let grx=new Array(fnumber);
 let vgrh=0.15;
 let mhvh=0.15,hgv=0.025;
 let tu;
 let gro=[0,0,0,3,6,7];
-let grg=[2,2,2,3,3,3,4,5];
+let grg=[2,2,2,3,3,3,4,5,0];
 let grvn=[0,0,3,3,1];
 let minw=16;
 let maxw=51;
@@ -834,6 +870,7 @@ addfn1(100);
 addfn2(100);
 addfn3(100);
 addfn4(100);
+addfn5(100);
    
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
