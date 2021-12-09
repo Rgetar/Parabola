@@ -397,7 +397,7 @@ let d=document.createElement('span');
 t.appendChild(d);
 listc.appendChild(t); 
 
-listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b></i> <i id="gr6"><b><big> 2D </big></b></i> <i id="gr7"><b><big> 3D </big></b></i> <i id="gr8"><b><big> 4D </big></b></i> <i id="gr9"><b><big> 5D </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> 5D </big></b>(9)</i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
 if(graph==2)
    {let sc1=document.getElementById('sc1');
    for(e=1;e<=n;e++)
@@ -777,8 +777,8 @@ function addfn3(n)
    if(aar[tar[e]]<0)
          aar[tar[e]]=e;
    let i=0;
-   for(e of aar)if(e>0)i+=e;
-   let u=i%l;
+   for(e of aar)if(e>0){i+=e;i%=l}
+   let u=i;
    fn[3].push(u>=l/2?u-l:u);
    u=Math.floor(l/2);
    i=u*(u+1)/2;
@@ -832,6 +832,7 @@ function addfn6(n,d)
    l=[l,1,1,1,1];
    for(e=1;e<5;e++)
       if(d>e)l[e]=l[0];
+   if(d==3)l[2]=Math.min(60,l[0]);
    e=[0,0,0,0,0];
    let i=[0,0,0];
    let u;
@@ -845,13 +846,13 @@ function addfn6(n,d)
       for(u=-1;u<aar[s].length;u++)
       if(u>=0)
          {
-         if(u==0)i[0]+=aar[s][0];
-         if(u<l[0]/2)i[1]+=aar[s][u];
-         if(u<=l[0]/2)i[2]+=aar[s][u];
+         if(u==0){i[0]+=aar[s][0];i[0]%=l[0]}
+         if(u<l[0]/2){i[1]+=aar[s][u];i[1]%=l[0]}
+         if(u<=l[0]/2){i[2]+=aar[s][u];i[2]%=l[0]}
          }
       }
    for(u=0;u<3;u++)
-      {i[u]=i[u]%l[0];
+      {//i[u]=i[u]%l[0];
       if(i[u]>=l[0]/2)i[u]-=l[0];
       fn[6+3*d+u].push(i[u]);
       }
