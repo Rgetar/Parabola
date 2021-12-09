@@ -83,23 +83,23 @@ for(let e=0;e<=n+(grx[g]?0:1);e++)
       y0=e>1?y:n*w+(1+g%3)*maxw;
       }
    x=e?(e-0.5)*w1:1.5*w1;
-   y=e?(n-(graph==4?-0.5:0.5)-fn[g][e]-(graph==3||graph==5||graph==6||graph==7?tu:0))*w1:n*w+(1+g%3)*w1;
+   y=e?(n-(graph==4?-0.5:0.5)-fn[g][e]-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
    if(e>n)
       {grx[g]=document.createElement('g');
       x=w1/4;
       y=w1/4;
       }
    let m=document.createElement(fgr[g]);
-   if(g==0||g==3||g==6||g==9||g==12||g==15)
+   if(g==0||g==3||g==6||g==9||g==12||g==15||g==18||g==21)
       {m.setAttribute('y',y-w1/4);
       m.setAttribute('x',x-w1/4);
       m.setAttribute('width',w1/2);
       m.setAttribute('height',w1/2);
       }
-   else if(g==1||g==4||g==10||g==13||g==16)
+   else if(g==1||g==4||g==10||g==13||g==16||g==19||g==22)
       {m.setAttribute('points',(x-w1/6)+','+y+' '+x+','+(y-w1/4)+' '+(x+w1/6)+','+y+' '+x+','+(y+w1/4));
       }
-   else if(g==2||g==5||g==11||g==14||g==17)
+   else if(g==2||g==5||g==11||g==14||g==17||g==20||g==23)
       {m.setAttribute('cx',x);
       m.setAttribute('cy',y);
       m.setAttribute('r',w1/8);
@@ -313,6 +313,20 @@ let d=document.createElement('span');
          addgraph(s,n,w,fsize,16);
          addgraph(s,n,w,fsize,17);
       	}
+      else if(graph==8)
+      	{
+      	addfn6(n,4);
+         addgraph(s,n,w,fsize,18);
+         addgraph(s,n,w,fsize,19);
+         addgraph(s,n,w,fsize,20);
+      	}
+      else if(graph==9)
+      	{
+      	addfn6(n,5);
+         addgraph(s,n,w,fsize,21);
+         addgraph(s,n,w,fsize,22);
+         addgraph(s,n,w,fsize,23);
+      	}
       s.appendChild(g);
       }
       else
@@ -364,7 +378,7 @@ let d=document.createElement('span');
       t.setAttribute('x',n*w+7);
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
-      t.innerHTML=n-e-(graph==4?0:1)-(graph==1?mode*tu:graph==3||graph==5||graph==6||graph==7?tu:0);
+      t.innerHTML=n-e-(graph==4?0:1)-(graph==1?mode*tu:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0);
       s.appendChild(t);
       
       if(graph==1)
@@ -383,7 +397,7 @@ let d=document.createElement('span');
 t.appendChild(d);
 listc.appendChild(t); 
 
-listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b></i> <i id="gr6"><b><big> 2D </big></b></i> <i id="gr7"><b><big> 3D </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b></i> <i id="gr6"><b><big> 2D </big></b></i> <i id="gr7"><b><big> 3D </big></b></i> <i id="gr8"><b><big> 4D </big></b></i> <i id="gr9"><b><big> 5D </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/><br/><br/><br/><br/><br/></span>';
 if(graph==2)
    {let sc1=document.getElementById('sc1');
    for(e=1;e<=n;e++)
@@ -492,6 +506,24 @@ else if(c=='Digit7')
    {if(graph!=7)
       {let sct=listc.scrollTop;
       graph=7;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit8')
+   {if(graph!=8)
+      {let sct=listc.scrollTop;
+      graph=8;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit9')
+   {if(graph!=9)
+      {let sct=listc.scrollTop;
+      graph=9;
       swh=true;
       addtable(nextn);
       listc.scrollTop=sct;
@@ -623,6 +655,22 @@ if(c.id=='addtable')
    else if(c.id=='gr7')
       {if(graph!=7)
          {graph=7;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+   else if(c.id=='gr8')
+      {if(graph!=8)
+         {graph=8;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+   else if(c.id=='gr9')
+      {if(graph!=9)
+         {graph=9;
          swh=true;
          addtable(nextn);
          listc.scrollTop=listc.scrollHeight;
@@ -781,17 +829,19 @@ function addfn6(n,d)
       aar.push([]);
    for(e=0;e<l;e++)
       aar[tar[e]].push(e);
-   l=[l,1,1];
-   for(e=1;e<3;e++)
+   l=[l,1,1,1,1];
+   for(e=1;e<5;e++)
       if(d>e)l[e]=l[0];
-   e=[0,0,0];
+   e=[0,0,0,0,0];
    let i=[0,0,0];
    let u;
    for(e[0]=0;e[0]<l[0];e[0]++)
    for(e[1]=0;e[1]<l[1];e[1]++)
    for(e[2]=0;e[2]<l[2];e[2]++)
+   for(e[3]=0;e[3]<l[3];e[3]++)
+   for(e[4]=0;e[4]<l[4];e[4]++)
       {
-      let s=(e[0]*e[0]+e[1]*e[1]+e[2]*e[2])%l[0];
+      let s=(e[0]*e[0]+e[1]*e[1]+e[2]*e[2]+e[3]*e[3]+e[4]*e[4])%l[0];
       for(u=-1;u<aar[s].length;u++)
       if(u>=0)
          {
@@ -837,7 +887,7 @@ function mousetextupdate(x,y){
       {
       if(vgr[i])
          //document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-1)*w);
-         document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-(graph==3||graph==5||graph==6||graph==7?tu:0)-(graph==4?0:1))*w);
+         document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0)-(graph==4?0:1))*w);
          //document.getElementById('hg'+i).setAttribute('y',(fn[i][b?0:x1+1])*w);
       i++;
       }
@@ -851,7 +901,7 @@ function mousetextupdate(x,y){
          {
          h=x1+(graph>1?1:0);
          if(y1>=0)
-            h+='; '+(nextn-y1-(graph==4?0:1)-(graph==1?mode:graph==3||graph==5||graph==6||graph==7?1:0)*tu);
+            h+='; '+(nextn-y1-(graph==4?0:1)-(graph==1?mode:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?1:0)*tu);
          if(graph==1)
             {
             h+='<br/>'+car[x1]+' root'+(car[x1]==1?'':'s');
@@ -947,7 +997,7 @@ listc.addEventListener('mousemove', (e) => {
 let mode=0;
 let nextn=2;
 let tar,car,maxc,maxcz;
-let fnumber=17;
+let fnumber=23;
 let fn=[];
 for(let e=0;e<=fnumber;e++)
    fn.push([]);
@@ -955,10 +1005,10 @@ let mousex=-1000000;
 let mousey=-1000000;
 for(let e=0;e<=fnumber;e++)
    fn[e].push(mousey);
-let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple','','','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue'];
-let wgr=[5,15,15,5,10,15,5,0,0,5,10,15,5,10,15,5,10,15];
-let fgr=['rect','polygon','circle','rect','polygon','circle','rect','','','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle'];
-let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x','','','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2'];
+let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple','','','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue'];
+let wgr=[5,15,15,5,10,15,5,0,0,5,10,15,5,10,15,5,10,15,5,10,15,5,10,15];
+let fgr=['rect','polygon','circle','rect','polygon','circle','rect','','','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle'];
+let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x','','','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2'];
 let vgr=[]
 for(let e=0;e<=fnumber;e++)
    vgr.push(true);
@@ -966,10 +1016,10 @@ let grx=new Array(fnumber);
 let vgrh=0.15;
 let mhvh=0.15,hgv=0.025;
 let tu;
-let gro=[0,0,0,3,6,9,12,15];
-let grg=[2,2,2,3,3,3,4,0,0,5,5,5,6,6,6,7,7,7];
-let grvn=[0,0,3,3,1,3,3,3];
-let grvn1=[0,0,3,3,1,3,3,3];
+let gro=[0,0,0,3,6,9,12,15,18,21];
+let grg=[2,2,2,3,3,3,4,0,0,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9];
+let grvn=[0,0,3,3,1,3,3,3,3,3,3];
+let grvn1=[0,0,3,3,1,3,3,3,3,3,3];
 let minw=16;
 let maxw=51;
 
@@ -984,6 +1034,8 @@ addfn5(100);
 addfn6(30,1);
 addfn6(30,2);
 addfn6(30,3);
+addfn6(10,4);
+addfn6(10,5);
  
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
