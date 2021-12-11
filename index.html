@@ -89,11 +89,11 @@ for(let e=0;e<=n+(grx[g]?0:1);e++)
       y0=e>1?y:n*w+(1+g%3)*maxw;
       }
    //if(graph!=7||wmode||!e||e>=pwidth||n<pwidth)
-   if(graph!=7||!e||(wmode?!mar[e]:!pwidth||n<pwidth||!(e%pwidth)))
+   if(graph!=7||!e||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth)))
    {
    x=e?(e-0.5)*w1:1.5*w1;
    //y=e?(n-(graph==4?-0.5:0.5)-(graph!=7||(!pwidth&&!wmode)||n<pwidth?fn[g][e]:wmode?fnw[g-15][n][e-1]:fnw[g-15][e][pwidth-1])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
-   y=e?(n-(graph==4?-0.5:0.5)-(graph!=7?fn[g][e]:wmode?fnw[g-15][n][e]:!pwidth||n<pwidth?fn[g][e]:fnw[g-15][e][pwidth])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
+   y=e?(n-(graph==4?-0.5:0.5)-(graph!=7?fn[g][e]:wmode>1?fnw[g-15][n][e]:!pwidth||n<pwidth?fn[g][e]:fnw[g-15][e][wmode?e/pwidth:pwidth])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
    if(e>n)
       {grx[g]=document.createElement('g');
       x=w1/4;
@@ -125,7 +125,7 @@ for(let e=0;e<=n+(grx[g]?0:1);e++)
    }
    //if(e&&e<=n)
    //if(e&&e<=n&&(graph!=7||wmode||e==1||e>pwidth||n<pwidth))
-   if(e&&e<=n&&(graph!=7||e==1||(wmode?!mar[e]:!pwidth||n<pwidth||(e>pwidth&&!(e%pwidth)))))
+   if(e&&e<=n&&(graph!=7||e==1||(wmode>1?!mar[e]:!pwidth||n<pwidth||(e>pwidth&&!(e%pwidth)))))
       {if(e==1)
          w1=maxw;
       let x1=(e==1)?2.75*w1:x;
@@ -422,14 +422,19 @@ if(graph==7)
       op.setAttribute('selected','selected');
    s.appendChild(op);
    op=document.createElement('option');
+   op.innerHTML='Fixed period, N alters';
+   if(wmode==1)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
    op.innerHTML='Fixed N, width alters';
-   if(wmode)
+   if(wmode==2)
       op.setAttribute('selected','selected');
    s.appendChild(op);
    sc1.innerHTML+='Graph mode: ';
    sc1.appendChild(s);
    
-   if(!wmode)
+   if(wmode<2)
       {s=document.createElement('select');
       s.setAttribute('onchange','cw(event)');
       op=document.createElement('option');
@@ -445,7 +450,7 @@ if(graph==7)
             op.setAttribute('selected','selected');
          s.appendChild(op);
          }
-      sc1.innerHTML+='   Width: ';
+      sc1.innerHTML+=wmode?'   Period: ':'   Width: ';
       sc1.appendChild(s);
       }
    }
