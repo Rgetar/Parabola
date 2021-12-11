@@ -1067,11 +1067,12 @@ function addfn6(n,d)
             if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
             if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
             }
-   let la=[d==3?l:caar.length,1,1,1,1];
+   let b=d==3;
+   let la=[b?l:caar.length,1,1,1,1];
    for(e=1;e<5;e++)
       if(d>e)
          la[e]=caar.length;
-   if(d==3)
+   if(b)
    for(e=0;e<3;e++)
       {fnw[e].push([]);
       for(let y=0;y<=l;y++)
@@ -1081,32 +1082,117 @@ function addfn6(n,d)
    let i=[0,0,0];
    let u;
    let s0,s1,s2,s3,s;
+   let j0,j1,j2,j3,j;
+   let k1=b?1:2,k2=b?2:3,k3=b?3:4,k=b?4:5;
    let m0,m1,m2,m3,m;
+   let mf0,mf1,mf2,mf3,mf;
    for(e[0]=0;e[0]<la[0];e[0]++)
       {
-      s0=d==3?tar[e[0]]:xdaar[e[0]];
-      m0=d==3?1:caar[e[0]];
-      for(e[1]=0;e[1]<la[1];e[1]++)
+      j0=1;
+      s0=b?tar[e[0]]:xdaar[e[0]];
+      m0=b?1:caar[e[0]];
+      mf0=1;
+      //for(e[1]=0;e[1]<la[1];e[1]++)
+      for(e[1]=0;e[1]<(b?la[1]:Math.min(la[1],e[0]+1));e[1]++)
       //for(e[1]=0;e[1]<(d>1?l:la[1]);e[1]++)
          {
+         s1=s0;
+         m1=m0;
+         mf1=mf0;
+         j1=1;
+         if(d>1)
+            {
+            s1+=xdaar[e[1]];
+            m1*=caar[e[1]];
+            if(!b)
+               {
+               if(e[1]==e[0])
+                  j1+=j0;
+               mf1*=k1/j1;
+               }
+            }
+         /*j1=(d>1&&!b&&e[1]==e[0]?j0+1:1);
          s1=s0+(d>1?xdaar[e[1]]:0);
          m1=m0*(d>1?caar[e[1]]:1);
+         //mf1=mf0+(d>1&&!b&&e[1]<e[0]?1:0);
+         mf1=mf0*(d>1&&!b?k1/j1:1);*/
+         //if(mf1!=mf0)
+         //   m1*=mf1;
          //s1=s0+tar[e[1]];
          //m1=m0;
-         for(e[2]=0;e[2]<la[2];e[2]++)
+         //for(e[2]=0;e[2]<la[2];e[2]++)
+         for(e[2]=0;e[2]<Math.min(la[2],e[1]+1);e[2]++)
             {
+            s2=s1;
+            m2=m1;
+            mf2=mf1;
+            j2=1;
+            if(d>2)
+               {
+               s2+=xdaar[e[2]];
+               m2*=caar[e[2]];
+               if(e[2]==e[1])
+                  j2+=j1;
+               mf2*=k2/j2;
+               }
+            /*j2=(d>2&&e[2]==e[1]?j1+1:1);
             s2=s1+(d>2?xdaar[e[2]]:0);
             m2=m1*(d>2?caar[e[2]]:1);
-            for(e[3]=0;e[3]<la[3];e[3]++)
+            //mf2=mf1+(d>2&&e[2]<e[1]?1:0);
+            mf2=mf1*(d>2?k2/j2:1);*/
+            //mf2=mf1;
+            //if(mf2!=mf1)
+            //   m2*=mf2;
+            //for(e[3]=0;e[3]<la[3];e[3]++)
+            for(e[3]=0;e[3]<Math.min(la[3],e[2]+1);e[3]++)
                {
+               s3=s2;
+               m3=m2;
+               mf3=mf2;
+               j3=1;
+               if(d>3)
+                  {
+                  s3+=xdaar[e[3]];
+                  m3*=caar[e[3]];
+                  if(e[3]==e[2])
+                     j3+=j2;
+                  mf3*=k3/j3;
+                  }
+               /*j3=(d>3&&e[3]==e[2]?j2+1:1);
                s3=s2+(d>3?xdaar[e[3]]:0);
                m3=m2*(d>3?caar[e[3]]:1);
-               for(e[4]=0;e[4]<la[4];e[4]++)
-                 {
+               //mf3=mf2+(d>3&&e[3]<e[2]?1:0);
+               mf3=mf2*(d>3?k3/j3:1);*/
+               //mf3=mf2;
+               //if(mf3!=mf2)
+               //   m3*=mf3;
+               //for(e[4]=0;e[4]<la[4];e[4]++)
+               for(e[4]=0;e[4]<Math.min(la[4],e[3]+1);e[4]++)
+                  {
                   //let s=(e[0]*e[0]+e[1]*e[1]+e[2]*e[2]+e[3]*e[3]+e[4]*e[4])%l[0];
                   //let s=(tar[e[0]]+tar[e[1]]+tar[e[2]]+tar[e[3]]+tar[e[4]])%l[0];
+                  s=s3;
+                  m=m3;
+                  mf=mf3;
+                  j=1;
+                  if(d>4)
+                     {
+                     s+=xdaar[e[4]];
+                     m*=caar[e[4]];
+                     if(e[4]==e[3])
+                        j+=j3;
+                     mf*=k/j;
+                     }
+                  /*j=(d>4&&e[4]==e[3]?j3+1:1);
                   s=(s3+(d>4?xdaar[e[4]]:0))%l;
                   m=m3*(d>4?caar[e[4]]:1);
+                  //mf=mf3+(d>4&&e[4]<e[3]?1:0);
+                  mf=mf3*(d>4?k/j:1);*/
+                  //mf=mf3;
+                  //if(mf!=mf3)
+                  //   m*=mf;
+                  s%=l;
+                  m*=mf;
                   //s=s1%l;
                   //m=m1;
                   /*for(u=-1;u<aar[s].length;u++)
@@ -1123,7 +1209,7 @@ function addfn6(n,d)
                }
             }
          }
-      if(d==3)
+      if(b)
          {for(let y=1;y<=l;y++)
             //if(!mar[y])
             //if(!e[0]%y)
@@ -1134,7 +1220,7 @@ function addfn6(n,d)
                   }
          }
       }
-   /*if(d==3)
+   /*if(b)
    for(u=0;u<3;u++)
    for(let y=0;y<=l[0];y++)
    if(fnw[u][l[0]][y])
