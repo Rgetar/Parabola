@@ -93,7 +93,7 @@ for(let e=0;e<=n+(grx[g]?0:1);e++)
    {
    x=e?(e-0.5)*w1:1.5*w1;
    //y=e?(n-(graph==4?-0.5:0.5)-(graph!=7||(!pwidth&&!wmode)||n<pwidth?fn[g][e]:wmode?fnw[g-15][n][e-1]:fnw[g-15][e][pwidth-1])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
-   y=e?(n-(graph==4?-0.5:0.5)-(graph!=7||!pwidth||n<pwidth?fn[g][e]:wmode?fnw[g-15][n][e]:fnw[g-15][e][pwidth])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
+   y=e?(n-(graph==4?-0.5:0.5)-(graph!=7?fn[g][e]:wmode?fnw[g-15][n][e]:!pwidth||n<pwidth?fn[g][e]:fnw[g-15][e][pwidth])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
    if(e>n)
       {grx[g]=document.createElement('g');
       x=w1/4;
