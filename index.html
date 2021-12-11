@@ -941,7 +941,7 @@ function addfn6old(n,d)
    }
 }
 
-function addfn6(n,d)
+function addfn6old2(n,d)
 {while(fn[6+3*d].length<=n)
    {let l=fn[6+3*d].length;
    setar(l);
@@ -1035,6 +1035,118 @@ function addfn6(n,d)
    }
 }
 
+function addfn6(n,d)
+{while(fn[6+3*d].length<=n)
+   {let l=fn[6+3*d].length;
+   setar(l);
+   let aar=[];
+   let e;
+   for(e=0;e<l;e++)
+      aar.push([]);
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e);
+   let caar=[];
+   let xdaar=[];
+   let iar=[[],[],[]];
+   for(e=0;e<l;e++)
+      {
+      if(aar[e].length)
+         {
+         caar.push(aar[e].length);
+         xdaar.push(e);
+         }
+      iar[0].push(0);
+      iar[1].push(0);
+      iar[2].push(0);
+      }
+   for(e=0;e<l;e++)
+      for(let u=-1;u<aar[e].length;u++)
+         if(u>=0)
+            {
+            if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+            if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+            if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+            }
+   let la=[d==3?l:caar.length,1,1,1,1];
+   for(e=1;e<5;e++)
+      if(d>e)
+         la[e]=caar.length;
+   if(d==3)
+   for(e=0;e<3;e++)
+      {fnw[e].push([]);
+      for(let y=0;y<=l;y++)
+         fnw[e][l].push(0);
+      }
+   e=[0,0,0,0,0];
+   let i=[0,0,0];
+   let u;
+   let s0,s1,s2,s3,s;
+   let m0,m1,m2,m3,m;
+   for(e[0]=0;e[0]<la[0];e[0]++)
+      {
+      s0=d==3?tar[e[0]]:xdaar[e[0]];
+      m0=d==3?1:caar[e[0]];
+      for(e[1]=0;e[1]<la[1];e[1]++)
+      //for(e[1]=0;e[1]<(d>1?l:la[1]);e[1]++)
+         {
+         s1=s0+(d>1?xdaar[e[1]]:0);
+         m1=m0*(d>1?caar[e[1]]:1);
+         //s1=s0+tar[e[1]];
+         //m1=m0;
+         for(e[2]=0;e[2]<la[2];e[2]++)
+            {
+            s2=s1+(d>2?xdaar[e[2]]:0);
+            m2=m1*(d>2?caar[e[2]]:1);
+            for(e[3]=0;e[3]<la[3];e[3]++)
+               {
+               s3=s2+(d>3?xdaar[e[3]]:0);
+               m3=m2*(d>3?caar[e[3]]:1);
+               for(e[4]=0;e[4]<la[4];e[4]++)
+                 {
+                  //let s=(e[0]*e[0]+e[1]*e[1]+e[2]*e[2]+e[3]*e[3]+e[4]*e[4])%l[0];
+                  //let s=(tar[e[0]]+tar[e[1]]+tar[e[2]]+tar[e[3]]+tar[e[4]])%l[0];
+                  s=(s3+(d>4?xdaar[e[4]]:0))%l;
+                  m=m3*(d>4?caar[e[4]]:1);
+                  //s=s1%l;
+                  //m=m1;
+                  /*for(u=-1;u<aar[s].length;u++)
+                  if(u>=0)
+                     {
+                     if(u==0){i[0]+=aar[s][0];i[0]%=l[0]}
+                     if(u<l[0]/2){i[1]+=aar[s][u];i[1]%=l[0]}
+                     if(u<=l[0]/2){i[2]+=aar[s][u];i[2]%=l[0]}
+                     }*/
+                  i[0]+=iar[0][s]*m;i[0]%=l;
+                  i[1]+=iar[1][s]*m;i[1]%=l;
+                  i[2]+=iar[2][s]*m;i[2]%=l;
+                  }
+               }
+            }
+         }
+      if(d==3)
+         {for(let y=1;y<=l;y++)
+            //if(!mar[y])
+            //if(!e[0]%y)
+            if(!mar[y]&&!e[0]%(l/y))
+               for(u=0;u<3;u++)
+                  {fnw[u][l][y]+=i[u]-(i[u]<l/2?0:l);
+                  fnw[u][l][y]%=l;
+                  }
+         }
+      }
+   /*if(d==3)
+   for(u=0;u<3;u++)
+   for(let y=0;y<=l[0];y++)
+   if(fnw[u][l[0]][y])
+       alert(fnw[u][l[0]][y]);*/
+   for(u=0;u<3;u++)
+      {//i[u]=i[u]%l[0];
+      if(i[u]>=l/2)i[u]-=l;
+      fn[6+3*d+u].push(i[u]);
+      }
+   }
+}
+
 function grectclick(g){
 if(!xsh)
    xshn=true;
@@ -1065,6 +1177,7 @@ function mousetextupdate(x,y){
       if(vgr[i])
          //document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-1)*w);
          document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0)-(graph==4?0:1))*w);
+
          //document.getElementById('hg'+i).setAttribute('y',(fn[i][b?0:x1+1])*w);
       i++;
       }
@@ -1090,8 +1203,9 @@ function mousetextupdate(x,y){
          	   {
          	   if(vgr[e])
          	      {
-         	      h+='<br/><span><svg id="sx'+e+'" width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text></svg></span>';
-                  
+         	      //h+='<br/><span><svg id="sx'+e+'" width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text></svg></span>';
+                  h+='<br/><span><svg id="sx'+e+'" width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="15">'+(graph!=7?fn[e][x1+1]:wmode>1?fnw[e-15][nextn][x1+1]:!pwidth||nextn<pwidth?fn[e][x1+1]:fnw[e-15][x1+1][wmode?(x1+1)/pwidth:pwidth])+'</text></svg></span>';
+
                   }
          	   }
          	}
