@@ -1010,7 +1010,7 @@ function addfn6(n,d)
          {for(let y=1;y<=l[0];y++)
             //if(!mar[y])
             //if(!e[0]%y)
-            if(!mar[y]&&!e[0]%y)
+            if(!mar[y]&&!e[0]%(l[0]/y))
                for(u=0;u<3;u++)
                   {fnw[u][l[0]][y]+=i[u]-(i[u]<l[0]/2?0:l[0]);
                   fnw[u][l[0]][y]%=l[0];
