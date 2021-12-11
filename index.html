@@ -754,7 +754,7 @@ if(c.id=='addtable')
       vgrid=!vgrid;
       document.getElementById('grid').setAttribute('opacity',vgrid?1:0);
       }
-   else
+   else if(c.tagName!='SELECT'&&c.tagName!='OPTION')
       {
       if(xshn)
          {//xsh=false;
