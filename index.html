@@ -892,7 +892,101 @@ function addfn5(n)
    }
 }
 
-function addfn6(n,d)
+function addfn6old(n,d)
+{while(fnold[6+3*d].length<=n)
+   {let l=fnold[6+3*d].length;
+   setar(l);
+   let aar=[];
+   let e;
+   for(e=0;e<l;e++)
+      aar.push([]);
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e);
+   let iar=[[],[],[]];
+   for(e=0;e<l;e++)
+      {
+      iar[0].push(0);
+      iar[1].push(0);
+      iar[2].push(0);
+      }
+   for(e=0;e<l;e++)
+      for(let u=-1;u<aar[e].length;u++)
+         if(u>=0)
+            {
+            if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+            if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+            if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+            }
+   l=[l,1,1,1,1];
+   for(e=1;e<5;e++)
+      if(d>e)l[e]=l[0];
+   //if(d==3)l[2]=Math.min(60,l[0]);
+   if(d==3)
+   for(e=0;e<3;e++)
+      {fnwold[e].push([]);
+      for(let y=0;y<=l[0];y++)
+         fnwold[e][l[0]].push(0);
+      }
+   e=[0,0,0,0,0];
+   let i=[0,0,0];
+   let u;
+   let s0,s1,s2,s3,s;
+   for(e[0]=0;e[0]<l[0];e[0]++)
+      {
+      s0=tar[e[0]];
+      for(e[1]=0;e[1]<l[1];e[1]++)
+         {
+         s1=s0+tar[e[1]];
+         for(e[2]=0;e[2]<l[2];e[2]++)
+            {
+            s2=s1+tar[e[2]];
+            for(e[3]=0;e[3]<l[3];e[3]++)
+               {
+               s3=s2+tar[e[3]];
+               for(e[4]=0;e[4]<l[4];e[4]++)
+                 {
+                  //let s=(e[0]*e[0]+e[1]*e[1]+e[2]*e[2]+e[3]*e[3]+e[4]*e[4])%l[0];
+                  //let s=(tar[e[0]]+tar[e[1]]+tar[e[2]]+tar[e[3]]+tar[e[4]])%l[0];
+                  s=(s3+tar[e[4]])%l[0];
+                  /*for(u=-1;u<aar[s].length;u++)
+                  if(u>=0)
+                     {
+                     if(u==0){i[0]+=aar[s][0];i[0]%=l[0]}
+                     if(u<l[0]/2){i[1]+=aar[s][u];i[1]%=l[0]}
+                     if(u<=l[0]/2){i[2]+=aar[s][u];i[2]%=l[0]}
+                     }*/
+                  i[0]+=iar[0][s];i[0]%=l[0];
+                  i[1]+=iar[1][s];i[1]%=l[0];
+                  i[2]+=iar[2][s];i[2]%=l[0];
+                  }
+               }
+            }
+         }
+      if(d==3)
+         {for(let y=1;y<=l[0];y++)
+            //if(!mar[y])
+            //if(!e[0]%y)
+            if(!mar[y]&&!e[0]%(l[0]/y))
+               for(u=0;u<3;u++)
+                  {fnwold[u][l[0]][y]+=i[u]-(i[u]<l[0]/2?0:l[0]);
+                  fnwold[u][l[0]][y]%=l[0];
+                  }
+         }
+      }
+   /*if(d==3)
+   for(u=0;u<3;u++)
+   for(let y=0;y<=l[0];y++)
+   if(fnw[u][l[0]][y])
+       alert(fnw[u][l[0]][y]);*/
+   for(u=0;u<3;u++)
+      {//i[u]=i[u]%l[0];
+      if(i[u]>=l[0]/2)i[u]-=l[0];
+      fnold[6+3*d+u].push(i[u]);
+      }
+   }
+}
+
+function addfn6old2(n,d)
 {
 
 function setlat(pe,e=0)
@@ -936,15 +1030,15 @@ for(let q=0;q<=pe;q++)
          for(let y=1;y<=l;y++)
             if(!mar[y]&&!q%(l/y))
                for(u=0;u<3;u++)
-                  {fnw[u][l][y]+=i[u]-(i[u]<l/2?0:l);
-                  fnw[u][l][y]%=l;
+                  {fnwold[u][l][y]+=i[u]-(i[u]<l/2?0:l);
+                  fnwold[u][l][y]%=l;
                   }
    	}
    }
 }
-
-while(fn[6+3*d].length<=n)
-   {var l=fn[6+3*d].length;
+//addfn6old(n,d);
+while(fnold[6+3*d].length<=n)
+   {var l=fnold[6+3*d].length;
    setar(l);
    let aar=[];
    var e,u;
@@ -974,6 +1068,140 @@ while(fn[6+3*d].length<=n)
    var b=d==3;
    if(b)
    for(e=0;e<3;e++)
+      {fnwold[e].push([]);
+      for(let y=0;y<=l;y++)
+         fnwold[e][l].push(0);
+      }
+   var i=[0,0,0];
+   var s=[0],j=[1],k=[0],m=[0],mf=[1];
+   for(u=1;u<d;u++)
+      {
+      s.push(0);
+      j.push(0);
+      k.push(b?u:u+1);
+      m.push(0);
+      mf.push(0);
+      }
+   setlat((b?l:caar.length)-1);
+   for(u=0;u<3;u++)
+      {
+      if(i[u]>=l/2)i[u]-=l;
+      fnold[6+3*d+u].push(i[u]);
+      //if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
+      //   alert('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+      //if(b)for(let y=0;y<=l;y++)
+      //   if(fnw[u][l][y]!=fnwold[u][l][y])
+      //      alert('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);
+      }
+   }
+}
+
+function addfn6(n,d)
+{
+
+function setlat(pe,e=0)
+{
+for(let q=0;q<=pe;q++)
+   {
+   if(e)
+      {
+      s[e]=s[e-1];
+      m[e]=m[e-1];
+      mf[e]=mf[e-1];
+      j[e]=1;
+      if(d1>e)
+         {
+         s[e]+=xdaar[q];
+         m[e]*=caar[q];
+         if((!b||e>1)&&q==pe)
+            j[e]+=j[e-1];
+         mf[e]*=k[e]/j[e];
+         }
+      }
+   else
+      {
+      s[0]=b?tar[q]:xdaar[q];
+      m[0]=b?1:caar[q];
+      }
+   if(e+1==d1)
+      {
+      s[e]%=l;
+      m[e]*=mf[e];
+      for(u=0;u<3;u++)
+         {i[u]+=iar[u][s[e]]*m[e];
+         i[u]%=l;}
+      }
+   else if(e)
+      setlat(q,e+1);
+   else
+   	{
+   	setlat(b?caar.length-1:q,e+1);
+      if(b)
+         for(let y=1;y<=l;y++)
+            if(!mar[y]&&!q%(l/y))
+               for(u=0;u<3;u++)
+                  {fnw[u][l][y]+=i[u]-(i[u]<l/2?0:l);
+                  fnw[u][l][y]%=l;
+                  }
+   	}
+   }
+}
+//addfn6old2(n,d);
+while(fn[6+3*d].length<=n)
+   {var l=fn[6+3*d].length;
+   setar(l);
+   let aar=[];
+   var e,u;
+   for(e=0;e<l;e++)
+      aar.push([]);
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e);
+   var caar=[],xdaar=[],iar=[[],[],[]];
+   for(e=0;e<l;e++)
+      {
+      if(aar[e].length)
+         {
+         caar.push(aar[e].length);
+         xdaar.push(e);
+         }
+      for(u=0;u<3;u++)
+         iar[u].push(0);
+      }
+   for(e=0;e<l;e++)
+      for(let u=-1;u<aar[e].length;u++)
+         if(u>=0)
+            {
+            if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+            if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+            if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+            }
+   var b=d==3;
+   if(d>1)
+      {
+      let caar0=[...caar];
+      let xdaar0=[...xdaar];
+      for(e=b?2:1;e<d;e++)
+         {
+         for(u=0;u<l;u++)
+            aar[u]=0;
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+         u=0;
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar[u]=aar[i];
+               xdaar[u]=i;
+               u++;
+               }
+         caar.length=u;
+         xdaar.length=u;
+         }
+      }  
+   var d1=b?2:1;
+   if(b)
+   for(e=0;e<3;e++)
       {fnw[e].push([]);
       for(let y=0;y<=l;y++)
          fnw[e][l].push(0);
@@ -993,6 +1221,12 @@ while(fn[6+3*d].length<=n)
       {
       if(i[u]>=l/2)i[u]-=l;
       fn[6+3*d+u].push(i[u]);
+      
+      /*if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
+         console.log('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+      if(b)for(let y=0;y<=l;y++)
+         if(fnw[u][l][y]!=fnwold[u][l][y])
+            console.log('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);*/
       }
    }
 }
@@ -1137,12 +1371,18 @@ let tar,car,maxc,maxcz,mar;
 let fnumber=23;
 let fn=[];
 let fnw=[[[]],[[]],[[]]];
+//let fnold=[];
+//let fnwold=[[[]],[[]],[[]]];
 for(let e=0;e<=fnumber;e++)
-   fn.push([]);
+   {fn.push([]);
+   //fnold.push([]);
+   }
 let mousex=-1000000;
 let mousey=-1000000;
 for(let e=0;e<=fnumber;e++)
-   fn[e].push(mousey);
+   {fn[e].push(mousey);
+   //fnold[e].push(mousey);
+   }
 let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple','','','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue'];
 let wgr=[5,15,15,5,10,15,5,0,0,5,10,15,5,10,15,5,10,15,5,10,15,5,10,15];
 let fgr=['rect','polygon','circle','rect','polygon','circle','rect','','','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle'];
@@ -1170,11 +1410,11 @@ addfn2(100);
 addfn3(100);
 addfn4(100);
 addfn5(100);
-addfn6(30,1);
-addfn6(30,2);
-addfn6(30,3);
-addfn6(30,4);
-addfn6(30,5);
+addfn6(50,1);
+addfn6(50,2);
+addfn6(50,3);
+addfn6(50,4);
+addfn6(50,5);
  
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
