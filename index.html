@@ -1365,47 +1365,137 @@ listc.addEventListener('mousemove', (e) => {
 });
 
 
+// mode - 0: (0; N), 1: (- N / 2, N / 2) for graph=1
+let mode=0;  
 
-let mode=0;
-let nextn=2;
+// nextn - N                       
+let nextn=2;    
+                    
+// tar - array of x*x mod N (parameter - x ∈ [0; N - 1])
+// car - array of numbers of roots of x (parameter - x ∈ [0; N - 1])
+// maxc - maximal value of car array
+// maxcz - maximal value of car array except car[0]
+// mar - array of N mod x (mar[0] = 0) (parameter - x ∈ [0; N - 1])
 let tar,car,maxc,maxcz,mar;
+
+// fnumber - maximal parameter values of fn array
 let fnumber=23;
+
+// fn[0] - array of maximal multiplicities (parameter - N)
+// fn[1] - array of maximal multiplicities except zero (parameter - N)
+// fn[2] - array of multiplicities of zero (parameter - N)
+// fn[3] - array of sums of minimal roots (parameter - N)
+// fn[4] - array of sums of roots < N / 2 (parameter - N)
+// fn[5] - array of sums of roots ≤ N / 2 (parameter - N)
+// fn[6] - array of numbers of x ∈ [0; N - 1]: ∃ √x (parameter - N)
+// fn[7] - array of N*N (parameter - N)
+// fn[8] - array of factorizations of prime and doubled prime N (empty string for other N) (parameter - N)
+// fn[9] - array of sums of minimal roots for squares of coordinates of nodes of 1D N lattice (parameter - N)
+// fn[10] - array of sums of roots < N / 2 for squares of coordinates of nodes of 1D N lattice (parameter - N)
+// fn[11] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 1D N lattice (parameter - N)
+// fn[12] - array of sums of minimal roots for squares of coordinates of nodes of 2D N x N lattice (parameter - N)
+// fn[13] - array of sums of roots < N / 2 for squares of coordinates of nodes of 2D N x N lattice (parameter - N)
+// fn[14] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 2D N x N lattice (parameter - N)
+// fn[15] - array of sums of minimal roots for squares of coordinates of nodes of 3D N x N x N lattice (parameter - N)
+// fn[16] - array of sums of roots < N / 2 for squares of coordinates of nodes of 3D N x N x N lattice (parameter - N)
+// fn[17] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 3D N x N x N lattice (parameter - N)
+// fn[18] - array of sums of minimal roots for squares of coordinates of nodes of 4D N x N x N x N lattice (parameter - N)
+// fn[19] - array of sums of roots < N / 2 for squares of coordinates of nodes of 4D N x N x N x N lattice (parameter - N)
+// fn[20] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 4D N x N x N x N lattice (parameter - N)
+// fn[21] - array of sums of minimal roots for squares of coordinates of nodes of 5D N x N x N x N x N lattice (parameter - N)
+// fn[22] - array of sums of roots < N / 2 for squares of coordinates of nodes of 5D N x N x N x N x N lattice (parameter - N)
+// fn[23] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 5D N x N x N x N x N lattice (parameter - N)
 let fn=[];
+
+// fnw[0] - array of sums of minimal roots for squares of coordinates of nodes of 3D width x N x N lattice (1st parameter - N, 2nd parameter - width ∈ [0; N - 1])
+// fnw[1] - array of sums of roots < N / 2 for squares of coordinates of nodes of 3D width x N x N lattice (1st parameter - N, 2nd parameter - width ∈ [0; N - 1])
+// fnw[2] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 3D width x N x N lattice (1st parameter - N, 2nd parameter - width ∈ [0; N - 1])
 let fnw=[[[]],[[]],[[]]];
-//let fnold=[];
-//let fnwold=[[[]],[[]],[[]]];
+
+// fnold, fnwold - copies of fn, fnw array, created by old versions of functions
+let fnold=[];
+
+let fnwold=[[[]],[[]],[[]]];
 for(let e=0;e<=fnumber;e++)
    {fn.push([]);
-   //fnold.push([]);
+   fnold.push([]);
    }
+   
+// mousex - x coordinate of mouse cursor in browser
+// mousey - y coordinate of mouse cursor in browser
 let mousex=-1000000;
 let mousey=-1000000;
+
 for(let e=0;e<=fnumber;e++)
    {fn[e].push(mousey);
-   //fnold[e].push(mousey);
+   fnold[e].push(mousey);
    }
+   
+// cgr - array of colors of graphs of fn arrays (parameter - number of fn array)
 let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple','','','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue'];
+
+// wgr - array of widths of graphs of fn arrays (parameter - number of fn array)
 let wgr=[5,15,15,5,10,15,5,0,0,5,10,15,5,10,15,5,10,15,5,10,15,5,10,15];
+
+// fgr - array of tag names of marks of graphs of fn arrays (parameter - number of fn array)
 let fgr=['rect','polygon','circle','rect','polygon','circle','rect','','','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle'];
+
+// tgr - array of captions of graphs of fn arrays (parameter - number of fn array)
 let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x','','','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2'];
+
+// vgr - array of visibilities of graphs of fn arrays (true - visible, false - invisible) (parameter - number of fn array)
 let vgr=[]
+
 for(let e=0;e<=fnumber;e++)
    vgr.push(true);
+   
+// grx - array of graphs of fn arrays (parameter - number of fn array)
 let grx=new Array(fnumber);
+
+// opacity of caption of invisible graph
 let vgrh=0.15;
+
+// mhvh - opacity of highlighted row and column
+// hgv - opacity of rows of values of displayed fn arrays
 let mhvh=0.15,hgv=0.025;
+
+// tu - vertical offset factor for graphs with negative values
 let tu;
+
+// gro - array of initial numbers of fn arrays (parameter - displayed set of graphs)
 let gro=[0,0,0,3,6,9,12,15,18,21];
+
+// grg - array of displayed set of graphs (parameter - number of fn array)
 let grg=[2,2,2,3,3,3,4,0,0,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9];
-let grvn=[0,0,3,3,1,3,3,3,3,3,3];
-let grvn1=[0,0,3,3,1,3,3,3,3,3,3];
+
+// grvn - array of numbers of visible graphs (parameter - displayed set of graphs)
+let grvn=[0,0,3,3,1,3,3,3,3,3];
+
+// grvn - array of numbers of graphs (parameter - displayed set of graphs)
+let grvn1=[0,0,3,3,1,3,3,3,3,3];
+
+// minw - minimal size of cell of graphs
 let minw=16;
+
+// maxw - maximal size of cell of graphs
 let maxw=31;
 
+// graph - displayed set of graphs
 let graph=1;
+
+// w - size of cell of graphs
+// gm - number of caption of graph (parameter - number of fn array)
+// xsh - visibility of text near mouse cursor
+// xshn - indicator of click of caption of graph
+// vgrid - visibility of grid
+// swh - invisibility of mode switcher
+// maxfsize - maximal font size of captions of rows, coumns and bar graphs
 let w,gm=-1,xsh=true,xshn=false,vgrid=true,swh=false,maxfsize=16;
+
+// pwidth - width or period of 3D lattice
+// wmode - mode of graphs of 3D lattice (0: fixed width, N alters; 1: fixed period, N alters; 2: fixed N, width alters)
 let pwidth=0,wmode=0;
-   
+
 addfn1(100);
 addfn2(100);
 addfn3(100);
