@@ -1161,7 +1161,7 @@ while(fn[6+3*d].length<=n)
       {
       if(aar[e].length)
          {
-         caar.push(aar[e].length);
+         caar.push(aar[e].length%l);
          xdaar.push(e);
          }
       for(u=0;u<3;u++)
@@ -1191,15 +1191,16 @@ while(fn[6+3*d].length<=n)
          for(let i=0;i<l;i++)
             if(aar[i])
                {
-               caar[u]=aar[i];
+               caar[u]=aar[i]%l;
                xdaar[u]=i;
                u++;
                }
          caar.length=u;
          xdaar.length=u;
          }
-      }  
+      }
    var d1=b?2:1;
+   //var d1=d+2;
    if(b)
    for(e=0;e<3;e++)
       {fnw[e].push([]);
