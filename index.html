@@ -1096,67 +1096,188 @@ while(fnold[6+3*d].length<=n)
    }
 }
 
+// addfn6 - set lattice arrays up to N (parameters: n - N; d - number of dimensions of lattice):
+// fn[9-11] - 1D
+// fn[12-14] - 2D
+// fn[15-17], fnw[0-2] - 3D
+// fn[18-20] - 4D
+// fn[21-23] - 5D
+// note: lattices with higher numbers of dimensions can be written in fn, fnw using offset:
+// with offset a (1+a)D lattice will be written in fn[9-11], (2+a)D in fn[12-14], (3+a)D in fn[15-17] and fnw[0-2], (4+a)D in fn[18-20], (5+a)D in fn[21-23]
 function addfn6(n,d)
 {
 
+// setlat - dimension pass (parameters: pe - maximal layer of lattice, e - dimension - 1)
 function setlat(pe,e=0)
 {
+
+// q - layer of lattice
 for(let q=0;q<=pe;q++)
    {
+   
+   // not 1st pass
    if(e)
       {
-      s[e]=s[e-1];
-      m[e]=m[e-1];
-      mf[e]=mf[e-1];
-      j[e]=1;
-      if(d1>e)
-         {
-         s[e]+=xdaar[q];
-         m[e]*=caar[q];
-         if((!b||e>1)&&q==pe)
-            j[e]+=j[e-1];
-         mf[e]*=k[e]/j[e];
-         }
+      
+      // add sum of squares
+      s[e]=s[e-1]+xdaar[q];
+      
+      // multiply numbers of nodes
+      m[e]=m[e-1]*caar[q];
+      
+      // if pattern of same coordinates continues, increase its length by 1, else set it to 1
+      j[e]=(!b||e>1)&&q==pe?j[e-1]+1:1;
+      
+      // multiply permutation factor by number of dimensions (except 1st dimension, if 3D) and divide it by length of pattern of same coordinates
+      mf[e]=mf[e-1]*k[e]/j[e];
+      
       }
+      
+   // 1st pass
    else
       {
+      
+      // set square (for 3D take from tar)
       s[0]=b?tar[q]:xdaar[q];
+      
+      // set factor (for 3D set to 1)
       m[0]=b?1:caar[q];
+      
       }
+      
+   // last pass
    if(e+1==d1)
       {
+      
+      // sum of squares mod l
       s[e]%=l;
+      
+      // multiply both factors
       m[e]*=mf[e];
+      
+      // compute elements of i1 array
       for(u=0;u<3;u++)
-         {i[u]+=iar[u][s[e]]*m[e];
-         i[u]%=l;}
+         {
+         
+         // 3D
+         if(b)
+         
+            {
+            
+            // add to element of i1 array sum of roots multiplied by factor
+            i1[u]+=iar[u][s[e]]*m[e];
+         
+            // element of i1 array mod l
+            i1[u]%=l;
+            
+            }
+            
+         // not 3D
+         else
+         
+            {
+            
+            // add to element of i array sum of roots multiplied by factor
+            i[u]+=iar[u][s[e]]*m[e];
+         
+            // element of i array mod l
+            i[u]%=l;
+            
+            }
+         }
       }
+      
+   // not last pass
    else if(e)
+   
+      // if not 1st pass, invoke next pass
       setlat(q,e+1);
+      
+   // 1st pass
    else
    	{
+   	
+   	// invoke next pass (if 3D, begin to use numbers of nodes of lattice mod l)
    	setlat(b?caar.length-1:q,e+1);
+   	
+   	// if 3D, fill fnw array
       if(b)
+         
+         {
+         // y - width of parallelepiped (l/y - period)
          for(let y=1;y<=l;y++)
+         
+            // check if period divisor of l and number of layer
             if(!mar[y]&&!q%(l/y))
+            
                for(u=0;u<3;u++)
-                  {fnw[u][l][y]+=i[u]-(i[u]<l/2?0:l);
-                  fnw[u][l][y]%=l;
+                  {
+                  
+                  // add to element of fnw array element of i1 array
+                  fnw[u][l][y]+=i1[u];
+                  
+                  // element of fnw mod l
+                  if(fnw[u][l][y]>=l)
+                     fnw[u][l][y]%=l;
+                     
+                  // element of fnw ∈ (-l / 2; l / 2)
+                  else if(fnw[u][l][y]>=l/2)
+                     fnw[u][l][y]-=l;
+                  
                   }
+                  
+         //
+         
+         for(u=0;u<3;u++)
+            {
+            
+            // add to element of i array element of i1 array
+            i[u]+=i1[u];
+            
+            // element of i array mod l
+            i[u]%=l;
+            
+            }
+            
+         // fill ia array with zeros
+         i1=[0,0,0];  
+         
+         }
    	}
    }
 }
+
+// invoking older version of addfn6 for comparison
 //addfn6old2(n,d);
+
+// set fn, fnw arrays up to N
 while(fn[6+3*d].length<=n)
+
+   // l - size of lattice
    {var l=fn[6+3*d].length;
+   
+   // set tar and mar arrays for N = l
    setar(l);
+   
+   // aar - array of roots (inverse tar array) (parameters: 1st - x ∈ [0; l - 1], 2nd - root number)
    let aar=[];
+   
    var e,u;
+   
+   // fill aar with empty arrays
    for(e=0;e<l;e++)
       aar.push([]);
+      
+   // fill aar with roots
    for(e=0;e<l;e++)
       aar[tar[e]].push(e);
+      
+   // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
+   // caar - array of numbers of nodes of lattice mod l such as xdaar[x] = sum of squares of coordinates mod l (parameter: x (sum number))
+   // iar - array of sums of roots mod l (parameters: 1st - 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2; 2nd - x ∈ [0; l - 1])
    var caar=[],xdaar=[],iar=[[],[],[]];
+   
+   // fill xdaar, caar arrays for 1D lattice, fill iar array with zeros
    for(e=0;e<l;e++)
       {
       if(aar[e].length)
@@ -1167,6 +1288,8 @@ while(fn[6+3*d].length<=n)
       for(u=0;u<3;u++)
          iar[u].push(0);
       }
+      
+   // fill iar array
    for(e=0;e<l;e++)
       for(let u=-1;u<aar[e].length;u++)
          if(u>=0)
@@ -1175,19 +1298,37 @@ while(fn[6+3*d].length<=n)
             if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
             if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
             }
+            
+   // b - 3D indicator (if offset is used, replace d with d + offset)
    var b=d==3;
+   
+   // fill xdaar, caar arrays for dD lattice (2D for 3D lattice) (if offset is used, replace d with d + offset)
    if(d>1)
       {
+      
+      // xdaar0, caar0 - 1D versions of xdaar, caar
       let caar0=[...caar];
       let xdaar0=[...xdaar];
+      
+      // e - dimension (if offset is used, replace d with d + offset)
       for(e=b?2:1;e<d;e++)
          {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         
+         // fill aar array with zeros
          for(u=0;u<l;u++)
             aar[u]=0;
+            
+         // fill aar array
          for(let i=0;i<caar.length;i++)
          for(u=0;u<caar0.length;u++)
             aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+            
+         // u - length of xdaar and caar arrays for (e+1)D (2D for 3D) lattice
          u=0;
+         
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
          for(let i=0;i<l;i++)
             if(aar[i])
                {
@@ -1195,20 +1336,39 @@ while(fn[6+3*d].length<=n)
                xdaar[u]=i;
                u++;
                }
+               
+         // set length of xdaar and caar arrays for (e+1)D (2D for 3D) lattice
          caar.length=u;
          xdaar.length=u;
          }
       }
+      
+   // d1 - number of dimensions for setlat function (2 for 3D, else 1)
    var d1=b?2:1;
    //var d1=d+2;
+   
+   // fill fnw for N = l with zeros
    if(b)
    for(e=0;e<3;e++)
       {fnw[e].push([]);
       for(let y=0;y<=l;y++)
          fnw[e][l].push(0);
       }
+      
+   // i - array of sums of roots (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
    var i=[0,0,0];
+   
+   // i - array of sums of roots for 1 layer of lattice (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i1=[0,0,0];
+   
+   // s - array of sums of squares of coordinates mod l (parameter: dimension - 1)
+   // j - array of length of pattern of equal coordinates (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // k - array of numbers of dimensions (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // m - array of factors of nodes with same sums of squares of coordinates (parameter: dimension - 1)
+   // mf - array of permutation factors (parameter: dimension - 1)
    var s=[0],j=[1],k=[0],m=[0],mf=[1];
+   
+   // fill s, j, k, m, mf arrays (if offset is used, replace d with d + offset)
    for(u=1;u<d;u++)
       {
       s.push(0);
@@ -1217,14 +1377,24 @@ while(fn[6+3*d].length<=n)
       m.push(0);
       mf.push(0);
       }
+      
+   // fill i, fnw arrays
    setlat((b?l:caar.length)-1);
+   
    for(u=0;u<3;u++)
       {
+      
+      // make values of i arrays ∈ (-l / 2; l / 2)
       if(i[u]>=l/2)i[u]-=l;
+      
+      // fill fn arrays
       fn[6+3*d+u].push(i[u]);
       
+      // comparison of fn with fnold
       /*if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
          console.log('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+
+      // comparison of fnw with fnwold
       if(b)for(let y=0;y<=l;y++)
          if(fnw[u][l][y]!=fnwold[u][l][y])
             console.log('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);*/
