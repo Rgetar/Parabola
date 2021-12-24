@@ -282,7 +282,7 @@ let d=document.createElement('span');
       re.setAttribute('height',w);
       re.style.fill='#ff0000';
       g.appendChild(re);
-      
+
       re=document.createElement('rect');
       re.setAttribute('id','g'+e);
       re.setAttribute('x',e*w);
@@ -291,7 +291,15 @@ let d=document.createElement('span');
       re.setAttribute('height',w*car[e]);
       re.style.fill='#a0d7d7';
       g.appendChild(re);
-      }   
+      }
+      re=document.createElement('path');
+      //re.setAttribute('d','M 0,'+n*w+' l '+n*w+','+(-Math.sqrt(n)*w));
+      re.setAttribute('d','M 0,'+n*w+' Q 0,'+((n-Math.sqrt(n)/2)*w)+' '+n*w+','+((n-Math.sqrt(n))*w));
+      re.setAttribute('stroke','black');
+      re.setAttribute('stroke-width','2');
+      re.setAttribute('stroke-dasharray','16 8');
+      re.setAttribute('fill','none');
+      g.appendChild(re);
       }
       else if(graph==2)
          {addgraph(s,n,w,fsize,0);
@@ -1342,6 +1350,14 @@ while(fn[6+3*d].length<=n)
          xdaar.length=u;
          }
       }
+      
+      
+   // + mass square
+   /*for(e=0;e<caar.length;e++)
+      {
+      xdaar[e]+=15;
+      xdaar[e]%=l;
+      }*/
       
    // d1 - number of dimensions for setlat function (2 for 3D, else 1)
    var d1=b?2:1;
