@@ -293,8 +293,10 @@ let d=document.createElement('span');
       g.appendChild(re);
       }
       re=document.createElement('path');
+      re.setAttribute('id','path0');
       //re.setAttribute('d','M 0,'+n*w+' l '+n*w+','+(-Math.sqrt(n)*w));
-      re.setAttribute('d','M 0,'+n*w+' Q 0,'+((n-Math.sqrt(n)/2)*w)+' '+n*w+','+((n-Math.sqrt(n))*w));
+      //re.setAttribute('d','M 0,'+n*w+' Q 0,'+((n-Math.sqrt(n)/2)*w)+' '+n*w+','+((n-Math.sqrt(n))*w));
+      re.setAttribute('d','M 0,'+(n-mode*tu-0.5)*w+' q 0,'+((-Math.sqrt(n)/2)*w)+' '+n*w+','+((-Math.sqrt(n))*w));
       re.setAttribute('stroke','black');
       re.setAttribute('stroke-width','2');
       re.setAttribute('stroke-dasharray','16 8');
@@ -516,10 +518,12 @@ else if(c=='KeyM')
    {
    if(graph==1)
    {mode=1-mode;
+   let re=document.getElementById('path0');
+   re.setAttribute('d','M 0,'+(nextn-mode*tu-0.5)*w+' q 0,'+((-Math.sqrt(nextn)/2)*w)+' '+nextn*w+','+((-Math.sqrt(nextn))*w));
    for(let n=nextn;n<=nextn;n++)
       {for(let e=0;e<n;e++)
          {
-         let re=document.getElementById('r'+e);
+         re=document.getElementById('r'+e);
          re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
          let t=document.getElementById('y'+e);
          t.innerHTML=n-e-1-mode*tu;
@@ -671,10 +675,12 @@ if(c.id=='addtable')
    else if(c.id=='switchmode')
       {if(graph==1)
       {mode=1-mode;
+      let re=document.getElementById('path0');
+      re.setAttribute('d','M 0,'+(nextn-mode*tu-0.5)*w+' q 0,'+((-Math.sqrt(nextn)/2)*w)+' '+nextn*w+','+((-Math.sqrt(nextn))*w));
       for(let n=nextn;n<=nextn;n++)
          {for(let e=0;e<n;e++)
             {
-            let re=document.getElementById('r'+e);
+            re=document.getElementById('r'+e);
             re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
             let t=document.getElementById('y'+e);
             t.innerHTML=n-e-1-mode*tu;
