@@ -437,8 +437,15 @@ let d=document.createElement('span');
 t.appendChild(d);
 listc.appendChild(t); 
 
-listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> 5D </big></b>(9)</i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/></span>';
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> '+(5+shdim)+'D <small>(alterable)</small> </big></b>(9)</i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'</span>';
 let sc1=document.getElementById('sc1');
+
+if(graph==9)
+   {
+   sc1.innerHTML+='<i id="removedim100"><b>D - 100</b></i>        <i id="removedim10"><b>D - 10</b></i>        <i id="removedim"><b>D - 1</b></i>        <i id="adddim"><b>D + 1</b></i>        <i id="adddim10"><b>D + 10</b></i>        <i id="adddim100"><b>D + 100</b></i><br/><br/><br/><br/> ';
+   }
+
+sc1.innerHTML+='<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/>';
 
 if(graph>4)
    {
@@ -500,7 +507,8 @@ if(graph==7)
       sc1.innerHTML+=wmode?'   Period: ':'   Width: ';
       sc1.appendChild(s);
       }
-   }
+   }   
+   
 sc1.innerHTML+='<br/><br/><br/><br/><br/>';
 if(graph==2)
    {
@@ -703,6 +711,17 @@ mousetextupdate(mousex,mousey);
 }
 );
 
+function cdim()
+{
+for(let e=21;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
 listc.onclick=function(e){
 let c=e.target;
 while(c.tagName=='B'||c.tagName=='SMALL'||c.tagName=='BIG')
@@ -712,7 +731,7 @@ if(c.id=='addtable')
    addtable(nextn);
    listc.scrollTop=listc.scrollHeight;
    }
-   else if(c.id=='addtables')
+else if(c.id=='addtables')
    {
    /*for(let e=0;e<10;e++)
       {nextn++;
@@ -722,13 +741,13 @@ if(c.id=='addtable')
    addtable(nextn);
    listc.scrollTop=listc.scrollHeight;
    }
-   else if(c.id=='addtables100')
+else if(c.id=='addtables100')
    {
    nextn+=100;
    addtable(nextn);
    listc.scrollTop=listc.scrollHeight;
    }
-   else if(c.id=='removetable')
+else if(c.id=='removetable')
    {
    if(nextn>2)
       {nextn--;
@@ -736,21 +755,67 @@ if(c.id=='addtable')
       listc.scrollTop=listc.scrollHeight;
       }
    }
-   else if(c.id=='removetables10')
+else if(c.id=='removetables10')
    {
-   nextn-=10;
-   if(nextn<2)nextn=2;
-   addtable(nextn);
-   listc.scrollTop=listc.scrollHeight;
+   if(nextn>2)
+      {
+      nextn-=10;
+      if(nextn<2)nextn=2;
+      addtable(nextn);
+      listc.scrollTop=listc.scrollHeight;
+      }
    }
-   else if(c.id=='removetables100')
+else if(c.id=='removetables100')
    {
-   nextn-=100;
-   if(nextn<2)nextn=2;
-   addtable(nextn);
-   listc.scrollTop=listc.scrollHeight;
+   if(nextn>2)
+      {
+      nextn-=100;
+      if(nextn<2)nextn=2;
+      addtable(nextn);
+      listc.scrollTop=listc.scrollHeight;
+      }
    }
-   else if(c.id=='switchmode')
+else if(c.id=='adddim')
+   {shdim++;
+   cdim();
+   }
+else if(c.id=='adddim10')
+   {
+
+   shdim+=10;
+   cdim();
+   }
+else if(c.id=='adddim100')
+   {
+   shdim+=100;
+   cdim();
+   }
+else if(c.id=='removedim')
+   {
+   if(shdim)
+      {shdim--;
+      cdim();
+      }
+   }
+else if(c.id=='removedim10')
+   {
+   if(shdim)
+      {
+      shdim-=10;
+      if(shdim<0)shdim=0;
+      cdim();
+      }
+   }
+else if(c.id=='removedim100')
+   {
+   if(shdim)
+      {
+      shdim-=100;
+      if(shdim<0)shdim=0;
+      cdim();
+      }
+   }
+else if(c.id=='switchmode')
       {if(graph==1)
       {mode=1-mode;
       let re=document.getElementById('scp');
@@ -769,7 +834,7 @@ if(c.id=='addtable')
       listc.scrollTop=listc.scrollHeight;
       }
       }
-   else if(c.id=='decpos')
+else if(c.id=='decpos')
       {
       if(ppn[0])
          {
@@ -777,12 +842,12 @@ if(c.id=='addtable')
          addtable(nextn);
          }
       }
-   else if(c.id=='incpos')
+else if(c.id=='incpos')
       {
       ppn[0]++;
       addtable(nextn);
       }
-   else if(c.id=='decneg')
+else if(c.id=='decneg')
       {
       if(ppn[1])
          {
@@ -790,12 +855,12 @@ if(c.id=='addtable')
          addtable(nextn);
          }
       }
-   else if(c.id=='incneg')
+else if(c.id=='incneg')
       {
       ppn[1]++;
       addtable(nextn);
       }
-   else if(c.id=='gr1')
+else if(c.id=='gr1')
       {if(graph!=1)
          {graph=1;
          swh=false;
@@ -803,7 +868,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr2')
+else if(c.id=='gr2')
       {if(graph!=2)
          {graph=2;
          swh=true;
@@ -811,7 +876,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr3')
+else if(c.id=='gr3')
       {if(graph!=3)
          {graph=3;
          swh=true;
@@ -819,7 +884,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr4')
+else if(c.id=='gr4')
       {if(graph!=4)
          {graph=4;
          swh=true;
@@ -827,7 +892,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr5')
+else if(c.id=='gr5')
       {if(graph!=5)
          {graph=5;
          swh=true;
@@ -835,7 +900,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr6')
+else if(c.id=='gr6')
       {if(graph!=6)
          {graph=6;
          swh=true;
@@ -843,7 +908,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr7')
+else if(c.id=='gr7')
       {if(graph!=7)
          {graph=7;
          swh=true;
@@ -851,7 +916,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr8')
+else if(c.id=='gr8')
       {if(graph!=8)
          {graph=8;
          swh=true;
@@ -859,7 +924,7 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='gr9')
+else if(c.id=='gr9')
       {if(graph!=9)
          {graph=9;
          swh=true;
@@ -867,12 +932,12 @@ if(c.id=='addtable')
          listc.scrollTop=listc.scrollHeight;
          }
       }
-   else if(c.id=='showhidegrid')
+else if(c.id=='showhidegrid')
       {
       vgrid=!vgrid;
       document.getElementById('grid').setAttribute('opacity',vgrid?1:0);
       }
-   else if(c.tagName!='SELECT'&&c.tagName!='OPTION')
+else if(c.tagName!='SELECT'&&c.tagName!='OPTION')
       {
       if(xshn)
          {//xsh=false;
@@ -1421,7 +1486,7 @@ while(fn[6+3*d].length<=n)
    var b=d==3;
    
    // fill xdaar, caar arrays for dD lattice (2D for 3D lattice) (if offset is used, replace d with d + offset)
-   if(d>1)
+   if((d>4?d+shdim:d)>1)
       {
       
       // xdaar0, caar0 - 1D versions of xdaar, caar
@@ -1429,7 +1494,7 @@ while(fn[6+3*d].length<=n)
       let xdaar0=[...xdaar];
       
       // e - dimension (if offset is used, replace d with d + offset)
-      for(e=b?2:1;e<d;e++)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
          {
          
          // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
@@ -1495,7 +1560,7 @@ while(fn[6+3*d].length<=n)
    var s=[0],j=[1],k=[0],m=[0],mf=[1];
    
    // fill s, j, k, m, mf arrays (if offset is used, replace d with d + offset)
-   for(u=1;u<d;u++)
+   for(u=1;u<(d>4?d+shdim:d);u++)
       {
       s.push(0);
       j.push(0);
@@ -1797,6 +1862,9 @@ let ppn=[1,1];
 
 // ms - mass square
 let ms=0;
+
+// shdim - offset of dimensions of lattice at graph=9
+let shdim=0;
 
 addfn1(100);
 addfn2(100);
