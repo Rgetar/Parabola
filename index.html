@@ -125,8 +125,9 @@ for(let e=0;e<=n+(grx[g]?0:1);e++)
    }
    //if(e&&e<=n)
    //if(e&&e<=n&&(graph!=7||wmode||e==1||e>pwidth||n<pwidth))
-   if(e==1||y0<n*w)
-   if(e<=n&&(graph<5||e==1||e>ms)&&(graph!=7||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth))))
+   //if(e==1||y0<n*w)
+   //if(e<=n&&(graph<5||e==1||e>ms)&&(graph!=7||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth))))
+   if((e==1)||((y0<n*w)&&(e<=n&&(graph<5||e>ms)&&(graph!=7||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth))))))
       {if(e==1)
          w1=maxw;
       let x1=(e==1)?2.75*w1:x;
@@ -1493,6 +1494,7 @@ while(fn[6+3*d].length<=n)
    for(e=0;e<l;e++)
       if(!pturn||(e>=Math.sqrt((pturn-1)*l)&&e<Math.sqrt(pturn*l)))
       aar[tar[e]].push(e);
+      //aar[e].push(Math.sqrt(e));
       
    // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
    // caar - array of numbers of nodes of lattice mod l such as xdaar[x] = sum of squares of coordinates mod l (parameter: x (sum number))
