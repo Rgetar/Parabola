@@ -463,7 +463,8 @@ if(graph>4)
    sc1.innerHTML+='Mass square: ';
    sc1.appendChild(s);
    
-   }sc1.innerHTML+='<br/><br/>';
+   sc1.innerHTML+='<br/><br/>';
+   }
 
 if(graph==7)
    {
@@ -507,8 +508,32 @@ if(graph==7)
       sc1.innerHTML+=wmode?'   Period: ':'   Width: ';
       sc1.appendChild(s);
       }
-   }   
+      
+   sc1.innerHTML+='<br/><br/>';  
+   }
    
+if(graph>4)
+   {
+   s=document.createElement('select');
+   s.setAttribute('onchange','cpt(event)');
+   let op=document.createElement('option');
+   op.innerHTML='all';
+      if(!pturn)
+         op.setAttribute('selected','selected');
+      s.appendChild(op);
+   for(e=1;e<=Math.max(pturn,n-1);e++)
+      {
+      op=document.createElement('option');
+      op.innerHTML=e;
+      if(pturn==e)
+         op.setAttribute('selected','selected');
+      s.appendChild(op);
+      }
+   sc1.innerHTML+='Parabola turn: ';
+   sc1.appendChild(s);
+   
+   }
+    
 sc1.innerHTML+='<br/><br/><br/><br/><br/>';
 if(graph==2)
    {
@@ -549,6 +574,19 @@ addtable(nextn);
 listc.scrollTop=sct;
 }
 
+function cpt(e)
+{
+pturn=e.target.selectedIndex;
+fnw=[[[]],[[]],[[]]];
+fnwold=[[[]],[[]],[[]]];
+for(let e=9;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
 
 document.addEventListener('keydown',function(e){
 if(!e.ctrlKey){
@@ -1453,6 +1491,7 @@ while(fn[6+3*d].length<=n)
       
    // fill aar with roots
    for(e=0;e<l;e++)
+      if(!pturn||(e>=Math.sqrt((pturn-1)*l)&&e<Math.sqrt(pturn*l)))
       aar[tar[e]].push(e);
       
    // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
@@ -1865,6 +1904,9 @@ let ms=0;
 
 // shdim - offset of dimensions of lattice at graph=9
 let shdim=0;
+
+// pturn - parabola turn (if all turns then 0)
+let pturn=0;
 
 addfn1(100);
 addfn2(100);
