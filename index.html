@@ -690,7 +690,11 @@ for(let e=9;e<=23;e++)
 if(rootmode)  
    {
    for(let e=9;e<=21;e+=3)
+      {
       tgr[e]='sum of positive roots';
+      grg[e+1]=0;
+      grg[e+2]=0;
+      }
    for(let e=5;e<=9;e++)
       grvn1[e]=1;
    }
@@ -699,7 +703,11 @@ else
    for(let e=9;e<=21;e+=3)
       tgr[e]='sum of min roots';
    for(let e=5;e<=9;e++)
+      {
       grvn1[e]=3;
+      grg[3*e-5]=0;
+      grg[3*e-4]=0;
+      }
    }
 let sct=listc.scrollTop;
 addtable(nextn);
@@ -2444,7 +2452,7 @@ let grg=[2,2,2,3,3,3,4,0,0,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9];
 // grvn - array of numbers of visible graphs (parameter - displayed set of graphs)
 let grvn=[0,0,3,3,1,3,3,3,3,3];
 
-// grvn - array of numbers of graphs (parameter - displayed set of graphs)
+// grvn1 - array of numbers of graphs (parameter - displayed set of graphs)
 let grvn1=[0,0,3,3,1,3,3,3,3,3];
 
 // minw - minimal size of cell of graphs
