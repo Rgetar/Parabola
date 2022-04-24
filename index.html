@@ -22,6 +22,55 @@ sup{font-size:0.83rem;}
 hidden></div><script
 >'use strict'
 
+// long square root (st - input integer number (string), exp - decimal exponent, n - number of decimal digits after point)
+// returns square root multiplied by 10^n
+function longsqrt(st,exp,n)
+{
+/*let exp=0;
+while(s%10)
+   {
+   s*=10;
+   exp--;
+   }
+let st=s.toString();*/
+
+if((exp+st.length)%2)st='0'+st;
+let i,e,x,y;
+let r='';
+let c=BigInt(0);
+for(i=0;i<2*n+exp;i++)st+='0';
+let l=st.length;
+for(i=0;i<l;i+=2)
+   {
+   c*=BigInt(100);
+   c+=BigInt(st.slice(i,i+2));
+   x=BigInt(-1);
+   do
+      {
+   	x++;
+   	y=x*(x+BigInt(20)*BigInt(r));
+      }
+   while(y<=c);
+   x--;
+   y=x*(x+BigInt(20)*BigInt(r));
+   r+=x.toString();
+   c-=y;
+   }
+return r;
+}
+
+function longsqrtfactor(s,m,n)
+{
+let exp=0;
+while(s%10)
+   {
+   s*=10;
+   exp--;
+   }
+s=m*BigInt(s);
+return BigInt(longsqrt(s.toString(),exp,n));
+}
+
 function getw(n)
 {
 w=Math.floor(1000/n);
@@ -337,36 +386,51 @@ let d=document.createElement('span');
       	{
       	addfn6(n,1);
          addgraph(s,n,w,fsize,9);
-         addgraph(s,n,w,fsize,10);
-         addgraph(s,n,w,fsize,11);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,10);
+            addgraph(s,n,w,fsize,11);
+            }
       	}
       else if(graph==6)
       	{
       	addfn6(n,2);
          addgraph(s,n,w,fsize,12);
-         addgraph(s,n,w,fsize,13);
-         addgraph(s,n,w,fsize,14);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,13);
+            addgraph(s,n,w,fsize,14);
+            }
       	}
       else if(graph==7)
       	{
       	addfn6(n,3);
          addgraph(s,n,w,fsize,15);
-         addgraph(s,n,w,fsize,16);
-         addgraph(s,n,w,fsize,17);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,16);
+            addgraph(s,n,w,fsize,17);
+            }
       	}
       else if(graph==8)
       	{
       	addfn6(n,4);
          addgraph(s,n,w,fsize,18);
-         addgraph(s,n,w,fsize,19);
-         addgraph(s,n,w,fsize,20);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,19);
+            addgraph(s,n,w,fsize,20);
+            }
       	}
       else if(graph==9)
       	{
       	addfn6(n,5);
          addgraph(s,n,w,fsize,21);
-         addgraph(s,n,w,fsize,22);
-         addgraph(s,n,w,fsize,23);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,22);
+            addgraph(s,n,w,fsize,23);
+            }
       	}
       s.appendChild(g);
       }
@@ -515,24 +579,49 @@ if(graph==7)
    
 if(graph>4)
    {
-   s=document.createElement('select');
-   s.setAttribute('onchange','cpt(event)');
-   let op=document.createElement('option');
-   op.innerHTML='all';
-      if(!pturn)
-         op.setAttribute('selected','selected');
-      s.appendChild(op);
-   for(e=1;e<=Math.max(pturn,n-1);e++)
-      {
-      op=document.createElement('option');
-      op.innerHTML=e;
-      if(pturn==e)
-         op.setAttribute('selected','selected');
-      s.appendChild(op);
-      }
-   sc1.innerHTML+='Parabola turn: ';
-   sc1.appendChild(s);
+   let op;
    
+   if(!rootmode)
+      {
+      s=document.createElement('select');
+      s.setAttribute('onchange','cpt(event)');
+      let op=document.createElement('option');
+      op.innerHTML='all';
+         if(!pturn)
+            op.setAttribute('selected','selected');
+         s.appendChild(op);
+      for(e=1;e<=Math.max(pturn,n-1);e++)
+         {
+         op=document.createElement('option');
+         op.innerHTML=e;
+         if(pturn==e)
+            op.setAttribute('selected','selected');
+         s.appendChild(op);
+         }
+      sc1.innerHTML+='Parabola turn: ';
+      sc1.appendChild(s);
+      sc1.innerHTML+='<br/><br/>'; 
+      }
+
+   s=document.createElement('select');
+   s.setAttribute('onchange','crm(event)');
+   op=document.createElement('option');
+   op.innerHTML='Integer square roots';
+   if(!rootmode)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='Real square roots without modulo';
+   if(rootmode==1)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='Real square roots with modulo';
+   if(rootmode==2)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   sc1.innerHTML+='Square root mode: ';
+   sc1.appendChild(s);
    }
     
 sc1.innerHTML+='<br/><br/><br/><br/><br/>';
@@ -583,6 +672,34 @@ fnwold=[[[]],[[]],[[]]];
 for(let e=9;e<=23;e++)
    {fn[e]=[-1000000];
    fnold[e]=[-1000000];
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function crm(e)
+{
+rootmode=e.target.selectedIndex;
+fnw=[[[]],[[]],[[]]];
+fnwold=[[[]],[[]],[[]]];
+for(let e=9;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+if(rootmode)  
+   {
+   for(let e=9;e<=21;e+=3)
+      tgr[e]='sum of positive roots';
+   for(let e=5;e<=9;e++)
+      grvn1[e]=1;
+   }
+else
+   {
+   for(let e=9;e<=21;e+=3)
+      tgr[e]='sum of min roots';
+   for(let e=5;e<=9;e++)
+      grvn1[e]=3;
    }
 let sct=listc.scrollTop;
 addtable(nextn);
@@ -1326,7 +1443,7 @@ while(fnold[6+3*d].length<=n)
 // fn[21-23] - 5D
 // note: lattices with higher numbers of dimensions can be written in fn, fnw using offset:
 // with offset a (1+a)D lattice will be written in fn[9-11], (2+a)D in fn[12-14], (3+a)D in fn[15-17] and fnw[0-2], (4+a)D in fn[18-20], (5+a)D in fn[21-23]
-function addfn6(n,d)
+function addfn6old3(n,d)
 {
 
 // setlat - dimension pass (parameters: pe - maximal layer of lattice, e - dimension - 1)
@@ -1634,6 +1751,460 @@ while(fn[6+3*d].length<=n)
    }
 }
 
+// addfn6 - set lattice arrays up to N (parameters: n - N; d - number of dimensions of lattice):
+// fn[9-11] - 1D
+// fn[12-14] - 2D
+// fn[15-17], fnw[0-2] - 3D
+// fn[18-20] - 4D
+// fn[21-23] - 5D
+// note: lattices with higher numbers of dimensions can be written in fn, fnw using offset:
+// with offset a (1+a)D lattice will be written in fn[9-11], (2+a)D in fn[12-14], (3+a)D in fn[15-17] and fnw[0-2], (4+a)D in fn[18-20], (5+a)D in fn[21-23]
+function addfn6(n,d)
+{
+
+// setlat - dimension pass (parameters: pe - maximal layer of lattice, e - dimension - 1)
+function setlat(pe,e=0)
+{
+
+// q - layer of lattice
+for(let q=0;q<=pe;q++)
+   {
+   
+   // not 1st pass
+   if(e)
+      {
+      
+      // add sum of squares
+      s[e]=s[e-1]+xdaar[q];
+      
+      // multiply numbers of nodes
+      m[e]=m[e-1]*caar[q];
+      
+      // if pattern of same coordinates continues, increase its length by 1, else set it to 1
+      j[e]=(!b||e>1)&&q==pe?j[e-1]+one:one;
+      
+      // multiply permutation factor by number of dimensions (except 1st dimension, if 3D) and divide it by length of pattern of same coordinates
+      mf[e]=mf[e-1]*k[e]/j[e];
+      
+      }
+      
+   // 1st pass
+   else
+      {
+      
+      // set square (for 3D take from tar)
+      s[0]=b?tar[q]:xdaar[q];
+      
+      // set factor (for 3D set to 1)
+      m[0]=b?one:caar[q];
+      
+      }
+      
+   // last pass
+   if(e+1==d1)
+      {
+      
+      // sum of squares mod l
+      if(rootmode!=1)
+         s[e]%=l;
+      
+      // multiply both factors
+      m[e]*=mf[e];
+      
+      // compute elements of i1 array
+      for(u=0;u<rmgn;u++)
+         {
+         
+         // 3D
+         if(b)
+         
+            {
+            
+            // add to element of i1 array sum of roots multiplied by factor
+            i1[u]+=rootmode?longsqrtfactor(s[e],m[e],digitsafterpoint1):iar[u][s[e]]*m[e];
+         
+            // element of i1 array mod l
+            if(!rootmode)
+               i1[u]%=l;
+            
+            }
+            
+         // not 3D
+         else
+         
+            {
+            
+            // add to element of i array sum of roots multiplied by factor
+            i[u]+=rootmode?longsqrtfactor(s[e],m[e],digitsafterpoint1):iar[u][s[e]]*m[e];
+         
+            // element of i array mod l
+            if(!rootmode)
+               i[u]%=l;
+            
+            }
+         }
+      }
+      
+   // not last pass
+   else if(e)
+   
+      // if not 1st pass, invoke next pass
+      setlat(q,e+1);
+      
+   // 1st pass
+   else
+   	{
+   	
+   	// invoke next pass (if 3D, begin to use numbers of nodes of lattice mod l)
+   	setlat(b?caar.length-1:q,e+1);
+   	
+   	// if 3D, fill fnw array
+      if(b)
+         
+         {
+         // y - width of parallelepiped (l/y - period)
+         for(let y=1;y<=l;y++)
+         
+            // check if period divisor of l and number of layer
+            if(!mar[y]&&!q%(l/y))
+            
+               for(u=0;u<rmgn;u++)
+                  {
+                  
+                  // add to element of fnw array element of i1 array
+                  fnw[u][l][y]+=i1[u];
+                  
+                  if(!rootmode)
+                     {
+                     // element of fnw mod l
+                     if(fnw[u][l][y]>=l)
+                        fnw[u][l][y]%=l;
+                     
+                     // element of fnw ∈ (-l / 2; l / 2)
+                     else if(fnw[u][l][y]>=halfl)
+                        fnw[u][l][y]-=l;
+                     }
+                     
+                  }
+                  
+         //
+         
+         for(u=0;u<rmgn;u++)
+            {
+            
+            // add to element of i array element of i1 array
+            i[u]+=i1[u];
+            
+            // element of i array mod l
+            if(!rootmode)
+               i[u]%=l;
+            
+            }
+            
+         // fill ia array with zeros
+         i1=[zero,zero,zero];  
+         
+         }
+   	}
+   }
+}
+
+// invoking older version of addfn6 for comparison
+//addfn6old2(n,d);
+
+// set fn, fnw arrays up to N
+while(fn[6+3*d].length<=n)
+
+   // l - size of lattice
+   {var l=fn[6+3*d].length;
+   
+   // halfl - minimal number larger than (- l / 2; l / 2) lattice
+   var halfl=rootmode?Math.ceil(l/2)-0.5:l/2;
+   
+   // set tar and mar arrays for N = l
+   setar(l);
+   
+   // digitsafterpoint1 - number of digits after point for solitary square root
+   // powerten = 10 ^ (digitsafterpoint1 - digitsafterpoint)
+   // powerten0 = 10 ^ digitsafterpoint
+   // bigl = size of lattice * 10 ^ digitsafterpoint
+   if(rootmode)
+      {
+      var digitsafterpoint1=Math.ceil(d*Math.log10(n))+digitsafterpoint;
+      var powerten=BigInt(10)**BigInt(digitsafterpoint1-digitsafterpoint);
+      var powerten0=10**digitsafterpoint;
+      var bigl=BigInt(l)*BigInt(10)**BigInt(digitsafterpoint);
+      }
+   
+   // rmgn - number of graphs (for rootmode 0 3, for rootmode 1-2 1)
+   var rmgn=rootmode?1:3;
+   
+   // zero = 0
+   var zero=rootmode?BigInt(0):0;
+   
+   // one = 1
+   var one=rootmode?BigInt(1):1;
+   
+   // aar - array of roots (inverse tar array) (parameters: 1st - x ∈ [0; l - 1], 2nd - root number)
+   let aar=[];
+   
+   var e,u;
+   
+   // fill aar with empty arrays
+   for(e=0;e<l;e++)
+      aar.push([]);
+      
+   // fill aar with roots
+   for(e=0;e<l;e++)
+      if(!pturn||(e>=Math.sqrt((pturn-1)*l)&&e<Math.sqrt(pturn*l)))
+      aar[tar[e]].push(e);
+      //aar[e].push(Math.sqrt(e));
+      
+   // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
+   // caar - array of numbers of nodes of lattice mod l such as xdaar[x] = sum of squares of coordinates mod l (parameter: x (sum number))
+   // iar - array of sums of roots mod l (parameters: 1st - 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2; 2nd - x ∈ [0; l - 1])
+   var caar=[],xdaar=[],iar=rootmode?[[]]:[[],[],[]];
+   
+   // fill xdaar, caar arrays for 1D lattice, fill iar array with zeros
+   if(rootmode==1)
+      for(e=0;e<l;e++)
+         {
+         caar.push(BigInt(1));
+         xdaar.push(e);
+         //iar[0].push(0);
+         }
+   else if(rootmode==2)
+      for(e=0;e<l;e++)
+         {
+         if(aar[e].length)
+            {
+            caar.push(BigInt(aar[e].length));
+            xdaar.push(e);
+            }
+         //iar[0].push(0);
+         }
+   else     
+      for(e=0;e<l;e++)
+         {
+         if(aar[e].length)
+            {
+            caar.push(aar[e].length%l);
+            xdaar.push(e);
+            }
+         for(u=0;u<3;u++)
+            iar[u].push(0);
+         }         
+         
+      
+   // fill iar array
+   if(!rootmode)
+      for(e=0;e<l;e++)
+         for(let u=-1;u<aar[e].length;u++)
+            if(u>=0)
+               {
+               if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+               if(u<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(u<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+               }
+            
+   // b - 3D indicator (if offset is used, replace d with d + offset)
+   var b=d==3;
+   
+   // fill xdaar, caar arrays for dD lattice (2D for 3D lattice) (if offset is used, replace d with d + offset)
+   if((d>4?d+shdim:d)>1)
+      {
+      
+      // xdaar0, caar0 - 1D versions of xdaar, caar
+      let caar0=[...caar];
+      let xdaar0=[...xdaar];
+      
+      if(rootmode==1)
+      
+      // e - dimension (if offset is used, replace d with d + offset)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+         {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         aar.length+=l;
+         
+         // fill aar array with zeros
+         aar.fill(zero);
+         
+         // fill aar array
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])]+=caar[i]*caar0[u];
+            
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+         caar.length=0;
+         xdaar.length=0;
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar.push(aar[i]);
+               xdaar.push(i);
+               }
+         }         
+         
+      else if(rootmode==2)
+      
+      // e - dimension (if offset is used, replace d with d + offset)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+         {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         
+         // fill aar array with zeros
+         aar.fill(zero);
+            
+         // fill aar array
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+            
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+         caar.length=0;
+         xdaar.length=0;
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar.push(aar[i]);
+               xdaar.push(i);
+               }
+         }
+         
+      else      
+      
+      // e - dimension (if offset is used, replace d with d + offset)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+         {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         
+         // fill aar array with zeros
+         aar.fill(0);
+            
+         // fill aar array
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+            
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+         caar.length=0;
+         xdaar.length=0;
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar.push(aar[i]%l);
+               xdaar.push(i);
+               }
+         }
+         
+      }
+      
+   // + mass square
+   if(ms)
+   if(rootmode==1)
+      for(e=0;e<caar.length;e++)
+         xdaar[e]+=ms;
+   else   
+      for(e=0;e<caar.length;e++)
+         {
+         xdaar[e]+=ms;
+         xdaar[e]%=l;
+         }
+      
+   // d1 - number of dimensions for setlat function (2 for 3D, else 1)
+   var d1=b?2:1;
+   //var d1=d+2;
+   
+   // fill fnw for N = l with zeros
+   if(b)
+   for(e=0;e<rmgn;e++)
+      {fnw[e].push([]);
+      for(let y=0;y<=l;y++)
+         fnw[e][l].push(zero);
+      }
+      
+   // i - array of sums of roots (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i=rootmode?[zero]:[0,0,0];
+   
+   // i - array of sums of roots for 1 layer of lattice (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i1=rootmode?[zero]:[0,0,0];
+   
+   // s - array of sums of squares of coordinates mod l (parameter: dimension - 1)
+   // j - array of length of pattern of equal coordinates (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // k - array of numbers of dimensions (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // m - array of factors of nodes with same sums of squares of coordinates (parameter: dimension - 1)
+   // mf - array of permutation factors (parameter: dimension - 1)
+   var s=[0],j=[one],k=[zero],m=[zero],mf=[one];
+   
+   // fill s, j, k, m, mf arrays (if offset is used, replace d with d + offset)
+   for(u=1;u<(d>4?d+shdim:d);u++)
+      {
+      s.push(0);
+      j.push(zero);
+      let u1=rootmode?BigInt(u):u;
+      k.push(b?u1:u1+one);
+      m.push(zero);
+      mf.push(zero);
+      }
+      
+   // fill i, fnw arrays
+   setlat((b?l:caar.length)-1);
+
+   if(b&&rootmode)
+      for(e=1;e<=l;e++)
+         {
+         fnw[0][l][e]/=powerten;
+      
+        // element of fnw mod l
+        if(fnw[0][l][e]>=bigl)
+           fnw[0][l][e]%=bigl;
+              
+        fnw[0][l][e]=Number(fnw[0][l][e])/powerten0;
+                     
+        // element of fnw ∈ (-l / 2; l / 2)
+        if(fnw[0][l][e]>=halfl)
+           fnw[0][l][e]-=l;
+           
+         fnw[0][l][e]=Number(fnw[0][l][e].toFixed(digitsafterpoint));
+         }
+   
+   for(u=0;u<rmgn;u++)
+      {
+      
+      if(rootmode)
+         {
+         i[u]/=powerten;
+         
+         if(i[u]>=bigl)
+            i[u]%=bigl;
+            
+         i[u]=Number(i[u])/powerten0;
+         }
+      
+      // make values of i arrays ∈ (-l / 2; l / 2)
+      if(i[u]>=halfl)i[u]-=l;
+      
+      if(rootmode)
+         i[u]=Number(i[u].toFixed(digitsafterpoint));
+      
+      // fill fn arrays
+      fn[6+3*d+u].push(i[u]);
+      
+      // comparison of fn with fnold
+      /*if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
+         console.log('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+
+      // comparison of fnw with fnwold
+      if(b)for(let y=0;y<=l;y++)
+         if(fnw[u][l][y]!=fnwold[u][l][y])
+            console.log('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);*/
+      }
+   }
+}
+
 function grectclick(g){
 if(!xsh)
    xshn=true;
@@ -1910,6 +2481,12 @@ let shdim=0;
 // pturn - parabola turn (if all turns then 0)
 let pturn=0;
 
+// rootmode - square root mode (0 - integer, 1 - real without modulo, 2 - real with modulo)
+let rootmode=0;
+
+// digitsafterpoint - number of digits after point for real square root modes
+let digitsafterpoint=5;
+
 addfn1(100);
 addfn2(100);
 addfn3(100);
@@ -1924,6 +2501,11 @@ addfn6(50,5);
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
 
+
+
+
+//listc.innerHTML+=longsqrt('36',0,10);
+
 //nextn=110;
 
 //listc.innerHTML+='<br/><br/>';
@@ -1933,6 +2515,45 @@ for(let e=2;e<=100000;e++)
       listc.innerHTML+=e+'<br/>';*/
 
 
+
+/*
+let n=10;
+let arn=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+let bn=true;
+let e=0,i=0,y=0,s=Math.floor(Math.sqrt(n)),l=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+while(bn)
+   {
+   e++;
+   for(i=0;i<=n;i++)
+      arn[e].push(false);
+   if(e==1)
+      for(i=0;i<=s;i++)
+         arn[e][i*i]=true;
+   else
+   	{
+   	for(i=0;i<=n;i++)
+   	if(arn[e-1][i])
+   	   {y=0
+   	   while(i+y*y<=n)
+   	      {
+   	      arn[e][i+y*y]=true;
+   	      y++;
+   	      }
+   	   }
+      i=0;
+      while(i<=n&&arn[e][i])
+   	   i++;
+      if(i>n)
+         bn=false;
+   	}
+   for(i=0;i<=n;i++)
+   if(!arn[e][i])
+      l[e]++;
+   listc.innerHTML+=l[e]+'<br/>'; 
+   }
+listc.innerHTML+='<br/>'; 
+listc.innerHTML+=e+'<br/>';  
+*/
 
 
 </script></body></html>
