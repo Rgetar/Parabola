@@ -67,8 +67,8 @@ while(s%10)
    s*=10;
    exp--;
    }
-s=m*BigInt(s);
-return BigInt(longsqrt(s.toString(),exp,n));
+s=BigInt(s);
+return m*BigInt(longsqrt(s.toString(),exp,n));
 }
 
 function getw(n)
@@ -1801,7 +1801,7 @@ for(let q=0;q<=pe;q++)
       {
       
       // set square (for 3D take from tar)
-      s[0]=b?tar[q]:xdaar[q];
+      s[0]=b?rootmode==1?q*q:tar[q]:xdaar[q];
       
       // set factor (for 3D set to 1)
       m[0]=b?one:caar[q];
@@ -1938,7 +1938,7 @@ while(fn[6+3*d].length<=n)
    // bigl = size of lattice * 10 ^ digitsafterpoint
    if(rootmode)
       {
-      var digitsafterpoint1=Math.ceil(d*Math.log10(n))+digitsafterpoint;
+      var digitsafterpoint1=Math.ceil(d*Math.log10(l))+digitsafterpoint;
       var powerten=BigInt(10)**BigInt(digitsafterpoint1-digitsafterpoint);
       var powerten0=10**digitsafterpoint;
       var bigl=BigInt(l)*BigInt(10)**BigInt(digitsafterpoint);
@@ -1978,7 +1978,7 @@ while(fn[6+3*d].length<=n)
       for(e=0;e<l;e++)
          {
          caar.push(BigInt(1));
-         xdaar.push(e);
+         xdaar.push(e*e);
          //iar[0].push(0);
          }
    else if(rootmode==2)
@@ -2028,31 +2028,35 @@ while(fn[6+3*d].length<=n)
       
       if(rootmode==1)
       
-      // e - dimension (if offset is used, replace d with d + offset)
-      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
          {
+         aar.length=l*l;
          
-         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
-         aar.length+=l;
+         // e - dimension (if offset is used, replace d with d + offset)
+         for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+            {
          
-         // fill aar array with zeros
-         aar.fill(zero);
+            // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+            aar.length+=l*l;
          
-         // fill aar array
-         for(let i=0;i<caar.length;i++)
-         for(u=0;u<caar0.length;u++)
-            aar[(xdaar[i]+xdaar0[u])]+=caar[i]*caar0[u];
+            // fill aar array with zeros
+            aar.fill(zero);
+         
+            // fill aar array
+            for(let i=0;i<caar.length;i++)
+            for(u=0;u<caar0.length;u++)
+               aar[(xdaar[i]+xdaar0[u])]+=caar[i]*caar0[u];
             
-         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
-         caar.length=0;
-         xdaar.length=0;
-         for(let i=0;i<aar.length;i++)
-            if(aar[i])
-               {
-               caar.push(aar[i]);
-               xdaar.push(i);
-               }
-         }         
+            // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+            caar.length=0;
+            xdaar.length=0;
+            for(let i=0;i<aar.length;i++)
+               if(aar[i])
+                  {
+                  caar.push(aar[i]);
+                  xdaar.push(i);
+                  }
+            }
+         }
          
       else if(rootmode==2)
       
@@ -2509,7 +2513,21 @@ addfn6(50,5);
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
 
-
+/*for(let e=1;e<=50;e++)
+   {
+   let u=0;
+   for(let i1=0;i1<e;i1++)
+   for(let i2=0;i2<e;i2++)
+   for(let i3=0;i3<e;i3++)
+   //for(let i4=0;i4<e;i4++)
+   //for(let i5=0;i5<e;i5++)
+   //for(let i6=0;i6<e;i6++)
+      //u+=Math.sqrt(i1*i1+i2*i2+i3*i3+i4*i4+i5*i5+i6*i6);
+      u+=Math.sqrt(i1*i1+i2*i2+i3*i3);
+   u%=e;
+   if(u>=Math.ceil(e/2)-0.5)u-=e;
+   listc.innerHTML+=e+' '+fn[15][e]+' '+u+'<br><br>';
+   }*/
 
 
 //listc.innerHTML+=longsqrt('36',0,10);
