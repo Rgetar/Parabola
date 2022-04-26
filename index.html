@@ -38,7 +38,9 @@ if((exp+st.length)%2)st='0'+st;
 let i,e,x,y;
 let r='';
 let c=BigInt(0);
-for(i=0;i<2*n+exp;i++)st+='0';
+let a=2*n+exp;
+for(i=0;i<a;i++)st+='0';
+if(a<0)st=st.slice(0,a);
 let l=st.length;
 for(i=0;i<l;i+=2)
    {
@@ -62,7 +64,9 @@ return r;
 function longsqrtfactor(s,m,n)
 {
 let exp=0;
-while(s%10)
+//let d=10**digitsafterpoint;
+//s=Math.round(s*d)/d;
+while(s%1)
    {
    s*=10;
    exp--;
@@ -2509,28 +2513,29 @@ addfn6(50,2);
 addfn6(50,3);
 addfn6(50,4);
 addfn6(50,5);
- 
+
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
 
-/*for(let e=1;e<=50;e++)
+/*for(let e=1;e<=25;e++)
    {
    let u=0;
    for(let i1=0;i1<e;i1++)
    for(let i2=0;i2<e;i2++)
    for(let i3=0;i3<e;i3++)
-   //for(let i4=0;i4<e;i4++)
+   for(let i4=0;i4<e;i4++)
    //for(let i5=0;i5<e;i5++)
    //for(let i6=0;i6<e;i6++)
-      //u+=Math.sqrt(i1*i1+i2*i2+i3*i3+i4*i4+i5*i5+i6*i6);
-      u+=Math.sqrt(i1*i1+i2*i2+i3*i3);
+      u+=Math.sqrt(i1*i1+i2*i2+i3*i3+i4*i4+ms);
+      //u+=Math.sqrt((i1*i1+i2*i2+i3*i3+i4*i4+i5*i5+i6*i6+ms)%e);
    u%=e;
    if(u>=Math.ceil(e/2)-0.5)u-=e;
-   listc.innerHTML+=e+' '+fn[15][e]+' '+u+'<br><br>';
+   listc.innerHTML+=e+' '+fn[18][e]+' '+u+'<br><br>';
    }*/
 
 
-//listc.innerHTML+=longsqrt('36',0,10);
+//listc.innerHTML+=longsqrt('52500000004',-11,5);
+//listc.innerHTML+=longsqrtfactor(0.5250001,1n,5);
 
 //nextn=110;
 
