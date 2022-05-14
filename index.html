@@ -2015,8 +2015,12 @@ while(fn[6+3*d].length<=n)
             if(u>=0)
                {
                if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
-               if(u<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
-               if(u<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+               
+               /*if(u<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(u<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}*/           
+               
+               if(aar[e][u]<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(aar[e][u]<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}
                }
             
    // b - 3D indicator (if offset is used, replace d with d + offset)
@@ -2516,6 +2520,71 @@ addfn6(50,5);
 
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
+
+
+
+
+/*
+let maxn=50;
+let f=[1];
+let b=[[1]];
+for(let e=1;e<=maxn;e++)
+   {
+   f.push(f[e-1]/e);
+   b[0].push(0);
+   b.push([1]);
+   //b.push([1,e]);
+   }
+for(let e=1;e<=maxn;e++)
+for(let i=1;i<=maxn;i++)
+   //b[e].push(b[e-1][i]+b[e-1][i-1]+b[e-1][i-2]*f[2]);
+   //b[e].push(b[e-1][i]+b[e-1][i-1]+(i>1?b[e-1][i-2]*f[2]:0));
+   {
+   b[e].push(0);
+   for(let u=0;u<=i;u++)
+      b[e][i]+=b[e-1][i-u]*f[u];
+   }
+   
+for(let e=2;e<=maxn;e++)
+for(let i=1;i<=maxn;i++)
+   b[e][i]/=Math.pow(e,i);
+   
+let der=[0];
+for(let e=1;e<=maxn;e++)
+   der.push(1/e/f[e]);
+for(let e=2;e<=maxn;e+=2)
+   der[e]=-der[e];
+
+for(let y=8;y<=15;y++)
+{
+let x=y/10;
+listc.innerHTML+='<br><br><br>';
+listc.innerHTML+='x = '+x;
+listc.innerHTML+='<br><br>';
+listc.innerHTML+='ln(1+x) = '+Math.log(1+x);
+listc.innerHTML+='<br><br>';
+
+let seq=0;
+listc.innerHTML+='partial sum sequence:<br><br>';
+for(let e=0;e<=maxn;e++)
+   {
+   seq+=f[e]*der[e]*Math.pow(x,e);
+   listc.innerHTML+=seq;
+   listc.innerHTML+='<br>';
+   }
+   
+listc.innerHTML+='<br>';
+listc.innerHTML+='shifted point sequence:<br><br>';
+for(let e=0;e<=maxn;e++)
+   {
+   seq=0;
+   for(let i=0;i<=e;i++)
+      seq+=b[e][i]*der[i]*Math.pow(x,i);
+   listc.innerHTML+=seq;
+   listc.innerHTML+='<br>';
+   }
+}
+*/
 
 /*for(let e=1;e<=25;e++)
    {
