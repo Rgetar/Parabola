@@ -1983,7 +1983,36 @@ while(fn[6+3*d].length<=n)
    // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
    // caar - array of numbers of nodes of lattice mod l such as xdaar[x] = sum of squares of coordinates mod l (parameter: x (sum number))
    // iar - array of sums of roots mod l (parameters: 1st - 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2; 2nd - x ∈ [0; l - 1])
+ 
    var caar=[],xdaar=[],iar=rootmode?[[]]:[[],[],[]];
+    
+   // fill iar array
+   for(e=0;e<l;e++)
+   for(u=0;u<3;u++)
+      iar[u].push(0);    
+   
+   if(!rootmode)
+      for(e=0;e<l;e++)
+         for(let u=-1;u<aar[e].length;u++)
+            if(u>=0)
+               {
+               if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+               
+               /*if(u<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(u<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}*/           
+               
+               if(aar[e][u]<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(aar[e][u]<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+               //iar[2][e]+=aar[e][u];iar[2][e]%=l;
+               }
+
+   aar=[];
+   // fill aar with empty arrays
+   for(e=0;e<l;e++)
+      aar.push([]);
+   // fill aar with roots
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e); 
    
    // fill xdaar, caar arrays for 1D lattice, fill iar array with zeros
    if(rootmode==1)
@@ -2014,31 +2043,7 @@ while(fn[6+3*d].length<=n)
          for(u=0;u<3;u++)
             iar[u].push(0);
          }         
-         
-   aar=[];
-   // fill aar with empty arrays
-   for(e=0;e<l;e++)
-      aar.push([]);
-   // fill aar with roots
-   for(e=0;e<l;e++)
-      aar[tar[e]].push(e);
-      
-   // fill iar array
-   if(!rootmode)
-      for(e=0;e<l;e++)
-         for(let u=-1;u<aar[e].length;u++)
-            if(u>=0)
-               {
-               if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
-               
-               /*if(u<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
-               if(u<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}*/           
-               
-               if(aar[e][u]<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
-               if(aar[e][u]<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}
-               //iar[2][e]+=aar[e][u];iar[2][e]%=l;
-               }
-            
+     
    // b - 3D indicator (if offset is used, replace d with d + offset)
    var b=d==3;
    
@@ -2047,42 +2052,9 @@ while(fn[6+3*d].length<=n)
       {
       
       // xdaar0, caar0 - 1D versions of xdaar, caar
-      //let caar0=[...caar];
-      //let xdaar0=[...xdaar];
-      
-      let caar0=[],xdaar0=[];
-   
-      // fill xdaar, caar arrays for 1D lattice, fill iar array with zeros
-      if(rootmode==1)
-         for(e=0;e<l;e++)
-            {
-            caar0.push(BigInt(1));
-            xdaar0.push(e*e);
-            //iar[0].push(0);
-            }
-      else if(rootmode==2)
-         for(e=0;e<l;e++)
-            {
-            if(aar[e].length)
-               {
-               caar0.push(BigInt(aar[e].length));
-               xdaar0.push(e);
-               }
-            //iar[0].push(0);
-            }
-      else     
-         for(e=0;e<l;e++)
-            {
-            if(aar[e].length)
-               {
-               caar0.push(aar[e].length%l);
-               xdaar0.push(e);
-               }
-            for(u=0;u<3;u++)
-               iar[u].push(0);
-            }         
-      
-      
+      let caar0=[...caar];
+      let xdaar0=[...xdaar];
+
       if(rootmode==1)
       
          {
@@ -2158,10 +2130,10 @@ while(fn[6+3*d].length<=n)
          for(u=0;u<caar0.length;u++)
             aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
             
-         /*fn[0]=[];
+         fn[0]=[];
          fn[0].push(0);
          for(let i=0;i<l;i++)
-            fn[0].push(aar[i]%l);*/
+            fn[0].push(aar[i]%l);
             
          // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
          caar.length=0;
