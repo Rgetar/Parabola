@@ -261,7 +261,7 @@ t.style.border='none';
 t.id='tc';
 
 // 'N = ..., D = ...'
-t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+(graph==10?', D = '+dnn:'')+'</span><br/><br/>';
+t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+(graph==10?', D = '+dnn+', power = '+pow:'')+'</span><br/><br/>';
 
 let d=document.createElement('span');
 
@@ -561,6 +561,7 @@ if(graph==9)
 if(graph==10)
    {
    sc1.innerHTML+='<i id="removedim"><b>D - 1</b></i>        <i id="adddim"><b>D + 1</b></i><br/><br/><br/><br/> ';
+   sc1.innerHTML+='<i id="removepower"><b>power - 1</b></i>        <i id="addpower"><b>power + 1</b></i><br/><br/><br/><br/> ';
    }
 
 sc1.innerHTML+='<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/>';
@@ -1040,7 +1041,7 @@ listc.onclick=function(e){
 let c=e.target;
 while(c.tagName=='B'||c.tagName=='SMALL'||c.tagName=='BIG')
    c=c.parentNode;
-if(graph==10&&(c.id=='addtable'||c.id=='addtables'||c.id=='addtables100'||c.id=='removetable'||c.id=='removetables10'||c.id=='removetables100'||c.id=='adddim'||c.id=='removedim'))
+if(graph==10&&(c.id=='addtable'||c.id=='addtables'||c.id=='addtables100'||c.id=='removetable'||c.id=='removetables10'||c.id=='removetables100'||c.id=='adddim'||c.id=='removedim'||c.id=='addpower'||c.id=='removepower'))
 {
 if(c.id=='addtable')
    {
@@ -1103,6 +1104,21 @@ else if(c.id=='removedim')
    if(dnn>1)
       {dnn--;
       nncdim();
+      }
+   }
+else if(c.id=='addpower')
+   {pow++;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='removepower')
+   {
+   if(pow>0)
+      {pow--;
+      nnnxyupdate();
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=listc.scrollHeight;
       }
    }
 }
@@ -2592,7 +2608,7 @@ function mousetextupdate(x,y){
       let e;
       if(gm<0)
          {
-         h=x1+(graph>1?1:0);
+         h=x1+(graph>1&&graph!=10?1:0);
          if(y1>=0)
             h+='; '+(ny-y1-(graph==4?0:1)-(graph==1?mode:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?1:0)*tu);
          if(graph==1)
