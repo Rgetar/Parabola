@@ -19,7 +19,7 @@ sup{font-size:0.83rem;}
 </style>
 <body style="font-family:Arial;white-space:pre;line-height:0;"
 ><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown0="return false"><br/><br/></span><div id="xs" style="position:fixed;border:1px solid #cccccc;border-radius:5px;padding:5px 5px 5px 15px;background:white;line-height:1.5;";
-hidden></div><script
+hidden></div><span id="cont1" style="float:left;line-height:0.9;position: absolute;top:500px;"></span><script
 >'use strict'
 
 // long square root (st - input integer number (string), exp - decimal exponent, n - number of decimal digits after point)
@@ -2469,16 +2469,79 @@ function dimpass(s,n,d)
 for(let e=0;e<n;e++)
 if(d)
    dimpass(s+e*e,n,d-1)
+   //dimpass(s+e*e*e+2*e*e+3*e+4,n,d-1)
 else
+   //if(s==e*e)
    fn[24][1+(mhor?(s+e*e)%n:s+e*e)]++;
+   //fn[24][1+(mhor?(s+e*e*e+2*e*e+3*e+4)%n:s+e*e*e+2*e*e+3*e+4)]++;
 }
 
-function addfn7()
+function dimpass3(s,t,n,d)
 {
+for(let e=0;e<n;e++)
+if(d>1)
+   dimpass3(e,0,n,d-1)
+else if(d)
+   dimpass3(s,e,n,d-1)    
+else
+   //if(s!=t&&s!=e&&t!=e)
+   //if(s==t&&s==e)
+   //if((!(s!=t&&s!=e&&t!=e))&&(!(s==t&&s==e)))
+   {fn[24][1+(mhor?(s*s+t*t+e*e)%n:s*s+t*t+e*e)]++;
+   if((s*s+t*t+e*e)%n==0)
+   if(s<=t&&t<=e)
+      cont1.innerHTML+='('+s+'; '+t+'; '+e+')<br>';
+   }
+}
+
+function addfn7old()
+{
+cont1.innerHTML='';
 fn[24]=[0];
 for(let e=0;e<nnnx;e++)
    fn[24].push(0);
 dimpass(0,nnn,dnn-1);
+//dimpass3(0,0,nnn,dnn-1);
+if(mver)
+   for(let e=1;e<=nnnx;e++)
+      fn[24][e]%=nnn;
+}
+
+function addfn7()
+{
+let ar0=Array(nnnx+1).fill(0);
+for(let e=0;e<nnn;e++)
+   {
+   let u=1;
+   for(let i=0;i<pow;i++)
+      {
+      u*=e;
+      if(mhor)
+         u%=nnn;
+      }
+   u++;
+   ar0[u]++;
+   if(mver&&ar0[u]==nnn)
+      ar0[u]==0;
+   }
+fn[24]=[...ar0];
+
+for(let d=1;d<dnn;d++)
+   {
+   let ar=Array(nnnx+1).fill(0);
+   for(let e=0;e<nnn;e++)
+   for(let i=0;i<nnnx;i++)
+   //if(ar0[e+1]&&fn[24][i+1])
+      {
+      let u=ar0[e+1]*fn[24][i+1];
+      if(mver)
+         u%=nnn;
+      ar[1+(mhor?(e+i)%nnn:e+i)]+=u;
+      if(mver&&ar[u]==nnn)
+         ar[u]==0;
+      }
+   fn[24]=[...ar];
+   }
 if(mver)
    for(let e=1;e<=nnnx;e++)
       fn[24][e]%=nnn;
@@ -2777,13 +2840,16 @@ let nnn=1;
 let dnn=1;
 
 // horizontal axis for node number (graph 10) (0 - without modulo, 1 - with modulo)
-let mhor=0;
+let mhor=1;
 
 // vertical axis for node number (graph 10) (0 - without modulo, 1 - with modulo)
-let mver=0;
+let mver=1;
 
 // nnnx, nnny - horizontal and vertical sizes for node number (graph 10)
 let nnnx,nnny;
+
+let pow=2;
+
 nnnxyupdate();
 
 addfn1(100);
@@ -2799,6 +2865,142 @@ addfn6(50,5);*/
 
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
+
+
+/*
+for(pow=1;pow<11;pow++)
+{
+let b=true;
+let ci=false;
+dnn=0;
+listc.innerHTML+='<br><br>p = '+pow+'<br><br>';
+let ar=Array(10001).fill(true);
+while(b)
+   {
+   nnn=1;
+   nnnx=1;
+   let c=true;
+   //while(c&&nnn<=1000)
+   while(c)
+      {
+      let d=true;
+      if(ar[nnn])
+      {
+      addfn7();
+      let x=1;
+      while(d&&x<=nnn)
+         {
+         if(fn[24][x])
+            d=false;
+         x++;
+         }
+      }
+      if(d)
+         ar[nnn]=false;
+      else
+         {
+         c=false;
+         ci=dnn?true:false;
+         let x=2;
+         while(ci&&x<=nnn)
+         {
+         if(fn[24][x]!=fn[24][1])
+            ci=false;
+         x++;
+         }
+         }
+
+      nnn++;
+      nnnx++;
+      }
+   if(c)
+      b=false;
+   if(b)
+      listc.innerHTML+='d = '+dnn+': '+(nnn-1)+(ci?' (const)':'')+'<br><br>';
+   dnn++;
+   if(dnn>pow)
+      b=false;
+   }
+}
+*/
+
+
+/*
+for(let n=1;n<25;n++)
+{
+let ar0=Array(n).fill(0);
+let ar=Array(n).fill(0);
+let b=true;
+for(let x=0;x<n;x++)
+for(let y=0;y<n;y++)
+   ar0[(x*x+y*y)%n]++;
+for(let z=1;z<2;z++)
+{
+for(let x=0;x<n;x++)
+for(let y=0;y<n;y++)
+   ar[(x*x+y*y+z*z)%n]++;
+if(JSON.stringify(ar)!=JSON.stringify(ar0))
+   b=false
+}
+listc.innerHTML+='<br>'+b;
+}
+*/
+
+
+/*for(let k=0.25;k<=0.5;k+=0.05)
+{
+let n,sum;
+listc.innerHTML+='<br><br><br>k = ' + k;
+listc.innerHTML+='<br><br><br>';
+for(let m=1;m<=301;m+=300)
+   {
+   let ar=[0],ar1=[0];
+   for(let e=1;e<=2*m;e++)
+      {
+      ar.push(0);
+      ar1.push(0);
+      }
+   ar[m]=1;
+   n=Math.round(m*m/k/k);
+   //n=Math.round(m/k);
+   for(let e=1;e<=n;e++)
+      {
+      sum=0;
+      ar1[1]+=ar[0]/2;
+      ar1[2*m-1]+=ar[2*m]/2;
+      for(let i=1;i<2*m;i++)
+         {
+         ar1[i-1]+=ar[i]/2;
+         ar1[i+1]+=ar[i]/2;
+         }
+      for(let i=0;i<=2*m;i++)
+         {
+         ar[i]=ar1[i];
+         ar1[i]=0;
+         }
+      }
+   for(let i=0;i<=2*m;i++)
+      sum+=ar[i];    
+   listc.innerHTML+=sum;
+   listc.innerHTML+='<br><br>';
+   }
+}*/
+
+/*
+for(let k=0.25;k<=3;k+=0.05)
+{
+let n,sum;
+listc.innerHTML+='<br><br><br>k = ' + k;
+listc.innerHTML+='<br><br><br>';
+sum=0;
+for(let m=1;m<=49;m+=4)
+   {
+   sum+=1/m*Math.exp(-Math.PI*Math.PI*m*m/8/k/k)-1/(m+2)*Math.exp(-Math.PI*Math.PI*(m+2)*(m+2)/8/k/k);
+   listc.innerHTML+=4*sum/Math.PI;
+   listc.innerHTML+='<br><br>';
+   }
+}
+*/
 
 
 
