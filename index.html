@@ -2547,8 +2547,9 @@ for(let d=1;d<dnn;d++)
    {
    let ar=Array(nnnx+1).fill(0);
    for(let e=0;e<nnn;e++)
+   if(ar0[e+1])
    for(let i=0;i<nnnx;i++)
-   //if(ar0[e+1]&&fn[24][i+1])
+   if(fn[24][i+1])
       {
       let u=ar0[e+1]*fn[24][i+1];
       if(mver)
@@ -2562,6 +2563,9 @@ for(let d=1;d<dnn;d++)
 if(mver)
    for(let e=1;e<=nnnx;e++)
       fn[24][e]%=nnn;
+if(!mhor&&nnnx>1)
+while(!fn[24][nnnx])
+   nnnx--;
 }
 
 function grectclick(g){
