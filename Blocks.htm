@@ -150,6 +150,11 @@ function uartostring(a)
    
 function displayd(d,a=[])
    {
+   if(!a.length)
+      {
+      addstring('Blocks of degree '+d+':');
+      addbr();
+      }
    if(d>1)
       for(let e=0;e<t;e++)
          {
@@ -432,24 +437,28 @@ function remd(d,a=[])
 
 function displayla()
    {
+   addstring(t+'d lattice: ');
+   addbr();
    let ar=[];
    for(let e=0;e<t;e++)
       ar.push(JSON.parse(JSON.stringify(Array(par.length).fill(0))));
    ar[0][0]=lab[1];
    for(let e=0;e<t;e++)
       {
+      let st=e?'':' + '+lab[1];
       for(let u=2;u<=t;u++)
          {
          let a=[e];
          for(let i=1;i<u;i++)
             a.push(0);
+         st=(u==t?'':' + ')+lab[u]+blocktostring(a)+st;
          let s=getuar(a);
          for(let i=0;i<par.length;i++)
             ar[e][i]+=lab[u]*s[i];
          }
       for(let i=0;i<par.length;i++)
          ar[e][i]=Math.round(ar[e][i]*1000)/1000;
-      addstring('u<sub>'+e+'</sub> = '+arraytostring([...ar[e]]));
+      addstring('u<sub>'+e+'</sub> = '+st+' = '+arraytostring([...ar[e]]));
       }
    addbr();
    for(let e=1;e<t;e++)
@@ -602,6 +611,12 @@ if(teven)
    }
 
 let c=1000000;
+
+addstring('t = '+t+', q '+(qeven?'even':'odd'));
+addbr();
+addbr();
+addbr();
+addbr();
 
 displayd(2);
 
