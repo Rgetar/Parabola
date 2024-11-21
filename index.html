@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <title>Parabola</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <style type="text/css" media="Screen">
 a{text-decoration:none;color:blue;}
@@ -11,6 +10,7 @@ a:hover{text-decoration:underline;}
 a:visited{color:blue;}
 li{list-style-type:none;cursor:pointer;padding-left: 7px;padding-right: 27px;}
 //li{list-style-type:none;cursor:pointer;padding-left: 7px;outline: 1px solid black}
+i{padding: 7px;outline: 1px solid black;cursor:pointer;}
 //ul{margin-right:auto;widthq:100%}
 //td{cursor:pointer;}
 sub{font-size:0.83rem;}
@@ -18,124 +18,3322 @@ sup{font-size:0.83rem;}
 //ul{display:flex;flex-direction:column-reverse;}
 </style>
 <body style="font-family:Arial;white-space:pre;line-height:0;"
-><span id="listc" style="float:left;line-height:0.9;position: absolute;heighta:80%;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown="return false"><span><br/><i>Add table</i></span></span><script
+><span id="listc" style="float:left;line-height:0.9;position: absolute;top:0;bottom:0;padding-bottom:32px;left:10px;right:0;overflow-x:overlay;overflow-y:auto;flex-direction:column-reverse;" onmousedown0="return false"><br/><br/></span><div id="xs" style="position:fixed;border:1px solid #cccccc;border-radius:5px;padding:5px 5px 5px 15px;background:white;line-height:1.5;";
+hidden></div><span id="cont1" style="float:left;line-height:0.9;position: absolute;top:500px;"></span><script
 >'use strict'
 
-
-document.addEventListener('keydown',function(e){
-if(!e.ctrlKey){
-let c=e.code;
-if(c=='Space'){
-   nextn++;
-   addtable(nextn);
-   listc.scrollTop=listc.scrollHeight;
-   }
-	       	
-}}
-);
-
-function addtable(n)
+// long square root (st - input integer number (string), exp - decimal exponent, n - number of decimal digits after point)
+// returns square root multiplied by 10^n
+function longsqrt(st,exp,n)
 {
-let tar=[];
-for(let e=0;e<n;e++)
-   tar.push(e*e%n);
+/*let exp=0;
+while(s%10)
+   {
+   s*=10;
+   exp--;
+   }
+let st=s.toString();*/
 
-let t;
-let w=Math.floor(500/n);
-if(w>51)
-   w=51;
-else if(w<3)
-   w=3;
+if((exp+st.length)%2)st='0'+st;
+let i,e,x,y;
+let r='';
+let c=BigInt(0);
+let a=2*n+exp;
+for(i=0;i<a;i++)st+='0';
+if(a<0)st=st.slice(0,a);
+let l=st.length;
+for(i=0;i<l;i+=2)
+   {
+   c*=BigInt(100);
+   c+=BigInt(st.slice(i,i+2));
+   x=BigInt(-1);
+   do
+      {
+   	x++;
+   	y=x*(x+BigInt(20)*BigInt(r));
+      }
+   while(y<=c);
+   x--;
+   y=x*(x+BigInt(20)*BigInt(r));
+   r+=x.toString();
+   c-=y;
+   }
+return r;
+}
+
+function longsqrtfactor(s,m,n)
+{
+let exp=0;
+//let d=10**digitsafterpoint;
+//s=Math.round(s*d)/d;
+while(s%1)
+   {
+   s*=10;
+   exp--;
+   }
+s=BigInt(s);
+return m*BigInt(longsqrt(s.toString(),exp,n));
+}
+
+function getw(n)
+{
+w=Math.floor(1000/n);
+if(w>maxw)
+   w=maxw;
+else if(w<minw)
+   w=minw;
+}
+
+function setar(n)
+{
+tar=[];
+car=[];
+mar=[];
+addfn1(n);
+car.push(0);
+mar.push(0);
+for(let e=1;e<n;e++)
+   {car.push(0);
+   mar.push(n%e);
+   }
+mar.push(0);
+if(fn[0].length>n)
+   {maxc=fn[0][n];
+   maxcz=fn[1][n];
+   tar.push(0);
+   car[0]++;   
+   for(let e=1;e<n;e++)
+      {let i=fn[7][e]%n;
+      tar.push(i);
+      car[i]++;
+      }
+   }
+else
+   {maxc=0;
+   maxcz=0;
+   tar.push(0);
+   car[0]++;
+   for(let e=1;e<n;e++)
+      {let i=fn[7][e]%n;
+      tar.push(i);
+      car[i]++;
+      if(i&&car[i]>maxcz)
+         maxcz++;
+      maxc=Math.max(car[0],maxcz);
+      }
+   }
+}
+
+// set arrays sar,larx,lary
+function setlarxy(n)
+{
+//sar=Array.from(Array(n),()=>[]);
+larx=Array.from(Array(n),()=>[]);
+lary=Array.from(Array(n),()=>[]);
+
+for(let e=0;e<n;e++)
+for(let i=0;i<n;i++)
+   {
+   let s=(tar[e]+tar[i])%n;
+   //sar[e].push(s);
+   larx[s].push(e);
+   lary[s].push(i);
+   }
+}
+
+function nnnxyupdate()
+{
+nnnx=mhor?nnn:(nnn-1)*(nnn-1)*dnn+1;
+addfn7();
+//nnny=1+(mver?nnn:(nnn-1)*(nnn-1)*dnn+1);
+nnny=Math.max(...fn[24])+1;
+}
+
+function addgraph(s,n,w,fsize,g,ny=0)
+{
+if(!ny)ny=n;
+let x,y,x0,y0;
+let gc=document.createElement('g');
+gc.setAttribute('id','gc'+g);
+gc.setAttribute('opacity',vgr[g]?1:vgrh);
+let grc=document.createElement('g');
+grc.setAttribute('id','grc'+g);
+grc.setAttribute('height',300);
+grc.setAttribute('opacity',vgr[g]?1:0);
+for(let e=0;e<=n+(grx[g]?0:1);e++)
+   {let w1=e>n||e==0?maxw:w;
+   if(e)
+      {
+      x0=e>1?x:0.25*w1;
+      y0=e>1?y:ny*w+(1+g%3)*maxw;
+      }
+   //if(graph!=7||wmode||!e||e>=pwidth||n<pwidth)
+   if((graph<5||graph==10||!e||e>=ms)&&(graph!=7||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth))))
+   {
+   x=e?(e-0.5)*w1:1.5*w1;
+   //y=e?(n-(graph==4?-0.5:0.5)-(graph!=7||(!pwidth&&!wmode)||n<pwidth?fn[g][e]:wmode?fnw[g-15][n][e-1]:fnw[g-15][e][pwidth-1])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:n*w+(1+g%3)*w1;
+   y=e?(ny-(graph==4?-0.5:0.5)-(graph!=7?fn[g][e]:wmode>1?fnw[g-15][n][e]:!pwidth||n<pwidth?fn[g][e]:fnw[g-15][e][wmode?e/pwidth:pwidth])-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0))*w1:ny*w+(1+g%3)*w1;
+   if(e>n)
+      {grx[g]=document.createElement('g');
+      x=w1/4;
+      y=w1/4;
+      }
+   let m=document.createElement(fgr[g]);
+   if(g==0||g==3||g==6||g==9||g==12||g==15||g==18||g==21||g==24)
+      {m.setAttribute('y',y-w1/4);
+      m.setAttribute('x',x-w1/4);
+      m.setAttribute('width',w1/2);
+      m.setAttribute('height',w1/2);
+      }
+   else if(g==1||g==4||g==10||g==13||g==16||g==19||g==22)
+      {m.setAttribute('points',(x-w1/6)+','+y+' '+x+','+(y-w1/4)+' '+(x+w1/6)+','+y+' '+x+','+(y+w1/4));
+      }
+   else if(g==2||g==5||g==11||g==14||g==17||g==20||g==23)
+      {m.setAttribute('cx',x);
+      m.setAttribute('cy',y);
+      m.setAttribute('r',w1/8);
+      }
+   m.style.fill=cgr[g];
+   //
+   if(e>n)
+      grx[g].appendChild(m);
+   else if(e)
+      grc.appendChild(m);
+   else
+   	gc.appendChild(m);
+   }
+   //if(e&&e<=n)
+   //if(e&&e<=n&&(graph!=7||wmode||e==1||e>pwidth||n<pwidth))
+   //if(e==1||y0<n*w)
+   //if(e<=n&&(graph<5||e==1||e>ms)&&(graph!=7||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth))))
+   if((e==1)||((y0<ny*w)&&(e<=n&&(graph<5||e>ms)&&(graph!=7||(wmode>1?!mar[e]:!pwidth||n<pwidth||!(e%pwidth))))))
+      {if(e==1)
+         w1=maxw;
+      let x1=(e==1)?2.75*w1:x;
+      let y1=(e==1)?y0:y;
+      let li=document.createElement('line');
+      li.setAttribute('x1',x0);
+      li.setAttribute('y1',y0);
+      li.setAttribute('x2',x1);
+      li.setAttribute('y2',y1);
+      li.setAttribute('stroke',cgr[g]);
+      li.setAttribute('stroke-width',w1/wgr[g]);
+      if(e==1)
+         gc.appendChild(li);
+      else
+   	   grc.appendChild(li);
+      }
+   }
+let t=document.createElement('text');
+t.setAttribute('x',3*maxw);
+t.setAttribute('y',ny*w+(1+g%3)*maxw+maxfsize/2);
+//t.setAttribute('font-size',fsize+'px');
+t.innerHTML=tgr[g];
+gc.appendChild(t);
+s.appendChild(grc);
+s.appendChild(gc);
+let grect=document.createElement('rect');
+grect.setAttribute('id','grect'+g);
+grect.setAttribute('y',ny*w+(0.75+g%3)*maxw);
+grect.setAttribute('x',0);
+grect.setAttribute('width',maxw*3);
+grect.setAttribute('height',maxw/2);
+grect.setAttribute('opacity',0);
+grect.style.cursor='pointer';
+grect.setAttribute('onclick','grectclick('+g+')');
+grect.setAttribute('onmousemove','setgm('+g+')');
+grect.setAttribute('onmouseleave','setgm(-1)');
+s.appendChild(grect);
+}
+
+function setgm(g)
+{gm=g;
+}
+
+function addtable(n,nx=0,ny=0)
+{
+if(!nx)nx=n;
+if(!ny)ny=n;
+if(graph==1||graph==7||graph==11)
+   setar(n);
+if(graph==11)
+   setlarxy(n);
+let to=1.5;
+getw(Math.max(nx,ny));
+tu=Math.floor(n/2+(n%2?-0.5:0.5));
 
 let fsize=Math.floor(w*0.5);
-if(fsize>16)
-   fsize=16;
-
-
+if(fsize>maxfsize)
+   fsize=maxfsize;
 
 listc.lastChild.remove();
+listc.lastChild.remove();
 
-t=document.createElement('table');
+let t=document.createElement('span');
 t.border=2;
 t.cellPadding=0;
 t.style.textAlign='center';
 t.style.borderSpacing='0';
-t.style.float='left';
-t.style.marginRight='10px';
-t.style.marginBottom='-10px';
-for(let e=0;e<n;e++)
-   {let r=document.createElement('tr');
-   for(let i=0;i<n;i++)
-      {let d=document.createElement('td');
-      d.style.width=w-1+'px';
-      d.style.height=w-1+'px';
-      if(tar[i]==n-1-e)
-         d.style.background='#a0ffa0';
-      d.style.borderLeft='none';
-      d.style.borderTop='none';
-      r.appendChild(d);
+t.style.width=w*nx+'px';
+t.style.height=w*ny+'px';
+t.style.border='none';
+t.id='tc';
+
+// 'N = ..., D = ...'
+t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+(graph==10?', D = '+dnn+', power = '+pow:'')+'</span><br/><br/>';
+
+let d=document.createElement('span');
+
+      let s=document.createElement('svg');
+      s.setAttribute('id','svg');
+      s.setAttribute('width',Math.max(357,w*(nx+5)));
+      s.setAttribute('height',w*ny+(graph==1?w:maxw)*((graph==1?maxc:grvn1[graph]-1)+to));
+
+      let e;
+      
+      // yellow row
+      let re=document.createElement('rect');
+      re.setAttribute('id','mh');
+      e=(Math.floor((mousey+listc.scrollTop-68)/w))*w;
+      if(e>=w*ny||e<0)
+         e=-1000000;
+      re.setAttribute('y',e);
+      re.setAttribute('x',0);
+      re.setAttribute('width',w*nx);
+      re.setAttribute('height',w);
+      re.setAttribute('opacity',mhvh);
+      re.style.fill='#ffff00';
+      s.appendChild(re);
+      
+      // yellow column
+      re=document.createElement('rect');
+      re.setAttribute('id','mv');
+      re.setAttribute('y',0);
+      e=(Math.floor((mousex+listc.scrollLeft-10)/w))*w;
+      if(e>=w*nx||e<0)
+         e=-1000000;
+      re.setAttribute('x',e);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w*ny);
+      re.setAttribute('opacity',mhvh);
+      re.style.fill='#ffff00';
+      s.appendChild(re);
+      
+      // graph rows
+      let i=gro[graph];
+      while(grg[i]==graph)
+         {
+         re=document.createElement('rect');
+         re.setAttribute('id','hg'+i);
+         re.setAttribute('y',fn[i][0]);
+         re.setAttribute('x',0);
+         re.setAttribute('width',w*nx);
+         re.setAttribute('height',w);
+         re.setAttribute('opacity',vgr[i]?hgv:0);
+         re.style.fill=cgr[i];
+         s.appendChild(re);
+         i++;
+         }
+      
+      if(graph!=4&&graph!=10)
+      {let g=document.createElement('g');
+      g.setAttribute('id','rc');
+
+      // zero gray row
+      re=document.createElement('rect');
+      re.setAttribute('id','zerostring');
+      re.setAttribute('y',((n-1-(graph==1||graph==11?mode:graph==2?0:1)*tu)%n)*w);
+      re.setAttribute('x',0);
+      re.setAttribute('width',w*n);
+      re.setAttribute('height',w);
+      re.setAttribute('opacity',0.1);
+      g.appendChild(re);
+      
+      // graph 11 zero gray column
+      if(graph==11)
+      {
+      re=document.createElement('rect');
+      re.setAttribute('id','zerocolumn');
+      re.setAttribute('y',0);
+      re.setAttribute('x',((n*2-mode*(tu+(n%2?1:0)))%n)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w*n);
+      re.setAttribute('opacity',0.1);
+      g.appendChild(re);
       }
-   t.appendChild(r); 
-   }
-listc.appendChild(t); 
+      
+      // graph 2 gray columns
+      if(graph==2)
+      for(e=1;e<=n;e++)
+      {addfn2(n);
+      addfn5(n);
+      if(fn[8][e])
+      {re=document.createElement('rect');
+      re.setAttribute('y',0);
+      re.setAttribute('x',(e-1)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',n*w);
+      re.setAttribute('opacity',0.05);
+      g.appendChild(re);}}
 
+      if(graph==1)
+      {
+      for(e=0;e<n;e++)
+      {
+      // graph 1 red squares
+      re=document.createElement('rect');
+      re.setAttribute('id','r'+e);
+      re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
+      re.setAttribute('x',tar[e]*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w);
+      re.style.fill='#ff0000';
+      g.appendChild(re);
 
-t=document.createElement('table');
-t.cellPadding=0;
-t.style.textAlign='left';
-t.style.borderSpacing='0';
-t.style.fontSize=fsize+'px';
-for(let e=0;e<n;e++)
-   {let r=document.createElement('tr');
-      let d=document.createElement('td');
-      d.style.height=w+'px';
-      d.style.border='none';
-         d.innerHTML=n-1-e;
-      r.appendChild(d);
-   t.appendChild(r); 
-   }
-listc.appendChild(t); 
-
-listc.innerHTML+='<br/>'; 
-
-t=document.createElement('table');
-t.cellPadding=0;
-t.style.textAlign='center';
-t.style.borderSpacing='0';
-t.style.fontSize=fsize+'px';
-   {let r=document.createElement('tr');
-   for(let i=0;i<n;i++)
-      {let d=document.createElement('td');
-      d.style.width=w+'px';
-      d.style.border='none';
-         d.innerHTML=i;
-      r.appendChild(d);
+      // graph 1 blue columns
+      re=document.createElement('rect');
+      re.setAttribute('id','g'+e);
+      re.setAttribute('x',e*w);
+      re.setAttribute('y',w*(n+maxc-car[e]+to));
+      re.setAttribute('width',w-1);
+      re.setAttribute('height',w*car[e]);
+      re.style.fill='#a0d7d7';
+      g.appendChild(re);
       }
-   t.appendChild(r); 
-   }
+      
+      let scp=document.createElement('svg');
+      scp.setAttribute('id','scp');
+      scp.setAttribute('width',n*w);
+      scp.setAttribute('height',n*w);
+      scp.setAttribute('viewBox','0 '+(mode*tu*w)+' '+n*w+' '+n*w);
+
+      // graph 1 parabola turns
+      for(let u=0;u<2;u++)
+      for(e=0;e<ppn[u]*ppn[u]*n/4;e++)
+      for(i=-1;i<2;i++)
+         {
+         let y=u?-Math.floor((Math.sqrt(n*e)-0.5)/n)*n:-Math.floor((n-Math.sqrt(n*e)-0.5)/n)*n;
+         re=document.createElement('path');
+         if(u)
+            re.setAttribute('d','M 0,'+(Math.sqrt(n*e)-0.5+i*n+y)*w+' Q '+(Math.sqrt(n*n*e*(e+1))-n*e)*w+','+((Math.sqrt(n*e)+Math.sqrt(n*(e+1)))/2-0.5+i*n+y)*w+' '+n*w+','+(Math.sqrt(n*(e+1))-0.5+i*n+y)*w);        
+         else
+            re.setAttribute('d','M 0,'+(n-Math.sqrt(n*e)-0.5+i*n+y)*w+' Q '+(Math.sqrt(n*n*e*(e+1))-n*e)*w+','+(n-(Math.sqrt(n*e)+Math.sqrt(n*(e+1)))/2-0.5+i*n+y)*w+' '+n*w+','+(n-Math.sqrt(n*(e+1))-0.5+i*n+y)*w);        
+         re.setAttribute('stroke','black');
+         re.setAttribute('stroke-width','2');
+         re.setAttribute('stroke-dasharray','16 8');
+         re.setAttribute('fill','none');
+         /*if(e)
+            {
+            re.setAttribute('opacity',0.25); 
+            re.setAttribute('stroke-dasharray','4 4');
+            }
+         else
+         	re.setAttribute('stroke-dasharray','16 8');*/
+
+         scp.appendChild(re);
+         }
+      g.appendChild(scp);
+      }
+      else if(graph==2)
+         {addgraph(s,n,w,fsize,0);
+         addgraph(s,n,w,fsize,1);
+         addgraph(s,n,w,fsize,2);
+         }
+      else if(graph==3)
+      	{
+      	addfn3(n);
+         addgraph(s,n,w,fsize,3);
+         addgraph(s,n,w,fsize,4);
+         addgraph(s,n,w,fsize,5);
+      	}
+      else if(graph==5)
+      	{
+      	addfn6(n,1);
+         addgraph(s,n,w,fsize,9);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,10);
+            addgraph(s,n,w,fsize,11);
+            }
+      	}
+      else if(graph==6)
+      	{
+      	addfn6(n,2);
+         addgraph(s,n,w,fsize,12);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,13);
+            addgraph(s,n,w,fsize,14);
+            }
+      	}
+      else if(graph==7)
+      	{
+      	addfn6(n,3);
+         addgraph(s,n,w,fsize,15);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,16);
+            addgraph(s,n,w,fsize,17);
+            }
+      	}
+      else if(graph==8)
+      	{
+      	addfn6(n,4);
+         addgraph(s,n,w,fsize,18);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,19);
+            addgraph(s,n,w,fsize,20);
+            }
+      	}
+      else if(graph==9)
+      	{
+      	addfn6(n,5);
+         addgraph(s,n,w,fsize,21);
+         if(!rootmode)
+            {
+            addgraph(s,n,w,fsize,22);
+            addgraph(s,n,w,fsize,23);
+            }
+      	}
+      else if(graph==11)
+         {
+         /*let scp=document.createElement('svg');
+         scp.setAttribute('id','scp');
+         scp.setAttribute('width',n*w);
+         scp.setAttribute('height',n*w);
+         scp.setAttribute('viewBox','0 '+(mode*tu*w)+' '+n*w+' '+n*w);  
+         g.appendChild(scp);*/
+         
+         for(e=0;e<larx[0].length;e++)
+         {
+         // graph 11 red squares
+         re=document.createElement('rect');
+         re.setAttribute('id','r'+e);
+         re.setAttribute('y',((2*n-lary[0][e]-1-mode*tu)%n)*w);
+         re.setAttribute('x',((2*n+larx[0][e]-mode*(tu+(n%2?1:0)))%n)*w);
+         re.setAttribute('width',w);
+         re.setAttribute('height',w);
+         re.style.fill='#ff0000';
+         g.appendChild(re);
+         }
+         
+         }	
+      s.appendChild(g);
+      }
+      else if(graph==4)
+         {addfn4(n);
+         addgraph(s,n,w,fsize,6);
+         }
+      else
+         {//addfn7();
+         addgraph(s,nx,w,fsize,24,ny);
+         }
+         
+      // grid and frame
+      let grid=document.createElement('g');
+      grid.setAttribute('id','grid');
+      grid.setAttribute('opacity',vgrid?1:0);
+      
+      // vertical lines
+      for(let e=0;e<=nx;e++)
+      {let li=document.createElement('line');
+      li.setAttribute('id','v'+e);
+      li.setAttribute('x1',w*e+(e?-0.5:0.5));
+      li.setAttribute('y1',0);
+      li.setAttribute('x2',w*e+(e?-0.5:0.5));
+      li.setAttribute('y2',w*ny);
+      li.setAttribute('stroke','black');
+      if(e&&e<nx)
+         grid.appendChild(li);
+      else
+         s.appendChild(li);}
+
+      // horizontal lines
+      for(let e=0;e<=ny;e++)
+      {let li=document.createElement('line');
+      li.setAttribute('id','h'+e);
+      li.setAttribute('x1',0);
+      li.setAttribute('y1',w*e+(e?-0.5:0.5));
+      li.setAttribute('x2',w*nx);
+      li.setAttribute('y2',w*e+(e?-0.5:0.5));
+      li.setAttribute('stroke','black');
+      if(e&&e<ny)
+         grid.appendChild(li);
+      else
+         s.appendChild(li);}
+         
+      s.appendChild(grid);
+      
+      // horizontal numbers
+      for(let e=0;e<nx;e++)
+      {let t=document.createElement('text');
+      t.setAttribute('id','x'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',ny*w+fsize+1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.innerHTML=e+(graph>1&&graph<10?1:graph==11?-mode*tu:0);
+      s.appendChild(t);
+      }
+      
+      // vertical numbers
+      for(let e=0;e<ny;e++)
+      {let t=document.createElement('text');
+      t.setAttribute('id','y'+e);
+      t.setAttribute('x',nx*w+7);
+      t.setAttribute('y',(e+0.6)*w);
+      t.setAttribute('font-size',fsize+'px');
+      t.innerHTML=ny-e-(graph==4?0:1)-(graph==1||graph==11?mode*tu:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0);
+      s.appendChild(t);
+      }
+      
+      // graph 1 blue column numbers
+      if(graph==1)
+      for(let e=0;e<n;e++)
+      {let t=document.createElement('text');
+      t.setAttribute('id','t'+e);
+      t.setAttribute('x',(e+0.5)*w);
+      t.setAttribute('y',(n+maxc-car[e]+to-0.5)*w+fsize-1);
+      t.setAttribute('font-size',fsize+'px');
+      t.setAttribute('text-anchor','middle');
+      t.innerHTML=car[e];
+      s.appendChild(t);
+      }
+      
+      d.appendChild(s);
+t.appendChild(d);
 listc.appendChild(t); 
 
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> '+(5+shdim)+'D <small>(alterable)</small> </big></b>(9)</i> <i id="gr10"><b><big> 10 </big></b>(0)</i> <i id="gr11"><b><big> 11 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'</span>';
+let sc1=document.getElementById('sc1');
 
+if(graph==9)
+   {
+   sc1.innerHTML+='<i id="removedim100"><b>D - 100</b></i>        <i id="removedim10"><b>D - 10</b></i>        <i id="removedim"><b>D - 1</b></i>        <i id="adddim"><b>D + 1</b></i>        <i id="adddim10"><b>D + 10</b></i>        <i id="adddim100"><b>D + 100</b></i><br/><br/><br/><br/> ';
+   }
 
-listc.innerHTML+='<br/><br/>';
-listc.innerHTML+='<span style="cursor:pointer;"><br/><i id="addtable">Add table (use "Space" key)</i></span>';
+if(graph==10)
+   {
+   sc1.innerHTML+='<i id="removedim"><b>D - 1</b></i>        <i id="adddim"><b>D + 1</b></i><br/><br/><br/><br/> ';
+   sc1.innerHTML+='<i id="removepower"><b>power - 1</b></i>        <i id="addpower"><b>power + 1</b></i><br/><br/><br/><br/> ';
+   }
+
+sc1.innerHTML+='<i id="showhidegrid">Show / hide grid <small>(use "G" key)</small></i><br/><br/><br/>';
+
+if(graph>4&&graph<10)
+   {
+   s=document.createElement('select');
+   s.setAttribute('onchange','cms(event)');
+   let op=document.createElement('option');
+   for(e=0;e<=Math.max(ms,n);e++)
+      {
+      op=document.createElement('option');
+      op.innerHTML=e;
+      if(ms==e)
+         op.setAttribute('selected','selected');
+      s.appendChild(op);
+      }
+   sc1.innerHTML+='Mass square: ';
+   sc1.appendChild(s);
+   
+   sc1.innerHTML+='<br/><br/>';
+   }
+
+if(graph==7)
+   {
+   s=document.createElement('select');
+   s.setAttribute('onchange','cf(event)');
+   let op=document.createElement('option');
+   op.innerHTML='Fixed width, N alters';
+   if(!wmode)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='Fixed period, N alters';
+   if(wmode==1)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='Fixed N, width alters';
+   if(wmode==2)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   sc1.innerHTML+='Graph mode: ';
+   sc1.appendChild(s);
+   
+   if(wmode<2)
+      {
+      s=document.createElement('select');
+      s.setAttribute('onchange','cw(event)');
+      op=document.createElement('option');
+      op.innerHTML='N';
+      if(!pwidth)
+         op.setAttribute('selected','selected');
+      s.appendChild(op);
+      for(e=1;e<=n;e++)
+         {
+         op=document.createElement('option');
+         op.innerHTML=e;
+         if(pwidth==e)
+            op.setAttribute('selected','selected');
+         s.appendChild(op);
+         }
+      sc1.innerHTML+=wmode?'   Period: ':'   Width: ';
+      sc1.appendChild(s);
+      }
+      
+   sc1.innerHTML+='<br/><br/>';  
+   }
+   
+if(graph>4&&graph<10)
+   {
+   let op;
+   
+   if(!rootmode)
+      {
+      s=document.createElement('select');
+      s.setAttribute('onchange','cpt(event)');
+      let op=document.createElement('option');
+      op.innerHTML='all';
+         if(!pturn)
+            op.setAttribute('selected','selected');
+         s.appendChild(op);
+      for(e=1;e<=Math.max(pturn,n-1);e++)
+         {
+         op=document.createElement('option');
+         op.innerHTML=e;
+         if(pturn==e)
+            op.setAttribute('selected','selected');
+         s.appendChild(op);
+         }
+      sc1.innerHTML+='Parabola turn: ';
+      sc1.appendChild(s);
+      sc1.innerHTML+='<br/><br/>'; 
+      }
+
+   s=document.createElement('select');
+   s.setAttribute('onchange','crm(event)');
+   op=document.createElement('option');
+   op.innerHTML='Integer square roots';
+   if(!rootmode)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='Real square roots without modulo';
+   if(rootmode==1)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='Real square roots with modulo';
+   if(rootmode==2)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   sc1.innerHTML+='Square root mode: ';
+   sc1.appendChild(s);
+   }
+    
+if(graph==10)
+   {
+   s=document.createElement('select');
+   s.setAttribute('onchange','chor(event)');
+   let op=document.createElement('option');
+   op.innerHTML='without modulo';
+   if(!mhor)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='with modulo';
+   if(mhor)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   sc1.innerHTML+='Horizontal axis: ';
+   sc1.appendChild(s);
+   sc1.innerHTML+='<br/><br/>'; 
+   
+   s=document.createElement('select');
+   s.setAttribute('onchange','cver(event)');
+   op=document.createElement('option');
+   op.innerHTML='without modulo';
+   if(!mver)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   op=document.createElement('option');
+   op.innerHTML='with modulo';
+   if(mver)
+      op.setAttribute('selected','selected');
+   s.appendChild(op);
+   sc1.innerHTML+='Vertical axis: ';
+   sc1.appendChild(s);
+   }
+    
+sc1.innerHTML+='<br/><br/><br/><br/><br/>';
+if(graph==2)
+   {
+   for(e=1;e<=n;e++)
+   if(fn[8][e])
+      sc1.innerHTML+=e+' = '+fn[8][e]+'<br/>';
+   }
+document.getElementById('gr'+graph).style.background='#c0fac0';
+}
+
+function cw(e)
+{
+pwidth=e.target.selectedIndex;
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function cf(e)
+{
+wmode=e.target.selectedIndex;
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function cms(e)
+{
+ms=e.target.selectedIndex;
+fnw=[[[]],[[]],[[]]];
+fnwold=[[[]],[[]],[[]]];
+for(let e=9;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function cpt(e)
+{
+pturn=e.target.selectedIndex;
+fnw=[[[]],[[]],[[]]];
+fnwold=[[[]],[[]],[[]]];
+for(let e=9;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function crm(e)
+{
+rootmode=e.target.selectedIndex;
+fnw=[[[]],[[]],[[]]];
+fnwold=[[[]],[[]],[[]]];
+for(let e=9;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+if(rootmode)  
+   {
+   for(let e=9;e<=21;e+=3)
+      {
+      tgr[e]='sum of positive roots';
+      grg[e+1]=0;
+      grg[e+2]=0;
+      }
+   for(let e=5;e<=9;e++)
+      grvn1[e]=1;
+   }
+else
+   {
+   for(let e=9;e<=21;e+=3)
+      tgr[e]='sum of min roots';
+   for(let e=5;e<=9;e++)
+      {
+      grvn1[e]=3;
+      grg[3*e-5]=0;
+      grg[3*e-4]=0;
+      }
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function chor(e)
+{
+mhor=e.target.selectedIndex;
+let sct=listc.scrollTop;
+nnnxyupdate();
+addtable(nnn,nnnx,nnny);
+listc.scrollTop=sct;
+}
+
+function cver(e)
+{
+mver=e.target.selectedIndex;
+let sct=listc.scrollTop;
+nnnxyupdate();
+addtable(nnn,nnnx,nnny);
+listc.scrollTop=sct;
+}
+
+document.addEventListener('keydown',function(e){
+if(!e.ctrlKey){
+let c=e.code;
+if(graph==10&&(c=='Space'||c=='Backspace'||c=='Enter'))
+{
+if(c=='Space'){
+   let sct=listc.scrollTop;
+   nnn++;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=sct;
+   }
+if(c=='Backspace'){
+   if(nnn>1)
+      {let sct=listc.scrollTop;
+      nnn--;
+      nnnxyupdate();
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Enter')
+   {
+   let sct=listc.scrollTop;
+   nnn+=10;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=sct;
+   }
+}
+else
+if(c=='Space'){
+   let sct=listc.scrollTop;
+   nextn++;
+   addtable(nextn);
+   listc.scrollTop=sct;
+   }
+else if(c=='Backspace'){
+   if(nextn>2)
+      {let sct=listc.scrollTop;
+      nextn--;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Enter')
+   {
+   let sct=listc.scrollTop;
+   nextn+=10;
+   addtable(nextn);
+   listc.scrollTop=sct;
+   }
+else if(c=='KeyM')
+   {
+   if(graph==1||graph==11)
+   {mode=1-mode;
+   if(graph==1)
+      {
+      let re=document.getElementById('scp');
+      re.setAttribute('viewBox','0 '+(mode*tu*w)+' '+nextn*w+' '+nextn*w);
+      }
+   if(graph==11)   
+      {
+      let re2=document.getElementById('zerocolumn');
+      re2.setAttribute('x',((nextn*2-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+      for(let e=0;e<nextn;e++)
+         {
+         let t=document.getElementById('x'+e);
+         t.innerHTML=e-mode*tu;
+         }
+      for(let e=0;e<larx[0].length;e++)
+         {
+         let re=document.getElementById('r'+e);
+         re.setAttribute('y',((2*nextn-lary[0][e]-1-mode*tu)%nextn)*w);
+         re.setAttribute('x',((2*nextn+larx[0][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+         }
+      }
+   for(let n=nextn;n<=nextn;n++)
+      {for(let e=0;e<n;e++)
+         {
+         if(graph==1)
+            {
+            let re=document.getElementById('r'+e);
+            re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
+            }
+         let t=document.getElementById('y'+e);
+         t.innerHTML=n-e-1-mode*tu;
+         let re1=document.getElementById('zerostring');
+         re1.setAttribute('y',((n-1-mode*tu)%n)*w);
+         }
+      }
+   }
+   }
+else if(c=='KeyO')
+   {
+   if(ppn[0])
+      {
+      ppn[0]--;
+      addtable(nextn);
+      }
+   }
+else if(c=='KeyP')
+   {
+   ppn[0]++;
+   addtable(nextn);
+   }
+else if(c=='KeyK')
+   {
+   if(ppn[1])
+      {
+      ppn[1]--;
+      addtable(nextn);
+      }
+   }
+else if(c=='KeyL')
+   {
+   ppn[1]++;
+   addtable(nextn);
+   }
+else if(c=='Digit1')
+   {if(graph!=1)
+      {let sct=listc.scrollTop;
+      graph=1;
+      swh=false;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit2')
+   {if(graph!=2)
+      {let sct=listc.scrollTop;
+      graph=2;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit3')
+   {if(graph!=3)
+      {let sct=listc.scrollTop;
+      graph=3;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit4')
+   {if(graph!=4)
+      {let sct=listc.scrollTop;
+      graph=4;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit5')
+   {if(graph!=5)
+      {let sct=listc.scrollTop;
+      graph=5;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit6')
+   {if(graph!=6)
+      {let sct=listc.scrollTop;
+      graph=6;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit7')
+   {if(graph!=7)
+      {let sct=listc.scrollTop;
+      graph=7;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit8')
+   {if(graph!=8)
+      {let sct=listc.scrollTop;
+      graph=8;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit9')
+   {if(graph!=9)
+      {let sct=listc.scrollTop;
+      graph=9;
+      swh=true;
+      addtable(nextn);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='Digit0')
+   {if(graph!=10)
+      {let sct=listc.scrollTop;
+      graph=10;
+      swh=true;
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=sct;
+      }
+   }
+else if(c=='KeyG')
+   {
+   vgrid=!vgrid;
+   document.getElementById('grid').setAttribute('opacity',vgrid?1:0);
+   }
+}
+gm=-1;
+mousetextupdate(mousex,mousey);
+}
+);
+
+function cdim()
+{
+for(let e=21;e<=23;e++)
+   {fn[e]=[-1000000];
+   fnold[e]=[-1000000];
+   }
+let sct=listc.scrollTop;
+addtable(nextn);
+listc.scrollTop=sct;
+}
+
+function nncdim()
+{
+let sct=listc.scrollTop;
+nnnxyupdate();
+addtable(nnn,nnnx,nnny);
+listc.scrollTop=sct;
 }
 
 listc.onclick=function(e){
-if(e.target.id=='addtable')
-{nextn++;
-addtable(nextn);
-listc.scrollTop=listc.scrollHeight;}
+let c=e.target;
+while(c.tagName=='B'||c.tagName=='SMALL'||c.tagName=='BIG')
+   c=c.parentNode;
+if(graph==10&&(c.id=='addtable'||c.id=='addtables'||c.id=='addtables100'||c.id=='removetable'||c.id=='removetables10'||c.id=='removetables100'||c.id=='adddim'||c.id=='removedim'||c.id=='addpower'||c.id=='removepower'))
+{
+if(c.id=='addtable')
+   {
+   nnn++;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='addtables')
+   {
+   nnn+=10;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='addtables100')
+   {
+   nnn+=100;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='removetable')
+   {
+   if(nnn>1)
+      {nnn--;
+      nnnxyupdate();
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+else if(c.id=='removetables10')
+   {
+   if(nnn>1)
+      {
+      nnn-=10;
+      if(nnn<1)nnn=1;
+      nnnxyupdate();
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+else if(c.id=='removetables100')
+   {
+   if(nnn>1)
+      {
+      nnn-=100;
+      if(nnn<1)nnn=1;
+      nnnxyupdate();
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+else if(c.id=='adddim')
+   {dnn++;
+   nncdim();
+   }
+else if(c.id=='removedim')
+   {
+   if(dnn>1)
+      {dnn--;
+      nncdim();
+      }
+   }
+else if(c.id=='addpower')
+   {pow++;
+   nnnxyupdate();
+   addtable(nnn,nnnx,nnny);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='removepower')
+   {
+   if(pow>0)
+      {pow--;
+      nnnxyupdate();
+      addtable(nnn,nnnx,nnny);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+}
+else
+if(c.id=='addtable')
+   {nextn++;
+   addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='addtables')
+   {
+   /*for(let e=0;e<10;e++)
+      {nextn++;
+      addtable(nextn);
+      }*/
+   nextn+=10;
+   addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='addtables100')
+   {
+   nextn+=100;
+   addtable(nextn);
+   listc.scrollTop=listc.scrollHeight;
+   }
+else if(c.id=='removetable')
+   {
+   if(nextn>2)
+      {nextn--;
+      addtable(nextn);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+else if(c.id=='removetables10')
+   {
+   if(nextn>2)
+      {
+      nextn-=10;
+      if(nextn<2)nextn=2;
+      addtable(nextn);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+else if(c.id=='removetables100')
+   {
+   if(nextn>2)
+      {
+      nextn-=100;
+      if(nextn<2)nextn=2;
+      addtable(nextn);
+      listc.scrollTop=listc.scrollHeight;
+      }
+   }
+else if(c.id=='adddim')
+   {shdim++;
+   cdim();
+   }
+else if(c.id=='adddim10')
+   {
+
+   shdim+=10;
+   cdim();
+   }
+else if(c.id=='adddim100')
+   {
+   shdim+=100;
+   cdim();
+   }
+else if(c.id=='removedim')
+   {
+   if(shdim)
+      {shdim--;
+      cdim();
+      }
+   }
+else if(c.id=='removedim10')
+   {
+   if(shdim)
+      {
+      shdim-=10;
+      if(shdim<0)shdim=0;
+      cdim();
+      }
+   }
+else if(c.id=='removedim100')
+   {
+   if(shdim)
+      {
+      shdim-=100;
+      if(shdim<0)shdim=0;
+      cdim();
+      }
+   }
+else if(c.id=='switchmode')
+   {if(graph==1||graph==11)
+   {mode=1-mode;
+   if(graph==1)
+      {
+      let re=document.getElementById('scp');
+      re.setAttribute('viewBox','0 '+(mode*tu*w)+' '+nextn*w+' '+nextn*w);
+      }
+   if(graph==11)   
+      {
+      let re2=document.getElementById('zerocolumn');
+      re2.setAttribute('x',((nextn*2-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+      for(let e=0;e<nextn;e++)
+         {
+         let t=document.getElementById('x'+e);
+         t.innerHTML=e-mode*tu;
+         }
+      for(let e=0;e<larx[0].length;e++)
+         {
+         let re=document.getElementById('r'+e);
+         re.setAttribute('y',((2*nextn-lary[0][e]-1-mode*tu)%nextn)*w);
+         re.setAttribute('x',((2*nextn+larx[0][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+         }
+      }
+   for(let n=nextn;n<=nextn;n++)
+      {for(let e=0;e<n;e++)
+         {
+         if(graph==1)
+            {
+            let re=document.getElementById('r'+e);
+            re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
+            }
+         let t=document.getElementById('y'+e);
+         t.innerHTML=n-e-1-mode*tu;
+         let re1=document.getElementById('zerostring');
+         re1.setAttribute('y',((n-1-mode*tu)%n)*w);
+         }
+         }
+      listc.scrollTop=listc.scrollHeight;
+      }
+      }
+else if(c.id=='decpos')
+      {
+      if(ppn[0])
+         {
+         ppn[0]--;
+         addtable(nextn);
+         }
+      }
+else if(c.id=='incpos')
+      {
+      ppn[0]++;
+      addtable(nextn);
+      }
+else if(c.id=='decneg')
+      {
+      if(ppn[1])
+         {
+         ppn[1]--;
+         addtable(nextn);
+         }
+      }
+else if(c.id=='incneg')
+      {
+      ppn[1]++;
+      addtable(nextn);
+      }
+else if(c.id=='gr1')
+      {if(graph!=1)
+         {graph=1;
+         swh=false;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr2')
+      {if(graph!=2)
+         {graph=2;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr3')
+      {if(graph!=3)
+         {graph=3;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr4')
+      {if(graph!=4)
+         {graph=4;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr5')
+      {if(graph!=5)
+         {graph=5;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr6')
+      {if(graph!=6)
+         {graph=6;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr7')
+      {if(graph!=7)
+         {graph=7;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr8')
+      {if(graph!=8)
+         {graph=8;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr9')
+      {if(graph!=9)
+         {graph=9;
+         swh=true;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr10')
+      {if(graph!=10)
+         {graph=10;
+         swh=true;
+         addtable(nnn,nnnx,nnny);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='gr11')
+      {if(graph!=11)
+         {graph=11;
+         swh=false;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
+else if(c.id=='showhidegrid')
+      {
+      vgrid=!vgrid;
+      document.getElementById('grid').setAttribute('opacity',vgrid?1:0);
+      }
+else if(c.tagName!='SELECT'&&c.tagName!='OPTION')
+      {
+      if(xshn)
+         {//xsh=false;
+         xshn=false;}
+      else
+      {let b=false;
+      let y=Math.floor((mousey+listc.scrollTop-68)/w);
+      if(y>=(graph==10?nnny:nextn)||y<0)
+         {y=-1000000;
+         if(xsh)
+            b=true;}
+      let x=Math.floor((mousex+listc.scrollLeft-10)/w);
+      if(x>=(graph==10?nnnx:nextn)||x<0)
+         {x=-1000000;
+         b=true;}
+      if(!b)
+         xsh=!xsh;
+      /*if(xshn)
+         {xsh=false;
+         xshn=false;}*/
+      mousetextupdate(mousex,mousey);}
+      }
 }
 
 
-let nextn=10;
+window.onkeydown = function(e) { 
+  return !((e.keyCode==32) && e.target == document.body);
+};
 
-for(let e=2;e<=nextn;e++)
-   addtable(e);
+
+function check(n)
+{let c=[];
+let e;
+for(e=0;e<n;e++)
+   c.push(0);
+let i=0;
+e=0;
+while(e<n&&c[i]<3)
+   {i=e*e%n;
+   c[i]++;
+   e++;
+   }
+return e==n;
+}
+
+function check1(n)
+{let e=2;
+let a=Math.sqrt(n);
+while(n%e&&e<=a)
+   e++;
+return e>a;
+}
+
+function check2(n)
+{//if(!(n%2))
+//   n/=2;
+let n1=n%2?n:n/2;
+let e=2;
+let a=Math.sqrt(n1);
+while(n1%e&&e<=a)
+   e++;
+return (e>a);
+
+return (e>a!=(fn[0][n]==2&&fn[2][n]==1));
+}
+
+// square numbers
+function addfn1(n)
+{while(fn[7].length<=n)
+   fn[7].push(fn[7].length*fn[7].length);
+}
+
+// triangle numbers
+/*function addfn1(n)
+{while(fn[7].length<=n)
+   fn[7].push((fn[7].length+1)*fn[7].length/2);
+}*/
+
+// random square functions
+/*function addfn1(n)
+{let k=2;
+while(fn[7].length<=n)
+   fn[7].push((k*fn[7].length-k+2)*fn[7].length/2);
+}*/
+
+// cubic numbers
+/*function addfn1(n)
+{while(fn[7].length<=n)
+   fn[7].push(fn[7].length*fn[7].length*fn[7].length);
+}*/
+
+// random powers
+/*function addfn1(n)
+{let p=3;
+while(fn[7].length<=n)
+   {
+   let s=1;
+   for(let e=0;e<p;e++)
+      s*=fn[7].length;
+   fn[7].push(s);
+   }
+}*/
+
+function addfn2(n)
+{
+while(fn[0].length<=n)
+   {let l=fn[0].length;
+   setar(l);
+   fn[0].push(maxc);
+   fn[1].push(maxcz);
+   fn[2].push(car[0]);
+   }
+}
+
+function addfn3(n)
+{while(fn[3].length<=n)
+   {let l=fn[3].length;
+   setar(l);
+   let aar=[];
+   let e;
+   for(e=0;e<l;e++)
+      aar.push(-1);
+   for(e=0;e<l;e++)
+   //   if(car[tar[e]]>1&&aar[tar[e]]<0)
+   if(aar[tar[e]]<0)
+         aar[tar[e]]=e;
+   let i=0;
+   for(e of aar)if(e>0){i+=e;i%=l}
+   let u=i;
+   fn[3].push(u>=l/2?u-l:u);
+   u=Math.floor(l/2);
+   i=u*(u+1)/2;
+   u=i%l;
+   u=u>=l/2?u-l:u;
+   fn[5].push(u);
+   if(!(l%2))
+      {i-=l/2;
+      u=i%l;
+      fn[4].push(u>=l/2?u-l:u);
+      }
+   else
+      fn[4].push(u);
+   }
+}
+
+function addfn4(n)
+{while(fn[6].length<=n)
+   {let l=fn[6].length;
+   setar(l);
+   let i=0;
+   for(let e of car)if(e)i++;
+   fn[6].push(i);
+   }
+}
+
+function addfn5(n)
+{while(fn[8].length<=n)
+   {let l=fn[8].length;
+   let i='';
+   //if(check2(l))
+   if(fn[0][l]==2&&fn[2][l]==1)
+      if(l<3||l%2)
+         i=l;
+      else
+      	i=l/2+'·2';
+   fn[8].push(i);
+   }
+}
+
+function addfn6old(n,d)
+{while(fnold[6+3*d].length<=n)
+   {let l=fnold[6+3*d].length;
+   setar(l);
+   let aar=[];
+   let e;
+   for(e=0;e<l;e++)
+      aar.push([]);
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e);
+   let iar=[[],[],[]];
+   for(e=0;e<l;e++)
+      {
+      iar[0].push(0);
+      iar[1].push(0);
+      iar[2].push(0);
+      }
+   for(e=0;e<l;e++)
+      for(let u=-1;u<aar[e].length;u++)
+         if(u>=0)
+            {
+            if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+            if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+            if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+            }
+   l=[l,1,1,1,1];
+   for(e=1;e<5;e++)
+      if(d>e)l[e]=l[0];
+   //if(d==3)l[2]=Math.min(60,l[0]);
+   if(d==3)
+   for(e=0;e<3;e++)
+      {fnwold[e].push([]);
+      for(let y=0;y<=l[0];y++)
+         fnwold[e][l[0]].push(0);
+      }
+   e=[0,0,0,0,0];
+   let i=[0,0,0];
+   let u;
+   let s0,s1,s2,s3,s;
+   for(e[0]=0;e[0]<l[0];e[0]++)
+      {
+      s0=tar[e[0]];
+      for(e[1]=0;e[1]<l[1];e[1]++)
+         {
+         s1=s0+tar[e[1]];
+         for(e[2]=0;e[2]<l[2];e[2]++)
+            {
+            s2=s1+tar[e[2]];
+            for(e[3]=0;e[3]<l[3];e[3]++)
+               {
+               s3=s2+tar[e[3]];
+               for(e[4]=0;e[4]<l[4];e[4]++)
+                 {
+                  //let s=(e[0]*e[0]+e[1]*e[1]+e[2]*e[2]+e[3]*e[3]+e[4]*e[4])%l[0];
+                  //let s=(tar[e[0]]+tar[e[1]]+tar[e[2]]+tar[e[3]]+tar[e[4]])%l[0];
+                  s=(s3+tar[e[4]])%l[0];
+                  /*for(u=-1;u<aar[s].length;u++)
+                  if(u>=0)
+                     {
+                     if(u==0){i[0]+=aar[s][0];i[0]%=l[0]}
+                     if(u<l[0]/2){i[1]+=aar[s][u];i[1]%=l[0]}
+                     if(u<=l[0]/2){i[2]+=aar[s][u];i[2]%=l[0]}
+                     }*/
+                  i[0]+=iar[0][s];i[0]%=l[0];
+                  i[1]+=iar[1][s];i[1]%=l[0];
+                  i[2]+=iar[2][s];i[2]%=l[0];
+                  }
+               }
+            }
+         }
+      if(d==3)
+         {for(let y=1;y<=l[0];y++)
+            //if(!mar[y])
+            //if(!e[0]%y)
+            if(!mar[y]&&!e[0]%(l[0]/y))
+               for(u=0;u<3;u++)
+                  {fnwold[u][l[0]][y]+=i[u]-(i[u]<l[0]/2?0:l[0]);
+                  fnwold[u][l[0]][y]%=l[0];
+                  }
+         }
+      }
+   /*if(d==3)
+   for(u=0;u<3;u++)
+   for(let y=0;y<=l[0];y++)
+   if(fnw[u][l[0]][y])
+       alert(fnw[u][l[0]][y]);*/
+   for(u=0;u<3;u++)
+      {//i[u]=i[u]%l[0];
+      if(i[u]>=l[0]/2)i[u]-=l[0];
+      fnold[6+3*d+u].push(i[u]);
+      }
+   }
+}
+
+function addfn6old2(n,d)
+{
+
+function setlat(pe,e=0)
+{
+for(let q=0;q<=pe;q++)
+   {
+   if(e)
+      {
+      s[e]=s[e-1];
+      m[e]=m[e-1];
+      mf[e]=mf[e-1];
+      j[e]=1;
+      if(d>e)
+         {
+         s[e]+=xdaar[q];
+         m[e]*=caar[q];
+         if((!b||e>1)&&q==pe)
+            j[e]+=j[e-1];
+         mf[e]*=k[e]/j[e];
+         }
+      }
+   else
+      {
+      s[0]=b?tar[q]:xdaar[q];
+      m[0]=b?1:caar[q];
+      }
+   if(e+1==d)
+      {
+      s[e]%=l;
+      m[e]*=mf[e];
+      for(u=0;u<3;u++)
+         {i[u]+=iar[u][s[e]]*m[e];
+         i[u]%=l;}
+      }
+   else if(e)
+      setlat(q,e+1);
+   else
+   	{
+   	setlat(b?caar.length-1:q,e+1);
+      if(b)
+         for(let y=1;y<=l;y++)
+            if(!mar[y]&&!q%(l/y))
+               for(u=0;u<3;u++)
+                  {fnwold[u][l][y]+=i[u]-(i[u]<l/2?0:l);
+                  fnwold[u][l][y]%=l;
+                  }
+   	}
+   }
+}
+//addfn6old(n,d);
+while(fnold[6+3*d].length<=n)
+   {var l=fnold[6+3*d].length;
+   setar(l);
+   let aar=[];
+   var e,u;
+   for(e=0;e<l;e++)
+      aar.push([]);
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e);
+   var caar=[],xdaar=[],iar=[[],[],[]];
+   for(e=0;e<l;e++)
+      {
+      if(aar[e].length)
+         {
+         caar.push(aar[e].length);
+         xdaar.push(e);
+         }
+      for(u=0;u<3;u++)
+         iar[u].push(0);
+      }
+   for(e=0;e<l;e++)
+      for(let u=-1;u<aar[e].length;u++)
+         if(u>=0)
+            {
+            if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+            if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+            if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+            }
+   var b=d==3;
+   if(b)
+   for(e=0;e<3;e++)
+      {fnwold[e].push([]);
+      for(let y=0;y<=l;y++)
+         fnwold[e][l].push(0);
+      }
+   var i=[0,0,0];
+   var s=[0],j=[1],k=[0],m=[0],mf=[1];
+   for(u=1;u<d;u++)
+      {
+      s.push(0);
+      j.push(0);
+      k.push(b?u:u+1);
+      m.push(0);
+      mf.push(0);
+      }
+   setlat((b?l:caar.length)-1);
+   for(u=0;u<3;u++)
+      {
+      if(i[u]>=l/2)i[u]-=l;
+      fnold[6+3*d+u].push(i[u]);
+      //if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
+      //   alert('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+      //if(b)for(let y=0;y<=l;y++)
+      //   if(fnw[u][l][y]!=fnwold[u][l][y])
+      //      alert('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);
+      }
+   }
+}
+
+// addfn6 - set lattice arrays up to N (parameters: n - N; d - number of dimensions of lattice):
+// fn[9-11] - 1D
+// fn[12-14] - 2D
+// fn[15-17], fnw[0-2] - 3D
+// fn[18-20] - 4D
+// fn[21-23] - 5D
+// note: lattices with higher numbers of dimensions can be written in fn, fnw using offset:
+// with offset a (1+a)D lattice will be written in fn[9-11], (2+a)D in fn[12-14], (3+a)D in fn[15-17] and fnw[0-2], (4+a)D in fn[18-20], (5+a)D in fn[21-23]
+function addfn6old3(n,d)
+{
+
+// setlat - dimension pass (parameters: pe - maximal layer of lattice, e - dimension - 1)
+function setlat(pe,e=0)
+{
+
+// q - layer of lattice
+for(let q=0;q<=pe;q++)
+   {
+   
+   // not 1st pass
+   if(e)
+      {
+      
+      // add sum of squares
+      s[e]=s[e-1]+xdaar[q];
+      
+      // multiply numbers of nodes
+      m[e]=m[e-1]*caar[q];
+      
+      // if pattern of same coordinates continues, increase its length by 1, else set it to 1
+      j[e]=(!b||e>1)&&q==pe?j[e-1]+1:1;
+      
+      // multiply permutation factor by number of dimensions (except 1st dimension, if 3D) and divide it by length of pattern of same coordinates
+      mf[e]=mf[e-1]*k[e]/j[e];
+      
+      }
+      
+   // 1st pass
+   else
+      {
+      
+      // set square (for 3D take from tar)
+      s[0]=b?tar[q]:xdaar[q];
+      
+      // set factor (for 3D set to 1)
+      m[0]=b?1:caar[q];
+      
+      }
+      
+   // last pass
+   if(e+1==d1)
+      {
+      
+      // sum of squares mod l
+      s[e]%=l;
+      
+      // multiply both factors
+      m[e]*=mf[e];
+      
+      // compute elements of i1 array
+      for(u=0;u<3;u++)
+         {
+         
+         // 3D
+         if(b)
+         
+            {
+            
+            // add to element of i1 array sum of roots multiplied by factor
+            i1[u]+=iar[u][s[e]]*m[e];
+         
+            // element of i1 array mod l
+            i1[u]%=l;
+            
+            }
+            
+         // not 3D
+         else
+         
+            {
+            
+            // add to element of i array sum of roots multiplied by factor
+            i[u]+=iar[u][s[e]]*m[e];
+         
+            // element of i array mod l
+            i[u]%=l;
+            
+            }
+         }
+      }
+      
+   // not last pass
+   else if(e)
+   
+      // if not 1st pass, invoke next pass
+      setlat(q,e+1);
+      
+   // 1st pass
+   else
+   	{
+   	
+   	// invoke next pass (if 3D, begin to use numbers of nodes of lattice mod l)
+   	setlat(b?caar.length-1:q,e+1);
+   	
+   	// if 3D, fill fnw array
+      if(b)
+         
+         {
+         // y - width of parallelepiped (l/y - period)
+         for(let y=1;y<=l;y++)
+         
+            // check if period divisor of l and number of layer
+            if(!mar[y]&&!q%(l/y))
+            
+               for(u=0;u<3;u++)
+                  {
+                  
+                  // add to element of fnw array element of i1 array
+                  fnw[u][l][y]+=i1[u];
+                  
+                  // element of fnw mod l
+                  if(fnw[u][l][y]>=l)
+                     fnw[u][l][y]%=l;
+                     
+                  // element of fnw ∈ (-l / 2; l / 2)
+                  else if(fnw[u][l][y]>=l/2)
+                     fnw[u][l][y]-=l;
+                  
+                  }
+                  
+         //
+         
+         for(u=0;u<3;u++)
+            {
+            
+            // add to element of i array element of i1 array
+            i[u]+=i1[u];
+            
+            // element of i array mod l
+            i[u]%=l;
+            
+            }
+            
+         // fill ia array with zeros
+         i1=[0,0,0];  
+         
+         }
+   	}
+   }
+}
+
+// invoking older version of addfn6 for comparison
+//addfn6old2(n,d);
+
+// set fn, fnw arrays up to N
+while(fn[6+3*d].length<=n)
+
+   // l - size of lattice
+   {var l=fn[6+3*d].length;
+   
+   // set tar and mar arrays for N = l
+   setar(l);
+   
+   // aar - array of roots (inverse tar array) (parameters: 1st - x ∈ [0; l - 1], 2nd - root number)
+   let aar=[];
+   
+   var e,u;
+   
+   // fill aar with empty arrays
+   for(e=0;e<l;e++)
+      aar.push([]);
+      
+   // fill aar with roots
+   for(e=0;e<l;e++)
+      if(!pturn||(e>=Math.sqrt((pturn-1)*l)&&e<Math.sqrt(pturn*l)))
+      aar[tar[e]].push(e);
+      //aar[e].push(Math.sqrt(e));
+      
+   // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
+   // caar - array of numbers of nodes of lattice mod l such as xdaar[x] = sum of squares of coordinates mod l (parameter: x (sum number))
+   // iar - array of sums of roots mod l (parameters: 1st - 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2; 2nd - x ∈ [0; l - 1])
+   var caar=[],xdaar=[],iar=[[],[],[]];
+   
+   // fill xdaar, caar arrays for 1D lattice, fill iar array with zeros
+   for(e=0;e<l;e++)
+      {
+      if(aar[e].length)
+         {
+         caar.push(aar[e].length%l);
+         xdaar.push(e);
+         }
+      for(u=0;u<3;u++)
+         iar[u].push(0);
+      }
+      
+   // fill iar array
+   for(e=0;e<l;e++)
+      for(let u=-1;u<aar[e].length;u++)
+         if(u>=0)
+            {
+            if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+            if(u<l/2){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+            if(u<=l/2){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+            }
+            
+   // b - 3D indicator (if offset is used, replace d with d + offset)
+   var b=d==3;
+   
+   // fill xdaar, caar arrays for dD lattice (2D for 3D lattice) (if offset is used, replace d with d + offset)
+   if((d>4?d+shdim:d)>1)
+      {
+      
+      // xdaar0, caar0 - 1D versions of xdaar, caar
+      let caar0=[...caar];
+      let xdaar0=[...xdaar];
+      
+      // e - dimension (if offset is used, replace d with d + offset)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+         {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         
+         // fill aar array with zeros
+         for(u=0;u<l;u++)
+            aar[u]=0;
+            
+         // fill aar array
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+            
+         // u - length of xdaar and caar arrays for (e+1)D (2D for 3D) lattice
+         u=0;
+         
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar[u]=aar[i]%l;
+               xdaar[u]=i;
+               u++;
+               }
+               
+         // set length of xdaar and caar arrays for (e+1)D (2D for 3D) lattice
+         caar.length=u;
+         xdaar.length=u;
+         }
+      }
+      
+   // + mass square
+   if(ms)
+   for(e=0;e<caar.length;e++)
+      {
+      xdaar[e]+=ms;
+      xdaar[e]%=l;
+      }
+      
+   // d1 - number of dimensions for setlat function (2 for 3D, else 1)
+   var d1=b?2:1;
+   //var d1=d+2;
+   
+   // fill fnw for N = l with zeros
+   if(b)
+   for(e=0;e<3;e++)
+      {fnw[e].push([]);
+      for(let y=0;y<=l;y++)
+         fnw[e][l].push(0);
+      }
+      
+   // i - array of sums of roots (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i=[0,0,0];
+   
+   // i - array of sums of roots for 1 layer of lattice (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i1=[0,0,0];
+   
+   // s - array of sums of squares of coordinates mod l (parameter: dimension - 1)
+   // j - array of length of pattern of equal coordinates (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // k - array of numbers of dimensions (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // m - array of factors of nodes with same sums of squares of coordinates (parameter: dimension - 1)
+   // mf - array of permutation factors (parameter: dimension - 1)
+   var s=[0],j=[1],k=[0],m=[0],mf=[1];
+   
+   // fill s, j, k, m, mf arrays (if offset is used, replace d with d + offset)
+   for(u=1;u<(d>4?d+shdim:d);u++)
+      {
+      s.push(0);
+      j.push(0);
+      k.push(b?u:u+1);
+      m.push(0);
+      mf.push(0);
+      }
+      
+   // fill i, fnw arrays
+   setlat((b?l:caar.length)-1);
+   
+   for(u=0;u<3;u++)
+      {
+      
+      // make values of i arrays ∈ (-l / 2; l / 2)
+      if(i[u]>=l/2)i[u]-=l;
+      
+      // fill fn arrays
+      fn[6+3*d+u].push(i[u]);
+      
+      // comparison of fn with fnold
+      /*if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
+         console.log('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+
+      // comparison of fnw with fnwold
+      if(b)for(let y=0;y<=l;y++)
+         if(fnw[u][l][y]!=fnwold[u][l][y])
+            console.log('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);*/
+      }
+   }
+}
+
+// addfn6 - set lattice arrays up to N (parameters: n - N; d - number of dimensions of lattice):
+// fn[9-11] - 1D
+// fn[12-14] - 2D
+// fn[15-17], fnw[0-2] - 3D
+// fn[18-20] - 4D
+// fn[21-23] - 5D
+// note: lattices with higher numbers of dimensions can be written in fn, fnw using offset:
+// with offset a (1+a)D lattice will be written in fn[9-11], (2+a)D in fn[12-14], (3+a)D in fn[15-17] and fnw[0-2], (4+a)D in fn[18-20], (5+a)D in fn[21-23]
+function addfn6(n,d)
+{
+
+// setlat - dimension pass (parameters: pe - maximal layer of lattice, e - dimension - 1)
+function setlat(pe,e=0)
+{
+
+// q - layer of lattice
+for(let q=0;q<=pe;q++)
+   {
+   
+   // not 1st pass
+   if(e)
+      {
+      
+      // add sum of squares
+      s[e]=s[e-1]+xdaar[q];
+      
+      // multiply numbers of nodes
+      m[e]=m[e-1]*caar[q];
+      
+      // if pattern of same coordinates continues, increase its length by 1, else set it to 1
+      j[e]=(!b||e>1)&&q==pe?j[e-1]+one:one;
+      
+      // multiply permutation factor by number of dimensions (except 1st dimension, if 3D) and divide it by length of pattern of same coordinates
+      mf[e]=mf[e-1]*k[e]/j[e];
+      
+      }
+      
+   // 1st pass
+   else
+      {
+      
+      // set square (for 3D take from tar)
+      s[0]=b?rootmode==1?q*q:tar[q]:xdaar[q];
+      
+      // set factor (for 3D set to 1)
+      m[0]=b?one:caar[q];
+      
+      }
+      
+   // last pass
+   if(e+1==d1)
+      {
+      
+      // sum of squares mod l
+      if(rootmode!=1)
+         s[e]%=l;
+      
+      // multiply both factors
+      m[e]*=mf[e];
+      
+      // compute elements of i1 array
+      for(u=0;u<rmgn;u++)
+         {
+         
+         // 3D
+         if(b)
+         
+            {
+            
+            // add to element of i1 array sum of roots multiplied by factor
+            i1[u]+=rootmode?longsqrtfactor(s[e],m[e],digitsafterpoint1):iar[u][s[e]]*m[e];
+         
+            // element of i1 array mod l
+            if(!rootmode)
+               i1[u]%=l;
+            
+            }
+            
+         // not 3D
+         else
+         
+            {
+            
+            // add to element of i array sum of roots multiplied by factor
+            i[u]+=rootmode?longsqrtfactor(s[e],m[e],digitsafterpoint1):iar[u][s[e]]*m[e];
+         
+            // element of i array mod l
+            if(!rootmode)
+               i[u]%=l;
+            
+            }
+         }
+      }
+      
+   // not last pass
+   else if(e)
+   
+      // if not 1st pass, invoke next pass
+      setlat(q,e+1);
+      
+   // 1st pass
+   else
+   	{
+   	
+   	// invoke next pass (if 3D, begin to use numbers of nodes of lattice mod l)
+   	setlat(b?caar.length-1:q,e+1);
+   	
+   	// if 3D, fill fnw array
+      if(b)
+         
+         {
+         // y - width of parallelepiped (l/y - period)
+         for(let y=1;y<=l;y++)
+         
+            // check if period divisor of l and number of layer
+            if(!mar[y]&&!q%(l/y))
+            
+               for(u=0;u<rmgn;u++)
+                  {
+                  
+                  // add to element of fnw array element of i1 array
+                  fnw[u][l][y]+=i1[u];
+                  
+                  if(!rootmode)
+                     {
+                     // element of fnw mod l
+                     if(fnw[u][l][y]>=l)
+                        fnw[u][l][y]%=l;
+                     
+                     // element of fnw ∈ (-l / 2; l / 2)
+                     else if(fnw[u][l][y]>=halfl)
+                        fnw[u][l][y]-=l;
+                     }
+                     
+                  }
+                  
+         //
+         
+         for(u=0;u<rmgn;u++)
+            {
+            
+            // add to element of i array element of i1 array
+            i[u]+=i1[u];
+            
+            // element of i array mod l
+            if(!rootmode)
+               i[u]%=l;
+            
+            }
+            
+         // fill ia array with zeros
+         i1=[zero,zero,zero];  
+         
+         }
+   	}
+   }
+}
+
+// invoking older version of addfn6 for comparison
+//addfn6old2(n,d);
+
+// set fn, fnw arrays up to N
+while(fn[6+3*d].length<=n)
+
+   // l - size of lattice
+   {var l=fn[6+3*d].length;
+   
+   // halfl - minimal number larger than (- l / 2; l / 2) lattice
+   var halfl=rootmode?Math.ceil(l/2)-0.5:l/2;
+   
+   // set tar and mar arrays for N = l
+   setar(l);
+   
+   // digitsafterpoint1 - number of digits after point for solitary square root
+   // powerten = 10 ^ (digitsafterpoint1 - digitsafterpoint)
+   // powerten0 = 10 ^ digitsafterpoint
+   // bigl = size of lattice * 10 ^ digitsafterpoint
+   if(rootmode)
+      {
+      var digitsafterpoint1=Math.ceil(d*Math.log10(l))+digitsafterpoint;
+      var powerten=BigInt(10)**BigInt(digitsafterpoint1-digitsafterpoint);
+      var powerten0=10**digitsafterpoint;
+      var bigl=BigInt(l)*BigInt(10)**BigInt(digitsafterpoint);
+      }
+   
+   // rmgn - number of graphs (for rootmode 0 3, for rootmode 1-2 1)
+   var rmgn=rootmode?1:3;
+   
+   // zero = 0
+   var zero=rootmode?BigInt(0):0;
+   
+   // one = 1
+   var one=rootmode?BigInt(1):1;
+   
+   // aar - array of roots (inverse tar array) (parameters: 1st - x ∈ [0; l - 1], 2nd - root number)
+   let aar=[];
+   
+   var e,u;
+   
+   // fill aar with empty arrays
+   for(e=0;e<l;e++)
+      aar.push([]);
+      
+   // fill aar with roots
+   for(e=0;e<l;e++)
+      if(!pturn||(e>=Math.sqrt((pturn-1)*l)&&e<Math.sqrt(pturn*l)))
+      aar[tar[e]].push(e);
+      //aar[e].push(Math.sqrt(e));
+      
+   // xdaar - array of sums of squares of coordinates mod l (parameter: sum number)
+   // caar - array of numbers of nodes of lattice mod l such as xdaar[x] = sum of squares of coordinates mod l (parameter: x (sum number))
+   // iar - array of sums of roots mod l (parameters: 1st - 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2; 2nd - x ∈ [0; l - 1])
+ 
+   var caar=[],xdaar=[],iar=rootmode?[[]]:[[],[],[]];
+    
+   // fill iar array
+   if(!rootmode)
+   for(e=0;e<l;e++)
+   for(u=0;u<3;u++)
+      iar[u].push(0);    
+   
+   if(!rootmode)
+      for(e=0;e<l;e++)
+         for(let u=-1;u<aar[e].length;u++)
+            if(u>=0)
+               {
+               if(u==0){iar[0][e]+=aar[e][0];iar[0][e]%=l}
+               
+               /*if(u<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(u<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}*/           
+               
+               if(aar[e][u]<halfl){iar[1][e]+=aar[e][u];iar[1][e]%=l}
+               if(aar[e][u]<=halfl){iar[2][e]+=aar[e][u];iar[2][e]%=l}
+               //iar[2][e]+=aar[e][u];iar[2][e]%=l;
+               }
+
+   aar=[];
+   // fill aar with empty arrays
+   for(e=0;e<l;e++)
+      aar.push([]);
+   // fill aar with roots
+   for(e=0;e<l;e++)
+      aar[tar[e]].push(e); 
+   
+   // fill xdaar, caar arrays for 1D lattice, fill iar array with zeros
+   if(rootmode==1)
+      for(e=0;e<l;e++)
+         {
+         caar.push(BigInt(1));
+         xdaar.push(e*e);
+         //iar[0].push(0);
+         }
+   else if(rootmode==2)
+      for(e=0;e<l;e++)
+         {
+         if(aar[e].length)
+            {
+            caar.push(BigInt(aar[e].length));
+            xdaar.push(e);
+            }
+         //iar[0].push(0);
+         }
+   else     
+      for(e=0;e<l;e++)
+         {
+         if(aar[e].length)
+            {
+            caar.push(aar[e].length%l);
+            xdaar.push(e);
+            }
+         for(u=0;u<3;u++)
+            iar[u].push(0);
+         }         
+     
+   // b - 3D indicator (if offset is used, replace d with d + offset)
+   var b=d==3;
+   
+   // fill xdaar, caar arrays for dD lattice (2D for 3D lattice) (if offset is used, replace d with d + offset)
+   if((d>4?d+shdim:d)>1)
+      {
+      
+      // xdaar0, caar0 - 1D versions of xdaar, caar
+      let caar0=[...caar];
+      let xdaar0=[...xdaar];
+
+      if(rootmode==1)
+      
+         {
+         aar.length=l*l;
+         
+         // e - dimension (if offset is used, replace d with d + offset)
+         for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+            {
+         
+            // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+            aar.length+=l*l;
+         
+            // fill aar array with zeros
+            aar.fill(zero);
+         
+            // fill aar array
+            for(let i=0;i<caar.length;i++)
+            for(u=0;u<caar0.length;u++)
+               aar[(xdaar[i]+xdaar0[u])]+=caar[i]*caar0[u];
+            
+            // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+            caar.length=0;
+            xdaar.length=0;
+            for(let i=0;i<aar.length;i++)
+               if(aar[i])
+                  {
+                  caar.push(aar[i]);
+                  xdaar.push(i);
+                  }
+            }
+         }
+         
+      else if(rootmode==2)
+      
+      // e - dimension (if offset is used, replace d with d + offset)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+         {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         
+         // fill aar array with zeros
+         aar.fill(zero);
+            
+         // fill aar array
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+            
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+         caar.length=0;
+         xdaar.length=0;
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar.push(aar[i]);
+               xdaar.push(i);
+               }
+         }
+         
+      else      
+      
+      // e - dimension (if offset is used, replace d with d + offset)
+      for(e=b?2:1;e<(d>4?d+shdim:d);e++)
+         {
+         
+         // aar - array of numbers of nodes of (e+1)D (2D for 3D) lattice (products of numbers mod l) such as x = sum of squares of coordinates mod l (parameter: x)
+         
+         // fill aar array with zeros
+         aar.fill(0);
+            
+         // fill aar array
+         for(let i=0;i<caar.length;i++)
+         for(u=0;u<caar0.length;u++)
+            aar[(xdaar[i]+xdaar0[u])%l]+=caar[i]*caar0[u];
+            
+         /*fn[0]=[];
+         fn[0].push(0);
+         for(let i=0;i<l;i++)
+            fn[0].push(aar[i]%l);*/
+            
+         // fill xdaar, caar arrays for (e+1)D (2D for 3D) lattice
+         caar.length=0;
+         xdaar.length=0;
+         for(let i=0;i<l;i++)
+            if(aar[i])
+               {
+               caar.push(aar[i]%l);
+               xdaar.push(i);
+               }
+         }
+         
+      }
+      
+   // + mass square
+   if(ms)
+   if(rootmode==1)
+      for(e=0;e<caar.length;e++)
+         xdaar[e]+=ms;
+   else   
+      for(e=0;e<caar.length;e++)
+         {
+         xdaar[e]+=ms;
+         xdaar[e]%=l;
+         }
+      
+   // d1 - number of dimensions for setlat function (2 for 3D, else 1)
+   var d1=b?2:1;
+   //var d1=d+2;
+   
+   // fill fnw for N = l with zeros
+   if(b)
+   for(e=0;e<rmgn;e++)
+      {fnw[e].push([]);
+      for(let y=0;y<=l;y++)
+         fnw[e][l].push(zero);
+      }
+      
+   // i - array of sums of roots (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i=rootmode?[zero]:[0,0,0];
+   
+   // i - array of sums of roots for 1 layer of lattice (parameter: 0: sum of minimal roots, 1: sum of roots < l / 2, 2: sum of roots ≤ l / 2)
+   var i1=rootmode?[zero]:[0,0,0];
+   
+   // s - array of sums of squares of coordinates mod l (parameter: dimension - 1)
+   // j - array of length of pattern of equal coordinates (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // k - array of numbers of dimensions (except 1st dimension, if 3D) (parameter: dimension - 1)
+   // m - array of factors of nodes with same sums of squares of coordinates (parameter: dimension - 1)
+   // mf - array of permutation factors (parameter: dimension - 1)
+   var s=[0],j=[one],k=[zero],m=[zero],mf=[one];
+   
+   // fill s, j, k, m, mf arrays (if offset is used, replace d with d + offset)
+   for(u=1;u<(d>4?d+shdim:d);u++)
+      {
+      s.push(0);
+      j.push(zero);
+      let u1=rootmode?BigInt(u):u;
+      k.push(b?u1:u1+one);
+      m.push(zero);
+      mf.push(zero);
+      }
+      
+   // fill i, fnw arrays
+   setlat((b?l:caar.length)-1);
+
+   if(b&&rootmode)
+      for(e=1;e<=l;e++)
+         {
+         fnw[0][l][e]/=powerten;
+      
+        // element of fnw mod l
+        if(fnw[0][l][e]>=bigl)
+           fnw[0][l][e]%=bigl;
+              
+        fnw[0][l][e]=Number(fnw[0][l][e])/powerten0;
+                     
+        // element of fnw ∈ (-l / 2; l / 2)
+        if(fnw[0][l][e]>=halfl)
+           fnw[0][l][e]-=l;
+           
+         fnw[0][l][e]=Number(fnw[0][l][e].toFixed(digitsafterpoint));
+         }
+   
+   for(u=0;u<rmgn;u++)
+      {
+      
+      if(rootmode)
+         {
+         i[u]/=powerten;
+         
+         if(i[u]>=bigl)
+            i[u]%=bigl;
+            
+         i[u]=Number(i[u])/powerten0;
+         }
+      
+      // make values of i arrays ∈ (-l / 2; l / 2)
+      if(i[u]>=halfl)i[u]-=l;
+      
+      if(rootmode)
+         i[u]=Number(i[u].toFixed(digitsafterpoint));
+      
+      // fill fn arrays
+      fn[6+3*d+u].push(i[u]);
+      
+      // comparison of fn with fnold
+      /*if(fn[6+3*d+u][fn[6+3*d+u].length-1]!=fnold[6+3*d+u][fn[6+3*d+u].length-1])
+         console.log('fn['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fn[6+3*d+u][fn[6+3*d+u].length-1]+'\nfnold['+(6+3*d+u)+']['+(fn[6+3*d+u].length-1)+'] = '+fnold[6+3*d+u][fn[6+3*d+u].length-1]);
+
+      // comparison of fnw with fnwold
+      if(b)for(let y=0;y<=l;y++)
+         if(fnw[u][l][y]!=fnwold[u][l][y])
+            console.log('fnw['+u+']['+l+']['+y+'] = '+fnw[u][l][y]+'\nfnwold['+u+']['+l+']['+y+'] = '+fnwold[u][l][y]);*/
+      }
+   }
+}
+
+function dimpass(s,n,d)
+{
+for(let e=0;e<n;e++)
+if(d)
+   dimpass(s+e*e,n,d-1)
+   //dimpass(s+e*e*e+2*e*e+3*e+4,n,d-1)
+else
+   //if(s==e*e)
+   fn[24][1+(mhor?(s+e*e)%n:s+e*e)]++;
+   //fn[24][1+(mhor?(s+e*e*e+2*e*e+3*e+4)%n:s+e*e*e+2*e*e+3*e+4)]++;
+}
+
+function dimpass3(s,t,n,d)
+{
+for(let e=0;e<n;e++)
+if(d>1)
+   dimpass3(e,0,n,d-1)
+else if(d)
+   dimpass3(s,e,n,d-1)    
+else
+   //if(s!=t&&s!=e&&t!=e)
+   //if(s==t&&s==e)
+   //if((!(s!=t&&s!=e&&t!=e))&&(!(s==t&&s==e)))
+   {fn[24][1+(mhor?(s*s+t*t+e*e)%n:s*s+t*t+e*e)]++;
+   if((s*s+t*t+e*e)%n==0)
+   if(s<=t&&t<=e)
+      cont1.innerHTML+='('+s+'; '+t+'; '+e+')<br>';
+   }
+}
+
+function addfn7old()
+{
+cont1.innerHTML='';
+fn[24]=[0];
+for(let e=0;e<nnnx;e++)
+   fn[24].push(0);
+dimpass(0,nnn,dnn-1);
+//dimpass3(0,0,nnn,dnn-1);
+if(mver)
+   for(let e=1;e<=nnnx;e++)
+      fn[24][e]%=nnn;
+}
+
+function addfn7()
+{
+let ar0=Array(nnnx+1).fill(0);
+for(let e=0;e<nnn;e++)
+   {
+   let u=1;
+   
+   // triangle numbers for pow = 2
+   /*if(pow==2)
+      {
+      u=e*(e+1)/2;
+      if(mhor)
+         u%=nnn;
+      }
+   else*/
+   
+   for(let i=0;i<pow;i++)
+      {
+      u*=e;
+      //u*=(31*e+19);
+      if(mhor)
+         u%=nnn;
+      }
+   //u=(e*e+e)/2;if(mhor)u%=nnn;   
+   u++;
+   ar0[u]++;
+   if(mver&&ar0[u]==nnn)
+      ar0[u]==0;
+   }
+fn[24]=[...ar0];
+
+for(let d=1;d<dnn;d++)
+   {
+   
+   
+/*
+ar0=Array(nnnx+1).fill(0);
+for(let e=0;e<nnn;e++)
+   {
+   let u=1;
+   for(let i=0;i<pow;i++)
+      {
+      u*=((d==1?1:3)*e+(d==1?0:1));
+      if(mhor)
+         u%=nnn;
+      }
+   u++;
+   ar0[u]++;
+   if(mver&&ar0[u]==nnn)
+      ar0[u]==0;
+   }
+*/
+   
+   
+   
+   let ar=Array(nnnx+1).fill(0);
+   for(let e=0;e<nnn;e++)
+   if(ar0[e+1])
+   for(let i=0;i<nnnx;i++)
+   if(fn[24][i+1])
+      {
+      let u=ar0[e+1]*fn[24][i+1];
+      if(mver)
+         u%=nnn;
+      ar[1+(mhor?(e+i)%nnn:e+i)]+=u;
+      if(mver&&ar[u]==nnn)
+         ar[u]==0;
+      }
+   fn[24]=[...ar];
+   }
+if(mver)
+   for(let e=1;e<=nnnx;e++)
+      fn[24][e]%=nnn;
+if(!mhor&&nnnx>1)
+while(!fn[24][nnnx])
+   nnnx--;
+}
+
+function grectclick(g){
+if(!xsh)
+   xshn=true;
+vgr[g]=!vgr[g];
+grvn[grg[g]]+=vgr[g]?1:-1;
+document.getElementById('grc'+g).setAttribute('opacity',vgr[g]?1:0);
+document.getElementById('gc'+g).setAttribute('opacity',vgr[g]?1:vgrh);
+document.getElementById('hg'+g).setAttribute('opacity',vgr[g]?hgv:0);
+}
+
+function mousetextupdate(x,y){
+   let b=false;
+   let y1=Math.floor((mousey+listc.scrollTop-68)/w);
+   let nx=graph==10?nnnx:nextn;
+   let ny=graph==10?nnny:nextn;
+   let nn=graph==10?nnn:nextn;
+   if(y1>=ny||y1<0)
+      {y1=-1000000;
+      //b=true;
+      }
+   document.getElementById('mh').setAttribute('y',y1*w);
+   let x1=Math.floor((mousex+listc.scrollLeft-10)/w);
+   if(x1>=nx||x1<0)
+      {x1=-1000000;
+      b=true;}
+   document.getElementById('mv').setAttribute('x',x1*w);
+   
+   let i=gro[graph];
+   while(grg[i]==graph)
+      {
+      if(vgr[i])
+         //document.getElementById('hg'+i).setAttribute('y',(nextn-fn[i][b?0:x1+1]-1)*w);
+         document.getElementById('hg'+i).setAttribute('y',(ny-fn[i][b?0:x1+1]-(graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0)-(graph==4?0:1))*w);
+
+         //document.getElementById('hg'+i).setAttribute('y',(fn[i][b?0:x1+1])*w);
+      i++;
+      }
+   
+   xs.hidden=(xsh||b)&&(gm<0);
+   if(!xs.hidden)
+      {
+      let h;
+      let e;
+      if(gm<0)
+         {
+         h=x1+(graph>1&&graph!=10?1:0);
+         if(y1>=0)
+            h+='; '+(ny-y1-(graph==4?0:1)-(graph==1?mode:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?1:0)*tu);
+         if(graph==1)
+            {
+            h+='<br/>'+car[x1]+' root'+(car[x1]==1?'':'s');
+            h+='<br/>N = '+nn;
+            }
+         else
+         	{
+         	for(e=gro[graph];e<gro[graph]+grvn1[graph];e++)
+         	   {
+         	   if(vgr[e])
+         	      {
+         	      //h+='<br/><span><svg id="sx'+e+'" width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="19">'+fn[e][x1+1]+'</text></svg></span>';
+                  h+='<br/><span><svg id="sx'+e+'" width=75 height='+(maxw/3+(vgr[e+1]&&grg[e+1]==graph?10:10))+'>'+grx[e].innerHTML+'<text x="'+(maxw/2+5)+'" y="15">'+(graph!=7?fn[e][x1+1]:wmode>1?fnw[e-15][nextn][x1+1]:!pwidth||nextn<pwidth?fn[e][x1+1]:fnw[e-15][x1+1][wmode?(x1+1)/pwidth:pwidth])+'</text></svg></span>';
+
+                  }
+         	   }
+         	}
+         }
+      else
+         h='<i style="outline:none"><small>Click to '+(vgr[gm]?'hide':'show')+' this ghaph</small></i>';
+      
+      xs.innerHTML=h;
+      if(gm<0&&graph>1)
+      for(e=gro[graph];e<gro[graph]+grvn1[graph];e++)
+      if(vgr[e])
+         {
+         let s=document.getElementById('sx'+e);
+         s.setAttribute('width',s.getBBox().width+10);
+         }
+      
+      
+      //xs.style.left=x+(x*2<window.innerWidth?35:-xs.offsetWidth-15)+'px';
+      xs.style.left=x+(x+110<window.innerWidth?35:-xs.offsetWidth-15)+'px';
+      //xs.style.top=y-(y*2<window.innerHeight?5:xs.offsetHeight-30)+'px';
+      xs.style.top=y-5+'px';
+      }
+}
+
+document.onmousemove=function(e){
+   mousex=e.clientX;
+   mousey=e.clientY;
+   //console.log(mousey);
+   mousetextupdate(mousex,mousey);
+}
+
+document.onmouseleave=function(e){
+   mousex=-1000000;
+   mousey=-1000000;
+   //xs.hidden=true;
+   mousetextupdate(mousex,mousey);
+}
+
+listc.onscroll=function(e){
+   mousetextupdate(mousex,mousey);
+}
+
+let isDown = false;
+let startX,startY;
+let scrollLeft,scrollTop;
+
+listc.addEventListener('mousedown', (e) => {
+  isDown = true;
+  listc.classList.add('active');
+  startX = e.pageX - listc.offsetLeft;
+  startY = e.pageY - listc.offsetTop;
+  scrollLeft = listc.scrollLeft;
+  scrollTop = listc.scrollTop;
+});
+
+listc.addEventListener('mouseup', () => {
+  isDown = false;
+  listc.classList.remove('active');
+});
+
+listc.addEventListener('mousemove', (e) => {
+  if(!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - listc.offsetLeft;
+  const y = e.pageY - listc.offsetTop;
+  const walkX = (x - startX) * 1; //scroll-fast
+  const walkY = (y - startY) * 1;
+  listc.scrollLeft = scrollLeft - walkX;
+  listc.scrollTop = scrollTop - walkY;
+  //if(scrollLeft!=listc.scrollLeft||scrollTop!=listc.scrollTop)
+     xshn=true;
+});
 
 
-	
-	
-	
-</script></div></body></html>
+// mode - 0: (0; N), 1: (- N / 2, N / 2) for graph=1
+let mode=0;  
+
+// nextn - N                       
+let nextn=2;    
+                    
+// tar - array of x*x mod N (parameter - x ∈ [0; N - 1])
+// car - array of numbers of roots of x (parameter - x ∈ [0; N - 1])
+// maxc - maximal value of car array
+// maxcz - maximal value of car array except car[0]
+// mar - array of N mod x (mar[0] = 0) (parameter - x ∈ [0; N - 1])
+// sar - 2D array of (x*x + y+y) mod N (parameters - x, y ∈ [0; N - 1])
+// larx,lary - 2D arrays of x, y such as (x*x + y+y) mod N = s
+// (1st parameter - s ∈ [0; N - 1], 2nd parameter - number of cell such as x*x + y+y) mod N = s)
+let tar,car,maxc,maxcz,mar,larx,lary;
+
+// fnumber - maximal parameter values of fn array
+let fnumber=24;
+
+// fn[0] - array of maximal multiplicities (parameter - N)
+// fn[1] - array of maximal multiplicities except zero (parameter - N)
+// fn[2] - array of multiplicities of zero (parameter - N)
+// fn[3] - array of sums of minimal roots (parameter - N)
+// fn[4] - array of sums of roots < N / 2 (parameter - N)
+// fn[5] - array of sums of roots ≤ N / 2 (parameter - N)
+// fn[6] - array of numbers of x ∈ [0; N - 1]: ∃ √x (parameter - N)
+// fn[7] - array of N*N (parameter - N)
+// fn[8] - array of factorizations of prime and doubled prime N (empty string for other N) (parameter - N)
+// fn[9] - array of sums of minimal roots for squares of coordinates of nodes of 1D N lattice (parameter - N)
+// fn[10] - array of sums of roots < N / 2 for squares of coordinates of nodes of 1D N lattice (parameter - N)
+// fn[11] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 1D N lattice (parameter - N)
+// fn[12] - array of sums of minimal roots for squares of coordinates of nodes of 2D N x N lattice (parameter - N)
+// fn[13] - array of sums of roots < N / 2 for squares of coordinates of nodes of 2D N x N lattice (parameter - N)
+// fn[14] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 2D N x N lattice (parameter - N)
+// fn[15] - array of sums of minimal roots for squares of coordinates of nodes of 3D N x N x N lattice (parameter - N)
+// fn[16] - array of sums of roots < N / 2 for squares of coordinates of nodes of 3D N x N x N lattice (parameter - N)
+// fn[17] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 3D N x N x N lattice (parameter - N)
+// fn[18] - array of sums of minimal roots for squares of coordinates of nodes of 4D N x N x N x N lattice (parameter - N)
+// fn[19] - array of sums of roots < N / 2 for squares of coordinates of nodes of 4D N x N x N x N lattice (parameter - N)
+// fn[20] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 4D N x N x N x N lattice (parameter - N)
+// fn[21] - array of sums of minimal roots for squares of coordinates of nodes of 5D N x N x N x N x N lattice (parameter - N)
+// fn[22] - array of sums of roots < N / 2 for squares of coordinates of nodes of 5D N x N x N x N x N lattice (parameter - N)
+// fn[23] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 5D N x N x N x N x N lattice (parameter - N)
+// fn[24] - array of numbers of nodes (parameter - sum of squares)
+let fn=[];
+
+// fnw[0] - array of sums of minimal roots for squares of coordinates of nodes of 3D width x N x N lattice (1st parameter - N, 2nd parameter - width ∈ [0; N - 1])
+// fnw[1] - array of sums of roots < N / 2 for squares of coordinates of nodes of 3D width x N x N lattice (1st parameter - N, 2nd parameter - width ∈ [0; N - 1])
+// fnw[2] - array of sums of roots ≤ N / 2 for squares of coordinates of nodes of 3D width x N x N lattice (1st parameter - N, 2nd parameter - width ∈ [0; N - 1])
+let fnw=[[[]],[[]],[[]]];
+
+// fnold, fnwold - copies of fn, fnw array, created by old versions of functions
+let fnold=[];
+
+let fnwold=[[[]],[[]],[[]]];
+for(let e=0;e<=fnumber;e++)
+   {fn.push([]);
+   fnold.push([]);
+   }
+   
+// mousex - x coordinate of mouse cursor in browser
+// mousey - y coordinate of mouse cursor in browser
+let mousex=-1000000;
+let mousey=-1000000;
+
+for(let e=0;e<=fnumber;e++)
+   {fn[e].push(mousey);
+   fnold[e].push(mousey);
+   }
+   
+// cgr - array of colors of graphs of fn arrays (parameter - number of fn array)
+let cgr=['orange','green','blue','gray','deeppink','deepskyblue','purple','','','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','gray','deeppink','deepskyblue','blue'];
+
+// wgr - array of widths of graphs of fn arrays (parameter - number of fn array)
+let wgr=[5,15,15,5,10,15,5,0,0,5,10,15,5,10,15,5,10,15,5,10,15,5,10,15,5];
+
+// fgr - array of tag names of marks of graphs of fn arrays (parameter - number of fn array)
+let fgr=['rect','polygon','circle','rect','polygon','circle','rect','','','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect','polygon','circle','rect'];
+
+// tgr - array of captions of graphs of fn arrays (parameter - number of fn array)
+let tgr=['max multiplicity','max multiplicity except zero','multiplicity of zero','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of x: ∃ √x','','','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','sum of min roots','sum of roots < N / 2','sum of roots ≤ N / 2','number of nodes'];
+
+// vgr - array of visibilities of graphs of fn arrays (true - visible, false - invisible) (parameter - number of fn array)
+let vgr=[]
+
+for(let e=0;e<=fnumber;e++)
+   vgr.push(true);
+   
+// grx - array of graphs of fn arrays (parameter - number of fn array)
+let grx=new Array(fnumber);
+
+// opacity of caption of invisible graph
+let vgrh=0.15;
+
+// mhvh - opacity of highlighted row and column
+// hgv - opacity of rows of values of displayed fn arrays
+let mhvh=0.15,hgv=0.025;
+
+// tu - vertical offset factor for graphs with negative values
+let tu;
+
+// gro - array of initial numbers of fn arrays (parameter - displayed set of graphs)
+let gro=[0,0,0,3,6,9,12,15,18,21,24,24,0];
+
+// grg - array of displayed set of graphs (parameter - number of fn array)
+let grg=[2,2,2,3,3,3,4,0,0,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9,10];
+
+// grvn - array of numbers of visible graphs (parameter - displayed set of graphs)
+let grvn=[0,0,3,3,1,3,3,3,3,3,1,1];
+
+// grvn1 - array of numbers of graphs (parameter - displayed set of graphs)
+let grvn1=[0,0,3,3,1,3,3,3,3,3,1,1];
+
+// minw - minimal size of cell of graphs
+let minw=16;
+
+// maxw - maximal size of cell of graphs
+let maxw=31;
+
+// graph - displayed set of graphs
+let graph=1;
+
+// w - size of cell of graphs
+// gm - number of caption of graph (parameter - number of fn array)
+// xsh - visibility of text near mouse cursor
+// xshn - indicator of click of caption of graph
+// vgrid - visibility of grid
+// swh - invisibility of mode switcher
+// maxfsize - maximal font size of captions of rows, coumns and bar graphs
+let w,gm=-1,xsh=true,xshn=false,vgrid=true,swh=false,maxfsize=16;
+
+// pwidth - width or period of 3D lattice
+// wmode - mode of graphs of 3D lattice (0: fixed width, N alters; 1: fixed period, N alters; 2: fixed N, width alters)
+let pwidth=0,wmode=0;
+
+// ppn - array of numbers of N / 2 parabolic segments (0 -  positive, 1 - negative)
+let ppn=[1,1];
+
+// ms - mass square
+let ms=0;
+
+// shdim - offset of dimensions of lattice at graph=9
+let shdim=0;
+
+// pturn - parabola turn (if all turns then 0)
+let pturn=0;
+
+// rootmode - square root mode (0 - integer, 1 - real without modulo, 2 - real with modulo)
+let rootmode=0;
+
+// digitsafterpoint - number of digits after point for real square root modes
+let digitsafterpoint=5;
+
+// nnn - node number N (graph 10)
+let nnn=1;
+
+// dnn - dimension number for node number (graph 10)
+let dnn=1;
+
+// horizontal axis for node number (graph 10) (0 - without modulo, 1 - with modulo)
+let mhor=1;
+
+// vertical axis for node number (graph 10) (0 - without modulo, 1 - with modulo)
+let mver=1;
+
+// nnnx, nnny - horizontal and vertical sizes for node number (graph 10)
+let nnnx,nnny;
+
+let pow=2;
+
+nnnxyupdate();
+
+addfn1(100);
+addfn2(100);
+addfn3(100);
+addfn4(100);
+addfn5(100);
+addfn6(50,1);
+/*addfn6(50,2);
+addfn6(50,3);
+addfn6(50,4);
+addfn6(50,5);*/
+
+addtable(nextn);
+if(graph>1)switchmode.hidden=true;
+
+//listc.innerHTML+='&#1514;&#8206;<sup>5</sup>';
+// &#8206; - ltr symbol, place it after hebrew letters!
+
+/*
+for(pow=1;pow<11;pow++)
+{
+let b=true;
+let ci=false;
+dnn=0;
+listc.innerHTML+='<br><br>p = '+pow+'<br><br>';
+let ar=Array(10001).fill(true);
+while(b)
+   {
+   nnn=1;
+   nnnx=1;
+   let c=true;
+   //while(c&&nnn<=1000)
+   while(c)
+      {
+      let d=true;
+      if(ar[nnn])
+      {
+      addfn7();
+      let x=1;
+      while(d&&x<=nnn)
+         {
+         if(fn[24][x])
+            d=false;
+         x++;
+         }
+      }
+      if(d)
+         ar[nnn]=false;
+      else
+         {
+         c=false;
+         ci=dnn?true:false;
+         let x=2;
+         while(ci&&x<=nnn)
+         {
+         if(fn[24][x]!=fn[24][1])
+            ci=false;
+         x++;
+         }
+         }
+
+      nnn++;
+      nnnx++;
+      }
+   if(c)
+      b=false;
+   if(b)
+      listc.innerHTML+='d = '+dnn+': '+(nnn-1)+(ci?' (const)':'')+'<br><br>';
+   dnn++;
+   if(dnn>pow)
+      b=false;
+   }
+}
+*/
+
+
+/*
+for(let n=1;n<25;n++)
+{
+let ar0=Array(n).fill(0);
+let ar=Array(n).fill(0);
+let b=true;
+for(let x=0;x<n;x++)
+for(let y=0;y<n;y++)
+   ar0[(x*x+y*y)%n]++;
+for(let z=1;z<2;z++)
+{
+for(let x=0;x<n;x++)
+for(let y=0;y<n;y++)
+   ar[(x*x+y*y+z*z)%n]++;
+if(JSON.stringify(ar)!=JSON.stringify(ar0))
+   b=false
+}
+listc.innerHTML+='<br>'+b;
+}
+*/
+
+
+/*for(let k=0.25;k<=0.5;k+=0.05)
+{
+let n,sum;
+listc.innerHTML+='<br><br><br>k = ' + k;
+listc.innerHTML+='<br><br><br>';
+for(let m=1;m<=301;m+=300)
+   {
+   let ar=[0],ar1=[0];
+   for(let e=1;e<=2*m;e++)
+      {
+      ar.push(0);
+      ar1.push(0);
+      }
+   ar[m]=1;
+   n=Math.round(m*m/k/k);
+   //n=Math.round(m/k);
+   for(let e=1;e<=n;e++)
+      {
+      sum=0;
+      ar1[1]+=ar[0]/2;
+      ar1[2*m-1]+=ar[2*m]/2;
+      for(let i=1;i<2*m;i++)
+         {
+         ar1[i-1]+=ar[i]/2;
+         ar1[i+1]+=ar[i]/2;
+         }
+      for(let i=0;i<=2*m;i++)
+         {
+         ar[i]=ar1[i];
+         ar1[i]=0;
+         }
+      }
+   for(let i=0;i<=2*m;i++)
+      sum+=ar[i];    
+   listc.innerHTML+=sum;
+   listc.innerHTML+='<br><br>';
+   }
+}*/
+
+/*
+for(let k=0.25;k<=3;k+=0.05)
+{
+let n,sum;
+listc.innerHTML+='<br><br><br>k = ' + k;
+listc.innerHTML+='<br><br><br>';
+sum=0;
+for(let m=1;m<=49;m+=4)
+   {
+   sum+=1/m*Math.exp(-Math.PI*Math.PI*m*m/8/k/k)-1/(m+2)*Math.exp(-Math.PI*Math.PI*(m+2)*(m+2)/8/k/k);
+   listc.innerHTML+=4*sum/Math.PI;
+   listc.innerHTML+='<br><br>';
+   }
+}
+*/
+
+
+
+
+/*
+let maxn=50;
+let f=[1];
+let b=[[1]];
+for(let e=1;e<=maxn;e++)
+   {
+   f.push(f[e-1]/e);
+   b[0].push(0);
+   b.push([1]);
+   //b.push([1,e]);
+   }
+for(let e=1;e<=maxn;e++)
+for(let i=1;i<=maxn;i++)
+   //b[e].push(b[e-1][i]+b[e-1][i-1]+b[e-1][i-2]*f[2]);
+   //b[e].push(b[e-1][i]+b[e-1][i-1]+(i>1?b[e-1][i-2]*f[2]:0));
+   {
+   b[e].push(0);
+   for(let u=0;u<=i;u++)
+      b[e][i]+=b[e-1][i-u]*f[u];
+   }
+   
+for(let e=2;e<=maxn;e++)
+for(let i=1;i<=maxn;i++)
+   b[e][i]/=Math.pow(e,i);
+   
+let der=[0];
+for(let e=1;e<=maxn;e++)
+   der.push(1/e/f[e]);
+for(let e=2;e<=maxn;e+=2)
+   der[e]=-der[e];
+
+for(let y=8;y<=15;y++)
+{
+let x=y/10;
+listc.innerHTML+='<br><br><br>';
+listc.innerHTML+='x = '+x;
+listc.innerHTML+='<br><br>';
+listc.innerHTML+='ln(1+x) = '+Math.log(1+x);
+listc.innerHTML+='<br><br>';
+
+let seq=0;
+listc.innerHTML+='partial sum sequence:<br><br>';
+for(let e=0;e<=maxn;e++)
+   {
+   seq+=f[e]*der[e]*Math.pow(x,e);
+   listc.innerHTML+=seq;
+   listc.innerHTML+='<br>';
+   }
+   
+listc.innerHTML+='<br>';
+listc.innerHTML+='shifted point sequence:<br><br>';
+for(let e=0;e<=maxn;e++)
+   {
+   seq=0;
+   for(let i=0;i<=e;i++)
+      seq+=b[e][i]*der[i]*Math.pow(x,i);
+   listc.innerHTML+=seq;
+   listc.innerHTML+='<br>';
+   }
+}
+*/
+
+/*for(let e=1;e<=25;e++)
+   {
+   let u=0;
+   for(let i1=0;i1<e;i1++)
+   for(let i2=0;i2<e;i2++)
+   for(let i3=0;i3<e;i3++)
+   for(let i4=0;i4<e;i4++)
+   //for(let i5=0;i5<e;i5++)
+   //for(let i6=0;i6<e;i6++)
+      u+=Math.sqrt(i1*i1+i2*i2+i3*i3+i4*i4+ms);
+      //u+=Math.sqrt((i1*i1+i2*i2+i3*i3+i4*i4+i5*i5+i6*i6+ms)%e);
+   u%=e;
+   if(u>=Math.ceil(e/2)-0.5)u-=e;
+   listc.innerHTML+=e+' '+fn[18][e]+' '+u+'<br><br>';
+   }*/
+
+
+//listc.innerHTML+=longsqrt('52500000004',-11,5);
+//listc.innerHTML+=longsqrtfactor(0.5250001,1n,5);
+
+//nextn=110;
+
+//listc.innerHTML+='<br/><br/>';
+/*addfn2(100000);
+for(let e=2;e<=100000;e++)
+   if(check2(e))
+      listc.innerHTML+=e+'<br/>';*/
+
+
+
+/*
+let n=10;
+let arn=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+let bn=true;
+let e=0,i=0,y=0,s=Math.floor(Math.sqrt(n)),l=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+while(bn)
+   {
+   e++;
+   for(i=0;i<=n;i++)
+      arn[e].push(false);
+   if(e==1)
+      for(i=0;i<=s;i++)
+         arn[e][i*i]=true;
+   else
+   	{
+   	for(i=0;i<=n;i++)
+   	if(arn[e-1][i])
+   	   {y=0
+   	   while(i+y*y<=n)
+   	      {
+   	      arn[e][i+y*y]=true;
+   	      y++;
+   	      }
+   	   }
+      i=0;
+      while(i<=n&&arn[e][i])
+   	   i++;
+      if(i>n)
+         bn=false;
+   	}
+   for(i=0;i<=n;i++)
+   if(!arn[e][i])
+      l[e]++;
+   listc.innerHTML+=l[e]+'<br/>'; 
+   }
+listc.innerHTML+='<br/>'; 
+listc.innerHTML+=e+'<br/>';  
+*/
+
+
+</script></body></html>
