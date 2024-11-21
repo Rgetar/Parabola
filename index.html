@@ -124,6 +124,23 @@ else
    }
 }
 
+// set arrays sar,larx,lary
+function setlarxy(n)
+{
+//sar=Array.from(Array(n),()=>[]);
+larx=Array.from(Array(n),()=>[]);
+lary=Array.from(Array(n),()=>[]);
+
+for(let e=0;e<n;e++)
+for(let i=0;i<n;i++)
+   {
+   let s=(tar[e]+tar[i])%n;
+   //sar[e].push(s);
+   larx[s].push(e);
+   lary[s].push(i);
+   }
+}
+
 function nnnxyupdate()
 {
 nnnx=mhor?nnn:(nnn-1)*(nnn-1)*dnn+1;
@@ -237,8 +254,10 @@ function addtable(n,nx=0,ny=0)
 {
 if(!nx)nx=n;
 if(!ny)ny=n;
-if(graph==1||graph==7)
+if(graph==1||graph==7||graph==11)
    setar(n);
+if(graph==11)
+   setlarxy(n);
 let to=1.5;
 getw(Math.max(nx,ny));
 tu=Math.floor(n/2+(n%2?-0.5:0.5));
@@ -323,12 +342,25 @@ let d=document.createElement('span');
       // zero gray row
       re=document.createElement('rect');
       re.setAttribute('id','zerostring');
-      re.setAttribute('y',((n-1-(graph==1?mode:graph==2?0:1)*tu)%n)*w);
+      re.setAttribute('y',((n-1-(graph==1||graph==11?mode:graph==2?0:1)*tu)%n)*w);
       re.setAttribute('x',0);
       re.setAttribute('width',w*n);
       re.setAttribute('height',w);
       re.setAttribute('opacity',0.1);
       g.appendChild(re);
+      
+      // graph 11 zero gray column
+      if(graph==11)
+      {
+      re=document.createElement('rect');
+      re.setAttribute('id','zerocolumn');
+      re.setAttribute('y',0);
+      re.setAttribute('x',((n*2-mode*(tu+(n%2?1:0)))%n)*w);
+      re.setAttribute('width',w);
+      re.setAttribute('height',w*n);
+      re.setAttribute('opacity',0.1);
+      g.appendChild(re);
+      }
       
       // graph 2 gray columns
       if(graph==2)
@@ -464,6 +496,29 @@ let d=document.createElement('span');
             addgraph(s,n,w,fsize,23);
             }
       	}
+      else if(graph==11)
+         {
+         /*let scp=document.createElement('svg');
+         scp.setAttribute('id','scp');
+         scp.setAttribute('width',n*w);
+         scp.setAttribute('height',n*w);
+         scp.setAttribute('viewBox','0 '+(mode*tu*w)+' '+n*w+' '+n*w);  
+         g.appendChild(scp);*/
+         
+         for(e=0;e<larx[0].length;e++)
+         {
+         // graph 11 red squares
+         re=document.createElement('rect');
+         re.setAttribute('id','r'+e);
+         re.setAttribute('y',((2*n-lary[0][e]-1-mode*tu)%n)*w);
+         re.setAttribute('x',((2*n+larx[0][e]-mode*(tu+(n%2?1:0)))%n)*w);
+         re.setAttribute('width',w);
+         re.setAttribute('height',w);
+         re.style.fill='#ff0000';
+         g.appendChild(re);
+         }
+         
+         }	
       s.appendChild(g);
       }
       else if(graph==4)
@@ -518,7 +573,7 @@ let d=document.createElement('span');
       t.setAttribute('y',ny*w+fsize+1);
       t.setAttribute('font-size',fsize+'px');
       t.setAttribute('text-anchor','middle');
-      t.innerHTML=e+(graph>1&&graph<10?1:0);
+      t.innerHTML=e+(graph>1&&graph<10?1:graph==11?-mode*tu:0);
       s.appendChild(t);
       }
       
@@ -529,7 +584,7 @@ let d=document.createElement('span');
       t.setAttribute('x',nx*w+7);
       t.setAttribute('y',(e+0.6)*w);
       t.setAttribute('font-size',fsize+'px');
-      t.innerHTML=ny-e-(graph==4?0:1)-(graph==1?mode*tu:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0);
+      t.innerHTML=ny-e-(graph==4?0:1)-(graph==1||graph==11?mode*tu:graph==3||graph==5||graph==6||graph==7||graph==8||graph==9?tu:0);
       s.appendChild(t);
       }
       
@@ -550,7 +605,7 @@ let d=document.createElement('span');
 t.appendChild(d);
 listc.appendChild(t); 
 
-listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> '+(5+shdim)+'D <small>(alterable)</small> </big></b>(9)</i> <i id="gr10"><b><big> 10 </big></b>(0)</i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'</span>';
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> '+(5+shdim)+'D <small>(alterable)</small> </big></b>(9)</i> <i id="gr10"><b><big> 10 </big></b>(0)</i> <i id="gr11"><b><big> 11 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'</span>';
 let sc1=document.getElementById('sc1');
 
 if(graph==9)
@@ -874,19 +929,41 @@ else if(c=='Enter')
    }
 else if(c=='KeyM')
    {
-   if(graph==1)
+   if(graph==1||graph==11)
    {mode=1-mode;
-   let re=document.getElementById('scp');
-   re.setAttribute('viewBox','0 '+(mode*tu*w)+' '+nextn*w+' '+nextn*w);
+   if(graph==1)
+      {
+      let re=document.getElementById('scp');
+      re.setAttribute('viewBox','0 '+(mode*tu*w)+' '+nextn*w+' '+nextn*w);
+      }
+   if(graph==11)   
+      {
+      let re2=document.getElementById('zerocolumn');
+      re2.setAttribute('x',((nextn*2-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+      for(let e=0;e<nextn;e++)
+         {
+         let t=document.getElementById('x'+e);
+         t.innerHTML=e-mode*tu;
+         }
+      for(let e=0;e<larx[0].length;e++)
+         {
+         let re=document.getElementById('r'+e);
+         re.setAttribute('y',((2*nextn-lary[0][e]-1-mode*tu)%nextn)*w);
+         re.setAttribute('x',((2*nextn+larx[0][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+         }
+      }
    for(let n=nextn;n<=nextn;n++)
       {for(let e=0;e<n;e++)
          {
-         re=document.getElementById('r'+e);
-         re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
+         if(graph==1)
+            {
+            let re=document.getElementById('r'+e);
+            re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
+            }
          let t=document.getElementById('y'+e);
          t.innerHTML=n-e-1-mode*tu;
-         re=document.getElementById('zerostring');
-         re.setAttribute('y',((n-1-mode*tu)%n)*w);
+         let re1=document.getElementById('zerostring');
+         re1.setAttribute('y',((n-1-mode*tu)%n)*w);
          }
       }
    }
@@ -1213,20 +1290,42 @@ else if(c.id=='removedim100')
       }
    }
 else if(c.id=='switchmode')
-      {if(graph==1)
-      {mode=1-mode;
+   {if(graph==1||graph==11)
+   {mode=1-mode;
+   if(graph==1)
+      {
       let re=document.getElementById('scp');
       re.setAttribute('viewBox','0 '+(mode*tu*w)+' '+nextn*w+' '+nextn*w);
-      for(let n=nextn;n<=nextn;n++)
-         {for(let e=0;e<n;e++)
+      }
+   if(graph==11)   
+      {
+      let re2=document.getElementById('zerocolumn');
+      re2.setAttribute('x',((nextn*2-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+      for(let e=0;e<nextn;e++)
+         {
+         let t=document.getElementById('x'+e);
+         t.innerHTML=e-mode*tu;
+         }
+      for(let e=0;e<larx[0].length;e++)
+         {
+         let re=document.getElementById('r'+e);
+         re.setAttribute('y',((2*nextn-lary[0][e]-1-mode*tu)%nextn)*w);
+         re.setAttribute('x',((2*nextn+larx[0][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+         }
+      }
+   for(let n=nextn;n<=nextn;n++)
+      {for(let e=0;e<n;e++)
+         {
+         if(graph==1)
             {
-            re=document.getElementById('r'+e);
+            let re=document.getElementById('r'+e);
             re.setAttribute('y',((n*2-e-1-mode*tu)%n)*w);
-            let t=document.getElementById('y'+e);
-            t.innerHTML=n-e-1-mode*tu;
-            re=document.getElementById('zerostring');
-            re.setAttribute('y',((n-1-mode*tu)%n)*w);
             }
+         let t=document.getElementById('y'+e);
+         t.innerHTML=n-e-1-mode*tu;
+         let re1=document.getElementById('zerostring');
+         re1.setAttribute('y',((n-1-mode*tu)%n)*w);
+         }
          }
       listc.scrollTop=listc.scrollHeight;
       }
@@ -1337,6 +1436,14 @@ else if(c.id=='gr10')
          listc.scrollTop=listc.scrollHeight;
          }
       }
+else if(c.id=='gr11')
+      {if(graph!=11)
+         {graph=11;
+         swh=false;
+         addtable(nextn);
+         listc.scrollTop=listc.scrollHeight;
+         }
+      }
 else if(c.id=='showhidegrid')
       {
       vgrid=!vgrid;
@@ -1409,10 +1516,42 @@ return (e>a);
 return (e>a!=(fn[0][n]==2&&fn[2][n]==1));
 }
 
+// square numbers
 function addfn1(n)
 {while(fn[7].length<=n)
    fn[7].push(fn[7].length*fn[7].length);
 }
+
+// triangle numbers
+/*function addfn1(n)
+{while(fn[7].length<=n)
+   fn[7].push((fn[7].length+1)*fn[7].length/2);
+}*/
+
+// random square functions
+/*function addfn1(n)
+{let k=2;
+while(fn[7].length<=n)
+   fn[7].push((k*fn[7].length-k+2)*fn[7].length/2);
+}*/
+
+// cubic numbers
+/*function addfn1(n)
+{while(fn[7].length<=n)
+   fn[7].push(fn[7].length*fn[7].length*fn[7].length);
+}*/
+
+// random powers
+/*function addfn1(n)
+{let p=3;
+while(fn[7].length<=n)
+   {
+   let s=1;
+   for(let e=0;e<p;e++)
+      s*=fn[7].length;
+   fn[7].push(s);
+   }
+}*/
 
 function addfn2(n)
 {
@@ -2530,12 +2669,24 @@ let ar0=Array(nnnx+1).fill(0);
 for(let e=0;e<nnn;e++)
    {
    let u=1;
-   for(let i=0;i<pow;i++)
+   
+   // triangle numbers for pow = 2
+   /*if(pow==2)
       {
-      u*=e;
+      u=e*(e+1)/2;
       if(mhor)
          u%=nnn;
       }
+   else*/
+   
+   for(let i=0;i<pow;i++)
+      {
+      u*=e;
+      //u*=(31*e+19);
+      if(mhor)
+         u%=nnn;
+      }
+   //u=(e*e+e)/2;if(mhor)u%=nnn;   
    u++;
    ar0[u]++;
    if(mver&&ar0[u]==nnn)
@@ -2545,6 +2696,28 @@ fn[24]=[...ar0];
 
 for(let d=1;d<dnn;d++)
    {
+   
+   
+/*
+ar0=Array(nnnx+1).fill(0);
+for(let e=0;e<nnn;e++)
+   {
+   let u=1;
+   for(let i=0;i<pow;i++)
+      {
+      u*=((d==1?1:3)*e+(d==1?0:1));
+      if(mhor)
+         u%=nnn;
+      }
+   u++;
+   ar0[u]++;
+   if(mver&&ar0[u]==nnn)
+      ar0[u]==0;
+   }
+*/
+   
+   
+   
    let ar=Array(nnnx+1).fill(0);
    for(let e=0;e<nnn;e++)
    if(ar0[e+1])
@@ -2715,7 +2888,10 @@ let nextn=2;
 // maxc - maximal value of car array
 // maxcz - maximal value of car array except car[0]
 // mar - array of N mod x (mar[0] = 0) (parameter - x ∈ [0; N - 1])
-let tar,car,maxc,maxcz,mar;
+// sar - 2D array of (x*x + y+y) mod N (parameters - x, y ∈ [0; N - 1])
+// larx,lary - 2D arrays of x, y such as (x*x + y+y) mod N = s
+// (1st parameter - s ∈ [0; N - 1], 2nd parameter - number of cell such as x*x + y+y) mod N = s)
+let tar,car,maxc,maxcz,mar,larx,lary;
 
 // fnumber - maximal parameter values of fn array
 let fnumber=24;
@@ -2803,16 +2979,16 @@ let mhvh=0.15,hgv=0.025;
 let tu;
 
 // gro - array of initial numbers of fn arrays (parameter - displayed set of graphs)
-let gro=[0,0,0,3,6,9,12,15,18,21,24];
+let gro=[0,0,0,3,6,9,12,15,18,21,24,24,0];
 
 // grg - array of displayed set of graphs (parameter - number of fn array)
 let grg=[2,2,2,3,3,3,4,0,0,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9,10];
 
 // grvn - array of numbers of visible graphs (parameter - displayed set of graphs)
-let grvn=[0,0,3,3,1,3,3,3,3,3,1];
+let grvn=[0,0,3,3,1,3,3,3,3,3,1,1];
 
 // grvn1 - array of numbers of graphs (parameter - displayed set of graphs)
-let grvn1=[0,0,3,3,1,3,3,3,3,3,1];
+let grvn1=[0,0,3,3,1,3,3,3,3,3,1,1];
 
 // minw - minimal size of cell of graphs
 let minw=16;
@@ -2887,6 +3063,8 @@ addfn6(50,5);*/
 addtable(nextn);
 if(graph>1)switchmode.hidden=true;
 
+//listc.innerHTML+='&#1514;&#8206;<sup>5</sup>';
+// &#8206; - ltr symbol, place it after hebrew letters!
 
 /*
 for(pow=1;pow<11;pow++)
