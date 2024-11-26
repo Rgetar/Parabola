@@ -22,6 +22,12 @@ sup{font-size:0.83rem;}
 hidden></div><span id="cont1" style="float:left;line-height:0.9;position: absolute;top:500px;"></span><script
 >'use strict'
 
+// modulo
+function mod(n,m)
+{
+return ((n%m)+m)%m;
+}
+
 // long square root (st - input integer number (string), exp - decimal exponent, n - number of decimal digits after point)
 // returns square root multiplied by 10^n
 function longsqrt(st,exp,n)
@@ -141,6 +147,11 @@ for(let i=0;i<n;i++)
    }
 }
 
+function getlars(n,z,s)
+{
+return (n+s-tar[z])%n;
+}
+
 function nnnxyupdate()
 {
 nnnx=mhor?nnn:(nnn-1)*(nnn-1)*dnn+1;
@@ -257,7 +268,11 @@ if(!ny)ny=n;
 if(graph==1||graph==7||graph==11)
    setar(n);
 if(graph==11)
+   {
    setlarxy(n);
+   coordz=coordz%n;
+   sumsquares=sumsquares%n;
+   }
 let to=1.5;
 getw(Math.max(nx,ny));
 tu=Math.floor(n/2+(n%2?-0.5:0.5));
@@ -280,7 +295,7 @@ t.style.border='none';
 t.id='tc';
 
 // 'N = ..., D = ...'
-t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+(graph==10?', D = '+dnn+', power = '+pow:'')+'</span><br/><br/>';
+t.innerHTML+='<span id="th" style="font-size:32px"><br/>N = '+n+(graph==10?', D = '+dnn+', power = '+pow:'')+(graph==11?', z = '+coordz+', sum = '+sumsquares:'')+'</span><br/><br/>';
 
 let d=document.createElement('span');
 
@@ -498,6 +513,8 @@ let d=document.createElement('span');
       	}
       else if(graph==11)
          {
+         ssquares=getlars(n,coordz,sumsquares);
+
          /*let scp=document.createElement('svg');
          scp.setAttribute('id','scp');
          scp.setAttribute('width',n*w);
@@ -505,13 +522,13 @@ let d=document.createElement('span');
          scp.setAttribute('viewBox','0 '+(mode*tu*w)+' '+n*w+' '+n*w);  
          g.appendChild(scp);*/
          
-         for(e=0;e<larx[0].length;e++)
+         for(e=0;e<larx[ssquares].length;e++)
          {
          // graph 11 red squares
          re=document.createElement('rect');
          re.setAttribute('id','r'+e);
-         re.setAttribute('y',((2*n-lary[0][e]-1-mode*tu)%n)*w);
-         re.setAttribute('x',((2*n+larx[0][e]-mode*(tu+(n%2?1:0)))%n)*w);
+         re.setAttribute('y',((2*n-lary[ssquares][e]-1-mode*tu)%n)*w);
+         re.setAttribute('x',((2*n+larx[ssquares][e]-mode*(tu+(n%2?1:0)))%n)*w);
          re.setAttribute('width',w);
          re.setAttribute('height',w);
          re.style.fill='#ff0000';
@@ -605,7 +622,7 @@ let d=document.createElement('span');
 t.appendChild(d);
 listc.appendChild(t); 
 
-listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> '+(5+shdim)+'D <small>(alterable)</small> </big></b>(9)</i> <i id="gr10"><b><big> 10 </big></b>(0)</i> <i id="gr11"><b><big> 11 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'</span>';
+listc.innerHTML+='<span id="sc1"><br/><br/><br/><br/>Graphs: <i id="gr1"><b><big> 1 </big></b></i> <i id="gr2"><b><big> 2 </big></b></i> <i id="gr3"><b><big> 3 </big></b></i> <i id="gr4"><b><big> 4 </big></b></i> <i id="gr5"><b><big> 1D </big></b>(5)</i> <i id="gr6"><b><big> 2D </big></b>(6)</i> <i id="gr7"><b><big> 3D </big></b>(7)</i> <i id="gr8"><b><big> 4D </big></b>(8)</i> <i id="gr9"><b><big> '+(5+shdim)+'D <small>(alterable)</small> </big></b>(9)</i> <i id="gr10"><b><big> 10 </big></b>(0)</i> <i id="gr11"><b><big> 11 </big></b></i> <i style="padding:0;outline:none;cursor:text;"><small>(use "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" keys)</small></i><br/><br/><br/><br/> <i id="removetables100"><b>N - 100</b></i>        <i id="removetables10"><b>N - 10</b></i>        <i id="removetable"><b>N - 1</b> <small>(use "Backspace" key)</small></i>        <i id="addtable"><b>N + 1</b> <small>(use "Space" key)</small></i>        <i id="addtables"><b>N + 10</b> <small>(use "Enter" key)</small></i>        <i id="addtables100"><b>N + 100</b></i><br/><br/><br/><br/><span'+(graph==1?'':' hidden')+'> <i id="decpos"><b>- positive branch</b> <small>(use "O" key)</small></i>        <i id="incpos"><b>+ positive branch</b> <small>(use "P" key)</small></i>        <i id="decneg"><b>- negative branch</b> <small>(use "K" key)</small></i>        <i id="incneg"><b>+ negative branch</b> <small>(use "L" key)</small></i><br/><br/><br/><br/></span><span'+(graph==11?'':' hidden')+'> <i id="decz"><b>- z</b> <small>(use "Q" key)</small></i>        <i id="incz"><b>+ z</b> <small>(use "W" key)</small></i>        <i id="decsum"><b>- sum</b> <small>(use "A" key)</small></i>        <i id="incsum"><b>+ sum</b> <small>(use "S" key)</small></i><br/><br/><br/><br/></span> <i id="switchmode"'+(swh?' hidden':'')+'>Switch (0, N) and (- N / 2, N / 2) modes <small>(use "M" key)</small></i>'+(swh?'':'        ')+'</span>';
 let sc1=document.getElementById('sc1');
 
 if(graph==9)
@@ -777,6 +794,43 @@ if(graph==2)
 document.getElementById('gr'+graph).style.background='#c0fac0';
 }
 
+function updatesumofsquares(olds,news)
+{
+let g=document.getElementById('rc');
+let re;
+let t=document.getElementById('th');
+t.innerHTML='<br/>N = '+nextn+', z = '+coordz+', sum = '+sumsquares;
+let lo=larx[olds].length;
+let ln=larx[news].length;
+if(lo<ln)
+for(let e=lo;e<ln;e++)
+   {
+   //re=document.createElement('rect');
+   re=document.createElementNS("http://www.w3.org/2000/svg", "rect");
+   re.setAttribute('id','r'+e);
+   //re.setAttribute('y',0);
+   //re.setAttribute('x',0);
+   re.setAttribute('width',w);
+   re.setAttribute('height',w);
+   re.style.fill='#ff0000';
+   g.appendChild(re);     
+   }
+else if(lo>ln) 
+for(let e=ln;e<lo;e++)
+   {
+   re=document.getElementById('r'+e);
+   re.remove();
+   //re.hidden=true;
+   }  
+for(let e=0;e<ln;e++)
+   {
+   re=document.getElementById('r'+e);
+   re.setAttribute('y',((2*nextn-lary[news][e]-1-mode*tu)%nextn)*w);
+   re.setAttribute('x',((2*nextn+larx[news][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+   }
+ssquares=news;
+}
+
 function cw(e)
 {
 pwidth=e.target.selectedIndex;
@@ -945,11 +999,11 @@ else if(c=='KeyM')
          let t=document.getElementById('x'+e);
          t.innerHTML=e-mode*tu;
          }
-      for(let e=0;e<larx[0].length;e++)
+      for(let e=0;e<larx[ssquares].length;e++)
          {
          let re=document.getElementById('r'+e);
-         re.setAttribute('y',((2*nextn-lary[0][e]-1-mode*tu)%nextn)*w);
-         re.setAttribute('x',((2*nextn+larx[0][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+         re.setAttribute('y',((2*nextn-lary[ssquares][e]-1-mode*tu)%nextn)*w);
+         re.setAttribute('x',((2*nextn+larx[ssquares][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
          }
       }
    for(let n=nextn;n<=nextn;n++)
@@ -994,6 +1048,26 @@ else if(c=='KeyL')
    ppn[1]++;
    addtable(nextn);
    }
+else if(c=='KeyQ')
+      {
+      coordz=mod(coordz-1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
+else if(c=='KeyW')
+      {
+      coordz=mod(coordz+1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
+else if(c=='KeyA')
+      {
+      sumsquares=mod(sumsquares-1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
+else if(c=='KeyS')
+      {
+      sumsquares=mod(sumsquares+1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
 else if(c=='Digit1')
    {if(graph!=1)
       {let sct=listc.scrollTop;
@@ -1306,11 +1380,11 @@ else if(c.id=='switchmode')
          let t=document.getElementById('x'+e);
          t.innerHTML=e-mode*tu;
          }
-      for(let e=0;e<larx[0].length;e++)
+      for(let e=0;e<larx[ssquares].length;e++)
          {
          let re=document.getElementById('r'+e);
-         re.setAttribute('y',((2*nextn-lary[0][e]-1-mode*tu)%nextn)*w);
-         re.setAttribute('x',((2*nextn+larx[0][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
+         re.setAttribute('y',((2*nextn-lary[ssquares][e]-1-mode*tu)%nextn)*w);
+         re.setAttribute('x',((2*nextn+larx[ssquares][e]-mode*(tu+(nextn%2?1:0)))%nextn)*w);
          }
       }
    for(let n=nextn;n<=nextn;n++)
@@ -1355,6 +1429,26 @@ else if(c.id=='incneg')
       {
       ppn[1]++;
       addtable(nextn);
+      }
+else if(c.id=='decz')
+      {
+      coordz=mod(coordz-1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
+else if(c.id=='incz')
+      {
+      coordz=mod(coordz+1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
+else if(c.id=='decsum')
+      {
+      sumsquares=mod(sumsquares-1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
+      }
+else if(c.id=='incsum')
+      {
+      sumsquares=mod(sumsquares+1,nextn);
+      updatesumofsquares(ssquares,getlars(nextn,coordz,sumsquares));
       }
 else if(c.id=='gr1')
       {if(graph!=1)
@@ -2892,6 +2986,15 @@ let nextn=2;
 // larx,lary - 2D arrays of x, y such as (x*x + y+y) mod N = s
 // (1st parameter - s ∈ [0; N - 1], 2nd parameter - number of cell such as x*x + y+y) mod N = s)
 let tar,car,maxc,maxcz,mar,larx,lary;
+
+// 3rd coordinate for graph 11 (sum of squares)
+let coordz=0;
+
+// sum of squares coordinate for graph 11 (sum of squares)
+let sumsquares=0;
+
+// 1st parameter (s) of larx, lary arrays
+let ssquares;
 
 // fnumber - maximal parameter values of fn array
 let fnumber=24;
